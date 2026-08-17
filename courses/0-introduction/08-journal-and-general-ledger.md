@@ -1,4 +1,11 @@
+---
+source: いぬぼき
+course: 初めて学ぶ簿記入門講座
+url: https://inuboki.com/nyuumon/nyuumon-text8/
+---
 # 第8講 — 仕訳帳と総勘定元帳
+
+> いぬぼき「初めて学ぶ簿記入門講座」第8講を ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 

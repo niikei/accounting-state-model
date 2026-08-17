@@ -1,3 +1,9 @@
+---
+source: 資料・教材・サイト名
+course: 講座・文書体系名
+url: https://example.com/course/lesson-1/
+---
+
 # 講座名
 
 ## 1. この講座で学ぶこと
@@ -10,7 +16,7 @@
 
 ## 3. 関連するASM
 
-- `theory/xx-module.md`（実在するモジュールへの相対リンクに置き換える）
+- `theory/xx-module.md`（配置先から実在するモジュールへの相対リンクに置き換える）
 
 ## 4. ASMによる説明
 

@@ -1,4 +1,11 @@
+---
+source: いぬぼき
+course: 初めて学ぶ簿記入門講座
+url: https://inuboki.com/nyuumon/nyuumon-text3/
+---
 # 第3講 — 勘定科目とは
+
+> いぬぼき「初めて学ぶ簿記入門講座」第3講を ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 

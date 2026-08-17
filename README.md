@@ -4,7 +4,7 @@ Accounting State Model (ASM) は、簿記・会計を次のように捉えるた
 
 > 認識された経済的事象による制約付き状態遷移と、その記録・再索引化・集約・検証
 
-このリポジトリでは、一般化された理論を `theory/`、各講座で理論を検証した記録を `courses/` に分けます。README は両者を結ぶ地図です。
+このリポジトリでは、一般化された理論を `theory/`、教材・サイト・文書ごとに理論を検証した記録を `courses/<order>-<course-id>/` に分けます。README は両者を結ぶ地図です。
 
 ## Core Pipeline
 
@@ -43,7 +43,7 @@ $$
 flowchart TD
     README["README.md<br/>ASM全体の地図"]
     THEORY["theory/<br/>一般理論の正本群"]
-    COURSES["courses/<br/>講座ごとの検証ノート"]
+    COURSES["courses/<br/>情報源を明記した検証ノート"]
     GLOSSARY["glossary.md<br/>用語と記号"]
     LEGACY["docs/legacy/<br/>移行前スナップショット"]
 
@@ -70,22 +70,24 @@ flowchart TD
 
 ## Course Notes
 
-### 入門
+Course Note は各ファイルの YAML で情報源と元ページを追跡する。現在のノートは、簿記学習サイト [いぬぼき](https://inuboki.com/) の講座を ASM で読み替えたものである。将来は別の教科書、会計基準、講義、記事なども独立した course directory として追加できる。詳しくは [Course Notes](courses/README.md) を参照。
 
-1. [簿記とは](courses/introduction/01-bookkeeping.md)
-2. [複式簿記とは](courses/introduction/02-double-entry.md)
-3. [勘定科目とは](courses/introduction/03-accounts.md)
-4. [勘定記入とは](courses/introduction/04-account-entry.md)
-5. [仕訳とは](courses/introduction/05-journal-entry.md)
-6. [転記とは](courses/introduction/06-posting.md)
-7. [決算と会計期間](courses/introduction/07-closing-and-period.md)
-8. [仕訳帳と総勘定元帳](courses/introduction/08-journal-and-general-ledger.md)
-9. [補助簿](courses/introduction/09-subsidiary-books.md)
-10. [試算表](courses/introduction/10-trial-balance.md)
+### いぬぼき — 初めて学ぶ簿記入門講座
 
-### 簿記3級
+1. [簿記とは](courses/0-introduction/01-bookkeeping.md)
+2. [複式簿記とは](courses/0-introduction/02-double-entry.md)
+3. [勘定科目とは](courses/0-introduction/03-accounts.md)
+4. [勘定記入とは](courses/0-introduction/04-account-entry.md)
+5. [仕訳とは](courses/0-introduction/05-journal-entry.md)
+6. [転記とは](courses/0-introduction/06-posting.md)
+7. [決算と会計期間](courses/0-introduction/07-closing-and-period.md)
+8. [仕訳帳と総勘定元帳](courses/0-introduction/08-journal-and-general-ledger.md)
+9. [補助簿](courses/0-introduction/09-subsidiary-books.md)
+10. [試算表](courses/0-introduction/10-trial-balance.md)
 
-1. [現金](courses/grade3/01-cash.md)
+### いぬぼき — 日商簿記3級無料講座
+
+1. [現金](courses/1-grade3/01-cash.md)
 
 新しい講座ノートは [Course Note Template](courses/TEMPLATE.md) から作成します。
 
@@ -94,7 +96,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     C["新しい講座"]
-    N["courses/ にノートを作成"]
+    N["該当する course directory にノートを作成"]
     T["既存 theory/ で説明"]
     Q{"講座を越えて成立する<br/>不足概念があるか"}
     KEEP["Theory変更なし"]
@@ -105,7 +107,7 @@ flowchart TD
     Q -->|"Yes"| UPDATE
 ```
 
-原則は「`courses/` を先に編集し、反例や具体例で検証したうえで、一般化できる内容だけ `theory/` へ昇格する」です。詳細は [AGENTS.md](AGENTS.md) を参照してください。
+原則は「該当する course directory を先に編集し、反例や具体例、必要なら複数情報源との比較で検証したうえで、情報源を越えて一般化できる内容だけ `theory/` へ昇格する」です。詳細は [AGENTS.md](AGENTS.md) を参照してください。
 
 ## Status
 

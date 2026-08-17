@@ -1,4 +1,11 @@
+---
+source: いぬぼき
+course: 初めて学ぶ簿記入門講座
+url: https://inuboki.com/nyuumon/nyuumon-text6/
+---
 # 第6講 — 転記とは
+
+> いぬぼき「初めて学ぶ簿記入門講座」第6講を ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 

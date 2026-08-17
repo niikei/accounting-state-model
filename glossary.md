@@ -3,7 +3,7 @@
 ASM で使う主要用語と記号の索引です。厳密な定義は各 Theory Module を参照してください。
 
 | 用語・記号 | 意味 | 主な参照先 |
-|---|---|---|
+| --- | --- | --- |
 | ASM | Accounting State Model | [README](README.md) |
 | $\omega(t)$ | 時刻 $t$ における現実の経済状態 | [Reality and Recognition](theory/01-reality-and-recognition.md) |
 | $e$ | 現実世界で発生する経済的事象 | [Reality and Recognition](theory/01-reality-and-recognition.md) |

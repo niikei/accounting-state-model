@@ -1,4 +1,11 @@
+---
+source: いぬぼき
+course: 初めて学ぶ簿記入門講座
+url: https://inuboki.com/nyuumon/nyuumon-text9/
+---
 # 第9講 — 補助簿
+
+> いぬぼき「初めて学ぶ簿記入門講座」第9講を ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 

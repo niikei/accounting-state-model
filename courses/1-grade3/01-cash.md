@@ -1,4 +1,13 @@
+---
+source: いぬぼき
+course: 日商簿記3級無料講座
+url: https://inuboki.com/3q-kouza/chapter1-1/
+related_urls:
+  - https://inuboki.com/3q-kouza/chapter1-2/
+---
 # 簿記3級 第1講 — 現金
+
+> いぬぼき「日商簿記3級無料講座」の現金に関するページを ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 
@@ -111,4 +120,3 @@ $$
 - 通貨代用証券の範囲を、会計ルール $\rho$ の入力としてどう表現するか。
 - 現金過不足の原因判明前後を、認識状態の更新としてどう扱うか。
 - 外貨現金の換算測定を Measurement と状態変化へどう分けるか。
-

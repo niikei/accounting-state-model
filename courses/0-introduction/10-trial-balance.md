@@ -1,4 +1,11 @@
+---
+source: いぬぼき
+course: 初めて学ぶ簿記入門講座
+url: https://inuboki.com/nyuumon/nyuumon-text10/
+---
 # 第10講 — 試算表
+
+> いぬぼき「初めて学ぶ簿記入門講座」第10講を ASM で読む Course Note。
 
 ## 1. この講座で学ぶこと
 
