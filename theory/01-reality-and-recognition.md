@@ -162,16 +162,13 @@ $$
 ASMでは現段階で、
 
 1. Stock型会計状態の変化
-
-$$
-\Delta s(e)
-$$
-
+    $$
+    \Delta s(e)
+    $$
 1. Revenue / Expense のような利益形成Flow
-
-$$
-f_{\mathrm{PL}}(e)
-$$
+    $$
+    f_{\mathrm{PL}}(e)
+    $$
 
 を区別する。
 
