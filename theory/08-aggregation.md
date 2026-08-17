@@ -4,15 +4,17 @@
 
 このモジュールは、
 
-- 会計情報の解像度
-- 詳細情報と要約情報
+- Information Resolution
+- Detail / Summary
 - Aggregation
-- Decomposition
-- 情報損失
+- Linear Aggregation
+- Information Loss
+- Kernel
+- Stock / Flow Detail
 - Subsidiary Ledger
 - Special Journal
 - Reconciliation
-- 会計情報処理における異なる変換
+- Information Processing Operations
 
 を扱う。
 
@@ -28,40 +30,17 @@ $$
 
 と考える。
 
-会計情報には少なくとも、
-
-- Recognition
-- Classification
-- Bookkeeping Representation
-- D/C Encoding
-- Posting
-- Filtering
-- Aggregation
-- Reporting Reconstruction
-
-という異なる情報変換が存在する。
-
-本モジュールでは、その中でも特に、
-
-$$
-\boxed{
-\text{Aggregation / Decomposition / Resolution}
-}
-$$
-
-を扱う。
-
 ## Information Resolution
 
-会計情報には複数の解像度が存在する。
+会計情報には異なる解像度が存在する。
 
-例えば売掛金300という総額だけを知る場合と、
+例えば売掛金300だけを知る場合と、
 
 - A社：100
 - B社：150
 - C社：50
 
-という明細を知る場合では、
+という内訳を知る場合では、
 情報量が異なる。
 
 したがって、
@@ -76,45 +55,40 @@ $$
 
 である。
 
-ASMでは、
-
-> 詳細をどの程度区別して保持するか
-
-を会計情報の **resolution / granularity** として捉える。
-
 ## Aggregation Map
 
-詳細情報空間を、
+Detail information spaceを、
 
 $$
-X_{\mathrm{detail}}
+\mathcal V_{\mathrm{detail}}
 $$
 
-要約情報空間を、
+Summary information spaceを、
 
 $$
-X_{\mathrm{summary}}
+\mathcal V_{\mathrm{summary}}
 $$
 
 とする。
 
-詳細から要約への集約写像を、
+Aggregation mapを、
 
 $$
 \boxed{
 G:
-X_{\mathrm{detail}}
+\mathcal V_{\mathrm{detail}}
 \to
-X_{\mathrm{summary}}
+\mathcal V_{\mathrm{summary}}
 }
 $$
 
 とする。
 
-例えば、得意先別売掛金残高が、
+## Example
 
 $$
-y=
+y
+=
 \begin{pmatrix}
 100\\
 150\\
@@ -122,7 +96,7 @@ y=
 \end{pmatrix}
 $$
 
-であれば、
+について、
 
 $$
 G(y)
@@ -132,66 +106,23 @@ G(y)
 300
 $$
 
-となる。
-
-したがって、
-
-$$
-\boxed{
-\text{Detail}
-\xrightarrow{G}
-\text{Summary}
-}
-$$
-
 である。
 
 ## Aggregation Is Usually Information-losing
 
-異なる詳細情報が、
-同じ要約情報を持つことがある。
-
-例えば、
-
-$$
-y_1=
-\begin{pmatrix}
-100\\
-150\\
-50
-\end{pmatrix}
-$$
-
-と、
-
-$$
-y_2=
-\begin{pmatrix}
-120\\
-130\\
-50
-\end{pmatrix}
-$$
-
-では、
+異なるdetail、
 
 $$
 y_1\neq y_2
 $$
 
-だが、
+が、
 
 $$
-G(y_1)=300
+G(y_1)=G(y_2)
 $$
 
-かつ、
-
-$$
-G(y_2)=300
-$$
-
-である。
+となりうる。
 
 したがって、
 
@@ -216,31 +147,13 @@ $$
 
 である。
 
-したがって、
-
-$$
-\boxed{
-\text{Aggregation is generally information-losing}
-}
-$$
-
-である。
-
 ## Aggregation as Compression
 
 Aggregationは、
-詳細情報をより低い解像度へ圧縮する操作と捉えられる。
 
-```mermaid
-flowchart LR
-    DETAIL["Detailed Information"]
-    AGG["Aggregation<br/>G"]
-    SUMMARY["Summary Information"]
+> Detail informationを低いresolutionへ圧縮する操作
 
-    DETAIL --> AGG --> SUMMARY
-```
-
-したがって、
+と考えられる。
 
 $$
 \boxed{
@@ -250,33 +163,24 @@ $$
 }
 $$
 
-である。
-
-ただし、
-Aggregationの目的は単に情報を捨てることではない。
-
-必要な目的に対して、
-扱いやすい解像度へ情報を変換することである。
-
 ## Additive Aggregation
 
-会計情報では、
-多くの集約が加算によって表される。
-
-勘定 $i$ の詳細インデックス集合を、
+Account $i$ のdetail index集合を、
 
 $$
-D_i
+\boxed{
+\mathcal D_i
+}
 $$
 
 とする。
 
-詳細値を、
+Detail valueを、
 
 $$
-y_{ij}
+y_{ij},
 \qquad
-j\in D_i
+j\in\mathcal D_i
 $$
 
 とすれば、
@@ -285,60 +189,17 @@ $$
 \boxed{
 G_i(y)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}
 }
 $$
 
 と書ける。
 
-例えば、
-
-$$
-D_{\mathrm{AR}}
-=
-\{
-A社,B社,C社
-\}
-$$
-
-なら、
-
-$$
-b_{\mathrm{AR}}(t)
-=
-\sum_{j\in D_{\mathrm{AR}}}
-y_{\mathrm{AR},j}(t)
-$$
-
-となる。
-
 ## Matrix Representation of Aggregation
 
 加算型Aggregationは、
-多くの場合、線形写像として表現できる。
-
-詳細ベクトルを、
-
-$$
-y\in\mathbb R^n
-$$
-
-要約ベクトルを、
-
-$$
-x\in\mathbb R^m
-$$
-
-とする。
-
-集約行列を、
-
-$$
-A_G
-$$
-
-とすれば、
+線形写像として、
 
 $$
 \boxed{
@@ -348,12 +209,13 @@ A_Gy
 }
 $$
 
-と書ける。
+と表せる場合が多い。
 
 例えば、
 
 $$
-y=
+y
+=
 \begin{pmatrix}
 100\\
 150\\
@@ -361,7 +223,7 @@ y=
 \end{pmatrix}
 $$
 
-をすべて1つへ集約するなら、
+を1つへ集約するなら、
 
 $$
 A_G
@@ -371,41 +233,23 @@ A_G
 \end{pmatrix}
 $$
 
-として、
+で、
 
 $$
-A_Gy
-=
-300
+A_Gy=300
 $$
 
 となる。
 
 ## Aggregation Matrix and Classification
 
-集約行列 $A_G$ は、
+$A_G$ は、
 
-> どの詳細項目が、どの要約項目へ属するか
+> どのdetailがどのsummary categoryへ属するか
 
-を表している。
+を表す。
 
 例えば、
-
-$$
-y=
-\begin{pmatrix}
-y_1\\
-y_2\\
-y_3
-\end{pmatrix}
-$$
-
-を、
-
-- $y_1,y_2$ → Group 1
-- $y_3$ → Group 2
-
-へ集約するなら、
 
 $$
 A_G
@@ -416,20 +260,20 @@ A_G
 \end{pmatrix}
 $$
 
-となる。
+なら、
 
-したがってAggregationは、
-Classification結果を利用した加算として表現できる場合が多い。
+- detail 1,2 → summary 1
+- detail 3 → summary 2
+
+である。
 
 ## Information Loss and Kernel
-
-Aggregationを線形写像、
 
 $$
 G(y)=A_Gy
 $$
 
-として考える。
+とする。
 
 もし、
 
@@ -438,12 +282,6 @@ G(y_1)=G(y_2)
 $$
 
 なら、
-
-$$
-A_Gy_1=A_Gy_2
-$$
-
-なので、
 
 $$
 A_G(y_1-y_2)=0
@@ -461,15 +299,15 @@ y_1-y_2
 }
 $$
 
-となる。
+である。
 
-つまり、
+## Meaning of the Kernel
 
 $$
 \boxed{
 \ker A_G
 =
-\text{aggregationによって見えなくなる詳細方向}
+\text{directions invisible after aggregation}
 }
 $$
 
@@ -477,10 +315,9 @@ $$
 
 ## Example of an Invisible Direction
 
-先ほどの、
-
 $$
-y_1=
+y_1
+=
 \begin{pmatrix}
 100\\
 150\\
@@ -488,10 +325,9 @@ y_1=
 \end{pmatrix}
 $$
 
-と、
-
 $$
-y_2=
+y_2
+=
 \begin{pmatrix}
 120\\
 130\\
@@ -499,7 +335,7 @@ y_2=
 \end{pmatrix}
 $$
 
-の差は、
+なら、
 
 $$
 y_2-y_1
@@ -513,60 +349,26 @@ $$
 
 である。
 
-しかし合計を取ると、
+総額集約では、
 
 $$
 20-20+0=0
 $$
 
-となる。
-
-したがって、
-
-$$
-\begin{pmatrix}
-20\\
--20\\
-0
-\end{pmatrix}
-\in
-\ker A_G
-$$
-
-である。
-
-つまり、
-
-> A社からB社へ20だけ明細構成が移動した
-
-という情報は、
-売掛金総額だけを見ると消えてしまう。
+なので、
+この差は見えない。
 
 ## Aggregation and Degrees of Freedom
 
-詳細空間の次元が $n$、
-要約空間で観測できる独立な情報の次元が $r$ なら、
-
-集約によって失われる自由度は概念的に、
+Rank-nullity theoremより、
 
 $$
 \boxed{
-n-r
-}
-$$
-
-である。
-
-線形写像なら、
-rank-nullity theoremより、
-
-$$
-\boxed{
-\dim X_{\mathrm{detail}}
+\dim\mathcal V_{\mathrm{detail}}
 =
 \operatorname{rank}(A_G)
 +
-\dim\ker(A_G)
+\dim\ker A_G
 }
 $$
 
@@ -575,27 +377,16 @@ $$
 したがって、
 
 $$
-\boxed{
-\dim\ker(A_G)
-}
+\dim\ker A_G
 $$
 
 は、
-Aggregation後に復元不能になる詳細自由度の大きさと解釈できる。
+Aggregationで失われるdetail自由度の大きさと解釈できる。
 
 ## Temporal Type Must Be Preserved
 
-07までのASMでは、
-
-- Stock-valued quantity
-- Flow-valued quantity
-
-を区別した。
-
-Aggregationにおいても、
-この時間型を混同してはならない。
-
-したがって、
+Aggregationでは、
+Temporal Typeを混同しない。
 
 $$
 \boxed{
@@ -605,8 +396,6 @@ $$
 }
 $$
 
-かつ、
-
 $$
 \boxed{
 \text{Flow detail}
@@ -615,23 +404,11 @@ $$
 }
 $$
 
-という集約を基本とする。
-
-つまり、
-
-$$
-\boxed{
-\text{Aggregation preserves temporal type}
-}
-$$
-
-を原則とする。
+を基本とする。
 
 ## Stock Detail Aggregation
 
-Stock-valued account $i\in X_S$ を考える。
-
-勘定 $i$ の詳細残高を、
+Stock-valued Account $i$ のdetail balanceを、
 
 $$
 y_{ij}(t)
@@ -639,46 +416,35 @@ $$
 
 とする。
 
-するとAccount-level Book Balanceは、
+すると、
 
 $$
 \boxed{
 b_i(t)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
 
-となる。
+である。
 
-例えばAccounts Receivableなら、
+## Example: Accounts Receivable
+
+得意先別売掛金なら、
 
 $$
 b_{\mathrm{AR}}(t)
 =
-\sum_{\text{customers }j}
+\sum_{j\in\mathcal D_{\mathrm{AR}}}
 y_{\mathrm{AR},j}(t)
 $$
 
 である。
 
-したがって、
-
-```mermaid
-flowchart LR
-    DETAIL["Customer-level AR<br/>yᵢⱼ(t)"]
-    AGG["Stock Aggregation"]
-    ACCOUNT["AR Book Balance<br/>bᵢ(t)"]
-
-    DETAIL --> AGG --> ACCOUNT
-```
-
 ## Flow Detail Aggregation
 
-Flow-valued account $i\in X_F$ を考える。
-
-詳細Flowを、
+Flow coordinate $i$ のdetail Flowを、
 
 $$
 z_{ij}(I)
@@ -686,34 +452,22 @@ $$
 
 とする。
 
-するとAccount-level Flowは、
+すると、
 
 $$
 \boxed{
 f_i(I)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
 
 である。
 
-例えば商品別Salesなら、
+## Same Structure, Different Temporal Meaning
 
-$$
-f_{\mathrm{Sales}}(I)
-=
-\sum_{\text{products }j}
-z_{\mathrm{Sales},j}(I)
-$$
-
-となる。
-
-## Stock Aggregation and Flow Aggregation Are Analogous but Distinct
-
-StockとFlowのAggregationは、
-数学的にはどちらも加算で表現できる場合が多い。
+Stock / Flowともに加算型Aggregationを使える。
 
 しかし、
 
@@ -721,19 +475,19 @@ $$
 y_{ij}(t)
 $$
 
-は時点量であり、
+はpoint-in-time quantity、
 
 $$
 z_{ij}(I)
 $$
 
-は期間量である。
+はperiod quantityである。
 
 したがって、
 
 $$
 \boxed{
-\text{same aggregation structure}
+\text{same aggregation form}
 \neq
 \text{same temporal meaning}
 }
@@ -743,102 +497,57 @@ $$
 
 ## Account-detail Decomposition
 
-Aggregationの逆方向を、
-完全な逆写像として考えることは一般にはできない。
-
-なぜなら、
-
-$$
-G
-$$
-
-は通常非単射だからである。
-
-しかし詳細記録が別途保持されている場合、
-
-$$
-\boxed{
-\text{Account-level information}
-+
-\text{Subsidiary detail}
-}
-$$
-
-として内部構造を保持できる。
+Aggregation $G$ は一般に非単射なので、
+SummaryからDetailを一意に復元できない。
 
 したがって、
+Subsidiary Recordは、
 
-$$
-\boxed{
-\text{Subsidiary Record}
-\approx
-\text{Account-detail decomposition}
-}
-$$
+> SummaryからDetailを逆算するもの
 
-と解釈する。
+ではなく、
+
+> Detailを別途保持するもの
+
+である。
 
 ## Subsidiary Ledger
 
 Subsidiary Ledgerは、
-General Ledger上のAccount-level valueの
-内部構造を保持する。
+Account-level quantityの内部構造を保持する。
 
-Stock-valued accountなら、
+Stock Accountなら、
 
 $$
 \boxed{
 b_i(t)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
 
 である。
 
-例えば売掛金300について、
-
-$$
-300
-=
-100+150+50
-$$
-
-という得意先別構造を保持する。
-
 ## Subsidiary Ledger as Detail Preservation
 
-General Ledger上では、
+General Ledgerに、
 
 $$
-b_{\mathrm{AR}}(t)=300
+b_{\mathrm{AR}}=300
 $$
 
-しか見えなくても、
+だけがあっても、
 
-Subsidiary Ledgerが、
+Subsidiary Ledgerに、
 
 $$
-\begin{aligned}
-A社&:100\\
-B社&:150\\
-C社&:50
-\end{aligned}
+(100,150,50)
 $$
 
-を保持していれば、
-詳細は失われていない。
+が残っていればdetailは保持されている。
 
 したがって、
-
-$$
-\boxed{
-\text{Summary alone loses information}
-}
-$$
-
-であっても、
 
 $$
 \boxed{
@@ -846,110 +555,73 @@ $$
 }
 $$
 
-としてシステム全体では詳細を保持できる。
+によってResolutionを維持できる。
 
 ## Stock and Flow Detail Decomposition
 
-Account-detail decompositionには、
-時間型に応じて少なくとも二種類ある。
-
 ```mermaid
 flowchart TD
-    ACCOUNT["Account-level Accounting Information"]
+    ACCOUNT["Account-level Information"]
 
-    STOCK["Stock-valued<br/>bᵢ(t)"]
-    FLOW["Flow-valued<br/>fᵢ(I)"]
+    STOCK["Stock<br/>bᵢ(t)"]
+    FLOW["Flow<br/>fᵢ(I)"]
 
-    STOCKDETAIL["Stock Detail<br/>yᵢⱼ(t)"]
-    FLOWDETAIL["Flow Detail<br/>zᵢⱼ(I)"]
+    SD["Stock Detail<br/>yᵢⱼ(t)"]
+    FD["Flow Detail<br/>zᵢⱼ(I)"]
 
     ACCOUNT --> STOCK
     ACCOUNT --> FLOW
 
-    STOCK --> STOCKDETAIL
-    FLOW --> FLOWDETAIL
+    STOCK --> SD
+    FLOW --> FD
 ```
-
-したがって、旧来の、
-
-$$
-\text{Subsidiary Ledger}
-\approx
-\text{State Decomposition}
-$$
-
-よりも一般的には、
-
-$$
-\boxed{
-\text{Subsidiary Record}
-\approx
-\text{Account-detail decomposition}
-}
-$$
-
-と考える方がよい。
 
 ## Special Journal
 
-Special Journalは、
-Journal全体から特定条件を満たす記録を抽出する。
+Journal全体から、
+特定条件を満たすEntryを抽出する。
 
-条件述語を、
+条件predicateを、
 
 $$
-q
+\boxed{
+\chi
+}
 $$
 
 とする。
 
 $$
-q(J_k)
+\chi(J_k)
 =
 \begin{cases}
-1 & \text{condition satisfied}\\
+1 & \text{selected}\\
 0 & \text{otherwise}
 \end{cases}
 $$
 
 とする。
 
-すると、
+Special Journalを、
 
 $$
 \boxed{
-\mathcal J_q
+\mathcal J_\chi
 =
 \{
 J_k\in\mathcal J
 \mid
-q(J_k)=1
+\chi(J_k)=1
 \}
 }
 $$
 
-である。
-
-したがって、
-
-$$
-\boxed{
-\text{Special Journal}
-\approx
-\text{event / record filtering}
-}
-$$
-
-である。
+とする。
 
 ## Filtering Is Not Aggregation
 
-Special Journalは、
-複数の金額を合計して要約する操作ではない。
-
-Journalから条件に合うレコードを選択している。
-
-したがって、
+Special JournalはRecord selectionであり、
+Aggregationではない。
 
 $$
 \boxed{
@@ -961,63 +633,18 @@ $$
 
 である。
 
-```mermaid
-flowchart LR
-    J["Journal<br/>𝒥"]
+## Subsidiary Books Use Different Operations
 
-    FILTER["Predicate q"]
+補助簿には異なるinformation operationが存在する。
 
-    SPECIAL["Special Journal<br/>𝒥q"]
-
-    J --> FILTER --> SPECIAL
-```
-
-## Subsidiary Books Use Different Information Operations
-
-補助簿を1つの数学的操作だけで説明する必要はない。
-
-例えば、
-
-**Subsidiary Ledger：**
-
-$$
-\boxed{
-\text{detail decomposition + aggregation/reconciliation}
-}
-$$
-
-**Special Journal：**
-
-$$
-\boxed{
-\text{filtering}
-}
-$$
+- Subsidiary Ledger → Detail preservation / reconciliation
+- Special Journal → Filtering
 
 である。
 
-```mermaid
-flowchart TD
-    BOOKS["Subsidiary Books"]
+## Stock Reconciliation
 
-    SL["Subsidiary Ledger"]
-    SJ["Special Journal"]
-
-    DECOMP["Account-detail decomposition"]
-    FILTER["Record filtering"]
-
-    BOOKS --> SL --> DECOMP
-    BOOKS --> SJ --> FILTER
-```
-
-## Reconciliation
-
-詳細情報とAccount-level summaryの間には、
-整合条件が存在する。
-
-### Stock Reconciliation
-
-Stock-valued account $i$ について、
+Stock Account $i$ について、
 
 $$
 \boxed{
@@ -1025,7 +652,7 @@ r_i^S(t)
 =
 b_i(t)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
@@ -1044,7 +671,7 @@ $$
 
 ## Flow Reconciliation
 
-Flow-valued account $i$ について、
+Flow coordinate $i$ について、
 
 $$
 \boxed{
@@ -1052,7 +679,7 @@ r_i^F(I)
 =
 f_i(I)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
@@ -1071,16 +698,8 @@ $$
 
 ## Reconciliation Does Not Guarantee Semantic Correctness
 
-詳細合計と総額が一致していても、
-個々の明細が正しいとは限らない。
-
-例えば、
-
-- A社の100をB社へ誤分類
-- 商品Aの売上を商品Bへ誤分類
-
-していても、
-総額は一致する可能性がある。
+Detailを誤分類しても、
+総額が一致する場合がある。
 
 したがって、
 
@@ -1094,63 +713,21 @@ $$
 
 である。
 
-つまり、
-
-$$
-\boxed{
-\text{Reconciliation Correctness}
-\neq
-\text{Classification Correctness}
-}
-$$
-
-である。
-
-この区別は、
-
-[09 — Validation](09-validation.md)
-
-で扱う。
-
 ## Reconciliation as Structural Validation
 
-Reconciliation residual、
+Reconciliation Residualは、
 
-$$
-r_i
-$$
+> DetailとSummaryの構造的一致
 
-は、
-詳細と要約の構造的一致を測る。
+を検査する。
 
-したがって、
-
-$$
-\boxed{
-r_i=0
-}
-$$
-
-はStructural Validityの一種と考えられる。
-
-ただし、
-
-- Recognition
-- Classification
-- Measurement
-
-そのものの正しさまでは保証しない。
+Recognition / Classification / Measurementそのものは保証しない。
 
 ## Accounting Information Processing Graph
 
-会計情報は、
-単純な一本のAggregation chainではない。
-
-例えば、
-
 ```mermaid
 flowchart LR
-    E["Recognized Accounting Events"]
+    E["Recognized Events"]
 
     J["Journal"]
 
@@ -1158,7 +735,7 @@ flowchart LR
 
     SUB["Subsidiary Records"]
 
-    SJ["Special Journals"]
+    SJ["Special Journal"]
 
     TB["Trial Balance"]
 
@@ -1168,44 +745,19 @@ flowchart LR
 
     E --> J
 
-    J -->|"Posting / re-indexing"| L
+    J -->|"Posting"| L
     J -->|"Filtering"| SJ
 
-    SUB -->|"Aggregation / reconciliation"| L
+    SUB -->|"Aggregation / Reconciliation"| L
 
-    L -->|"Balance aggregation"| TB
+    L -->|"Balance Aggregation"| TB
 
-    L --> PHI
-    PHI --> FS
+    L --> PHI --> FS
 ```
-
-この図では、
-異なる矢印が異なる種類の情報変換を表す。
 
 ## Aggregation Is Not Posting
 
-Postingは、
-
-$$
-\mathcal J
-\to
-\mathcal L
-$$
-
-というRe-indexingである。
-
-[06 — Journal and Ledger](06-journal-and-ledger.md)
-で定義したように、
-
-$$
-\boxed{
-\text{Posting}
-=
-\text{re-indexing}
-}
-$$
-
-であり、
+PostingはRe-indexingである。
 
 $$
 \boxed{
@@ -1215,13 +767,9 @@ $$
 }
 $$
 
-である。
-
 ## Aggregation Is Not Filtering
 
-Special Journalへの変換はFilteringである。
-
-したがって、
+FilteringはRecord selectionである。
 
 $$
 \boxed{
@@ -1231,39 +779,17 @@ $$
 }
 $$
 
-である。
-
 ## Aggregation Is Not Reporting Reconstruction
 
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
-では、
+Reporting Reconstructionは、
 
 $$
-\boxed{
-s(t_1)
-=
 \Phi_I
-\left(
-b_S^-(t_1),
-f(I)
-\right)
-}
 $$
 
-というReporting Reconstructionを導入した。
+によってBook representationからReporting Stateを構成する。
 
-これは単なる詳細値の合計ではない。
-
-例えば、
-
-- Flow accumulation
-- Profit calculation
-- Equity bridge
-- Closing structure
-
-を考慮する。
-
-したがって、
+これは単純なDetail summationではない。
 
 $$
 \boxed{
@@ -1273,21 +799,19 @@ G
 }
 $$
 
-である。
-
 ## Aggregation Is Not Classification
 
 Classificationは、
 
-> ある詳細対象をどのカテゴリーへ割り当てるか
+> Detailをcategoryへ割り当てる
 
-を決める。
+作用である。
 
 Aggregationは、
 
-> 既に分類された複数の情報を、より粗い解像度へまとめる
+> 同じcategoryに属する情報をまとめる
 
-操作である。
+作用である。
 
 したがって、
 
@@ -1299,99 +823,49 @@ $$
 }
 $$
 
-である。
-
-ただしAggregationは、
-Classification結果に依存する場合が多い。
-
 ## Major Information Operations in ASM
 
-ASMでこれまで登場した主な情報変換を整理する。
-
-| Operation | Input | Output | Main meaning |
-| --- | --- | --- | --- |
-| Recognition | Reality | Accounting effect | 記録対象の決定 |
-| Classification | Detail | Account / element | 意味分類 |
-| Representation | $\Delta s,f_{\mathrm{PL}}$ | $\Delta x$ | 帳簿表現 |
-| D/C Encoding | $\Delta x$ | $J$ | 左右表現 |
-| Posting | $J$ | $L$ | Re-indexing |
-| Filtering | $\mathcal J$ | $\mathcal J_q$ | 条件抽出 |
-| Aggregation | Detail | Summary | 解像度低下 |
-| Reporting Reconstruction | $(b_S,f)$ | $s$ | Reporting State構成 |
-
-したがって、
-
-$$
-\boxed{
-\text{Accounting system}
-=
-\text{composition of different information transformations}
-}
-$$
-
-と考えられる。
+| Operation | Main Meaning |
+| --- | --- |
+| Recognition | Accounting対象の決定 |
+| Classification | Accounting categoryへの割当 |
+| Representation | Semantic effect → Book change |
+| D/C Encoding | Book change → Journal |
+| Posting | Journal → Ledger re-indexing |
+| Filtering | Entry selection |
+| Aggregation | Detail → Summary |
+| Reporting Reconstruction | Book representation → Reporting State |
+| Closing | Book representation transformation |
 
 ## Aggregation Hierarchies
 
-同じ情報が複数段階で集約される場合もある。
-
-例えば売掛金なら、
+Detailは複数段階でAggregationされうる。
 
 ```mermaid
 flowchart LR
-    INVOICE["Invoice-level Detail"]
+    INVOICE["Invoice"]
+    CUSTOMER["Customer"]
+    ACCOUNT["AR Account"]
+    ELEMENT["Assets"]
+    REPORT["Balance Sheet"]
 
-    CUSTOMER["Customer Balance"]
-
-    ACCOUNT["Accounts Receivable"]
-
-    ELEMENT["Total Assets"]
-
-    BS["Balance Sheet"]
-
-    INVOICE -->|"Aggregation"| CUSTOMER
-    CUSTOMER -->|"Aggregation"| ACCOUNT
-    ACCOUNT -->|"Aggregation"| ELEMENT
-    ELEMENT -->|"Reporting"| BS
+    INVOICE --> CUSTOMER
+    CUSTOMER --> ACCOUNT
+    ACCOUNT --> ELEMENT
+    ELEMENT --> REPORT
 ```
-
-ただし最後のFinancial Statementへの変換は、
-単純Aggregationだけではなく、
-Reporting rulesを含みうる。
 
 ## Multiple Aggregation Levels
 
-詳細空間を、
-
 $$
-X_0
-$$
-
-その次の要約空間を、
-
-$$
-X_1
-$$
-
-さらに上位を、
-
-$$
-X_2
-$$
-
-とする。
-
-$$
-X_0
+\mathcal V_0
 \xrightarrow{G_1}
-X_1
+\mathcal V_1
 \xrightarrow{G_2}
-X_2
+\mathcal V_2
 $$
 
-とすれば、
-
-最終集約は、
+なら、
 
 $$
 \boxed{
@@ -1401,68 +875,34 @@ G_2\circ G_1
 }
 $$
 
-と書ける。
-
-したがって、
-Aggregationは階層的に構成可能である。
+である。
 
 ## Information Loss Accumulates
 
-各Aggregationが情報を失うなら、
-複数段階のAggregationでは
-一般にさらに詳細復元が困難になる。
-
-$$
-X_0
-\xrightarrow{G_1}
-X_1
-\xrightarrow{G_2}
-X_2
-$$
-
-について、
-
-$$
-\boxed{
-G_2(G_1(y_1))
-=
-G_2(G_1(y_2))
-}
-$$
-
-から、
-
-$$
-y_1=y_2
-$$
-
-を導くことは一般にできない。
-
-したがって、
+各Aggregationが非単射なら、
+上位Summaryから元Detailを復元することはさらに困難になる。
 
 $$
 \boxed{
 \text{higher summary level}
 \Rightarrow
-\text{lower recoverable detail}
+\text{less recoverable detail}
 }
 $$
 
-となる傾向がある。
+である。
 
 ## Traceability and Resolution
 
-高い解像度を保持すると、
+高resolution informationは、
 
-- 原因追跡
-- 誤り発見
-- 顧客別分析
-- 商品別分析
-- Audit Trail
+- Cause tracing
+- Error detection
+- Customer analysis
+- Product analysis
+- Audit trail
 
-などが容易になる。
-
-したがって、
+に有利である。
 
 $$
 \boxed{
@@ -1472,19 +912,18 @@ $$
 }
 $$
 
-である。
-
 ## Recording Cost
 
-しかし詳細を多く保持するほど、
+一方、
+Detail保持には、
 
-- 入力
-- 保存
-- 管理
-- 照合
-- 検証
+- Entry cost
+- Storage cost
+- Maintenance cost
+- Reconciliation cost
+- Validation cost
 
-のコストも増える。
+がかかる。
 
 したがって、
 
@@ -1492,44 +931,26 @@ $$
 \boxed{
 \text{more detail}
 \Longleftrightarrow
-\text{more traceability and more recording cost}
+\text{more traceability and more cost}
 }
 $$
 
-というトレードオフが存在する。
+である。
 
 ## Subsidiary Records as Selective Resolution
 
-会計システムは、
-すべての情報を最大解像度で保持する必要はない。
-
-必要な領域だけ詳細情報を保持できる。
+会計システムは必要な領域だけDetailを保持できる。
 
 例えば、
 
-- 売掛金 → 得意先別
-- 買掛金 → 仕入先別
-- 固定資産 → 資産別
-- 商品 → 品目別
+- AR → Customer
+- AP → Supplier
+- Fixed Asset → Asset item
+- Inventory → SKU
 
-などである。
-
-したがって、
-
-$$
-\boxed{
-\text{Subsidiary Records}
-=
-\text{selective increase in information resolution}
-}
-$$
-
-と解釈できる。
+である。
 
 ## Summary Does Not Replace Detail
-
-要約情報は、
-詳細情報の代替ではない。
 
 $$
 \boxed{
@@ -1541,22 +962,18 @@ $$
 
 である。
 
-300という売掛金総額から、
+300という総額から、
 
 $$
 (100,150,50)
 $$
 
-という内訳を一意に復元することはできない。
-
-したがって、
-詳細が必要な場合は
-集約前情報を別途保持する必要がある。
+を一意に復元することはできない。
 
 ## Relationship to Financial Reporting
 
-Financial Statementsは、
-Aggregationの最終地点の1つと見ることができる。
+Financial Reportingは、
+Aggregationを含む。
 
 しかし、
 
@@ -1570,36 +987,24 @@ $$
 
 である。
 
-Financial Reportingには、
+そこには、
 
 - Classification
 - Aggregation
 - Netting
-- Period allocation
 - Presentation
 - Reporting Reconstruction
 
 などが含まれうる。
 
-したがって、
-
-$$
-\boxed{
-G
-}
-$$
-
-はFinancial Reporting全体を表す写像ではない。
-
 ## Relationship to Trial Balance
 
 Trial Balanceは、
-Ledger balancesをAccount levelで集約して一覧化する。
 
-しかし同時に、
-Debit / Credit balanceを検証する機能も持つ。
+- Account-level Aggregation
+- Structural Validation
 
-したがって、
+の両方を持つ。
 
 $$
 \boxed{
@@ -1611,26 +1016,18 @@ $$
 }
 $$
 
-と解釈できる。
-
-この詳細は、
-
-[09 — Validation](09-validation.md)
-
-で扱う。
+と捉えられる。
 
 ## Core Equations
 
-本モジュールの主要式をまとめる。
-
-**General Aggregation：**
+**Aggregation Map：**
 
 $$
 \boxed{
 G:
-X_{\mathrm{detail}}
+\mathcal V_{\mathrm{detail}}
 \to
-X_{\mathrm{summary}}
+\mathcal V_{\mathrm{summary}}
 }
 $$
 
@@ -1658,7 +1055,7 @@ $$
 \boxed{
 \ker A_G
 =
-\text{information lost by aggregation}
+\text{aggregation-invisible directions}
 }
 $$
 
@@ -1668,7 +1065,7 @@ $$
 \boxed{
 b_i(t)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
@@ -1679,7 +1076,7 @@ $$
 \boxed{
 f_i(I)
 =
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
@@ -1692,7 +1089,7 @@ r_i^S(t)
 =
 b_i(t)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
@@ -1705,39 +1102,21 @@ r_i^F(I)
 =
 f_i(I)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
 
-**Reconciliation Condition：**
+**Special Journal Filtering：**
 
 $$
 \boxed{
-r_i=0
-}
-$$
-
-**Reconciliation Is Not Semantic Validity：**
-
-$$
-\boxed{
-r_i=0
-\not\Rightarrow
-\text{semantic correctness}
-}
-$$
-
-**Special Journal：**
-
-$$
-\boxed{
-\mathcal J_q
+\mathcal J_\chi
 =
 \{
 J_k\in\mathcal J
 \mid
-q(J_k)=1
+\chi(J_k)=1
 \}
 }
 $$
@@ -1778,10 +1157,8 @@ $$
 ## Open Questions
 
 - Aggregation matrix $A_G$ をAccount hierarchy全体でどう定義するか。
-- 勘定体系をtree / DAGとして正式に表現するか。
-- Stock / Flow以外の時間型情報に対するAggregationをどう一般化するか。
-- 多通貨・数量情報など、単純加算できない詳細情報をどう扱うか。
-- NettingやEliminationをAggregationとは別の作用としてどう形式化するか。
-- Financial Statement presentationをAggregationとReporting Reconstructionからどう分離するか。
-- $\ker A_G$ とAudit / Traceabilityの関係をどこまで形式化するか。
-- Subsidiary Recordの詳細度をコスト最適化問題として表現できるか。
+- Account hierarchyをtree / DAGとしてどう表現するか。
+- 多通貨・数量情報のAggregation。
+- Netting / Eliminationを別作用としてどう形式化するか。
+- $\ker A_G$ とAudit Traceabilityの関係。
+- Detail resolutionの最適化をcost functionとして表現できるか。

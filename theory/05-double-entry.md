@@ -3,9 +3,17 @@
 ## Scope
 
 このモジュールは、
-認識された会計的変化を
-帳簿勘定変化へ表現し、
-それをDebit / Creditへ符号化する構造を扱う。
+
+- Bookkeeping Change
+- Semantic-to-Book Representation
+- Book-only Transformation
+- Debit / Credit
+- Normal Orientation
+- D/C Encoding
+- Journal Balance
+- Double-entry Constraint
+
+を扱う。
 
 ASMでは、
 
@@ -21,14 +29,14 @@ $$
 
 とレイヤーを分ける。
 
-概念的には、
+通常の認識取引では、
 
 $$
 \boxed{
 (\Delta s,f_{\mathrm{PL}})
-\longrightarrow
+\to
 \Delta x
-\longrightarrow
+\to
 J
 }
 $$
@@ -37,7 +45,7 @@ $$
 
 ## Bookkeeping Change
 
-帳簿で使用される全勘定集合を、
+帳簿で使用される全Account集合を、
 
 $$
 X
@@ -45,29 +53,39 @@ $$
 
 とする。
 
-取引 $e$ の帳簿勘定変化を、
+Bookkeeping Changeを、
 
 $$
 \boxed{
-\Delta x(e)
+\Delta x
 =
 \left(
-\Delta x_i(e)
+\Delta x_i
 \right)_{i\in X}
 }
 $$
 
 とする。
 
-ここで、
+$\Delta x_i$ は、
+
+> Account $i$ の自然な意味上の増減として記録されるBook change
+
+である。
+
+## Bookkeeping Change Is Not Semantic Transition
+
+Semantic Stock Transitionは、
 
 $$
-\Delta x_i
+\Delta s
 $$
 
-は、
+Bookkeeping Changeは、
 
-> 勘定 $i$ に記録される意味的な増減
+$$
+\Delta x
+$$
 
 である。
 
@@ -75,19 +93,54 @@ $$
 
 $$
 \boxed{
-\Delta x
-\neq
 \Delta s
+\neq
+\Delta x
 }
 $$
 
 である。
 
-## Example: Credit Sale
+## Transaction Representation
 
-掛売上100の場合、
+Recognized Accounting Effect、
 
-Reporting Stock Stateでは、
+$$
+\alpha(e)
+=
+(\Delta s(e),f_{\mathrm{PL}}(e))
+$$
+
+をBookkeeping Changeへ表現する作用を、
+概念的に、
+
+$$
+\boxed{
+\beta
+}
+$$
+
+とする。
+
+通常取引について、
+
+$$
+\boxed{
+\Delta x_{\mathrm{tx}}(e)
+=
+\beta(\alpha(e))
+}
+$$
+
+とする。
+
+## Representation Is Not Identity
+
+$\beta$ は単なる座標コピーではない。
+
+例えばCredit Saleでは、
+
+Semantic layerで、
 
 $$
 \Delta AR=+100
@@ -97,19 +150,13 @@ $$
 \Delta E=+100
 $$
 
-となる。
-
-利益形成Flowは、
-
 $$
-f_{\mathrm{PL}}
-=
-Revenue\ 100
+f_{\mathrm{PL}}=Revenue\ 100
 $$
 
 である。
 
-しかし帳簿変化は、
+しかしBook layerでは、
 
 $$
 \Delta x_{AR}=+100
@@ -119,25 +166,113 @@ $$
 \Delta x_{Sales}=+100
 $$
 
-であり、
-
 $$
 \Delta x_E=0
 $$
 
+となりうる。
+
+## Example: Credit Sale
+
+掛売上100の場合、
+
+Semantic Reporting Stateでは、
+
+$$
+\Delta AR=+100
+$$
+
+$$
+\Delta E=+100
+$$
+
 である。
+
+Profit/Loss Flowは、
+
+$$
+f_{\mathrm{PL}}
+=
+Revenue\ 100
+$$
+
+である。
+
+Bookkeeping Changeは、
+
+$$
+\boxed{
+\Delta x_{AR}=+100
+}
+$$
+
+$$
+\boxed{
+\Delta x_{Sales}=+100
+}
+$$
+
+である。
+
+## Book-only Transformations
+
+すべてのBookkeeping Changeが、
+新しいSemantic Accounting Effectから生じるわけではない。
+
+Closingのように、
+
+$$
+\Delta s=0
+$$
+
+でありながら、
+
+$$
+\Delta x\neq0
+$$
+
+となるBook transformationが存在する。
 
 したがって、
 
 $$
 \boxed{
-\text{Semantic Stock Effect}
-\neq
-\text{Bookkeeping Representation}
+\Delta x
 }
 $$
 
-である。
+には少なくとも、
+
+1. Recognized transaction representation
+2. Book-only structural transformation
+
+という異なるprovenanceがある。
+
+## General Journal-producing Book Change
+
+Journal Entryを生じるBook changeを一般に、
+
+$$
+\Delta x
+$$
+
+と書く。
+
+そのsourceは、
+
+```mermaid
+flowchart TD
+    DX["Bookkeeping Change<br/>Δx"]
+
+    TX["Recognized Transaction<br/>β(α(e))"]
+
+    OP["Book-only Operation<br/>e.g. Closing"]
+
+    TX --> DX
+    OP --> DX
+```
+
+と考えられる。
 
 ## Debit and Credit Are Directions
 
@@ -158,7 +293,7 @@ $$
 
 両者は、
 
-> 帳簿変化を仕訳の左右どちらへ配置するか
+> Bookkeeping Changeを仕訳の左右どちらへ配置するか
 
 を表す記録方向である。
 
@@ -170,9 +305,9 @@ $$
 c(i)\in\{A,L,E,R,C\}
 $$
 
-が定義されている。
+である。
 
-会計要素からNormal Orientationへの写像を、
+Accounting ElementからNormal Orientationへの写像を、
 
 $$
 \boxed{
@@ -207,7 +342,23 @@ $$
 }
 $$
 
-である。
+とする。
+
+## Meaning of Normal Orientation
+
+$\sigma_i=+1$ は、
+
+> Account $i$ の意味上の増加がDebitで表現される
+
+ことを意味する。
+
+$\sigma_i=-1$ は、
+
+> Account $i$ の意味上の増加がCreditで表現される
+
+ことを意味する。
+
+## Reporting Account Orientation
 
 Reporting Account $i$ のorientationは、
 
@@ -231,14 +382,19 @@ $$
 }
 $$
 
-となる。
+である。
 
-## Temporary Account Orientation
+## Provisional Account Orientation
 
-Temporary Accountについては、
-$c(i)$ が未定義の場合がある。
+Provisional Accountでは、
 
-したがって、
+$$
+c(i)
+$$
+
+が未定義の場合がある。
+
+その場合、
 
 $$
 \sigma_i
@@ -246,10 +402,10 @@ $$
 \bar\sigma(c(i))
 $$
 
-とは定義できない場合がある。
+とは定義できない。
 
-その場合、
-Temporary AccountのNormal Orientation、
+したがって、
+Journalへ参加するすべてのAccountについて、
 
 $$
 \boxed{
@@ -257,15 +413,11 @@ $$
 }
 $$
 
-は、
-その勘定固有の記帳規則として別途定義する。
-
-したがってJournalへ参加する全勘定について、
-$\sigma_i$ が定義されていることを要求する。
+が別途定義されていることを要求する。
 
 ## Relation to Temporal Type
 
-Reporting Accountについては、
+Reporting Accountについて、
 
 $$
 \tau
@@ -286,21 +438,18 @@ $$
 ```mermaid
 flowchart TD
     ACCOUNT["Reporting Account i"]
-
     ELEMENT["Accounting Element<br/>c(i)"]
-
     TIME["Temporal Type<br/>τ(i)"]
-
-    ORIENTATION["Normal Orientation<br/>σi"]
+    ORIENT["Normal Orientation<br/>σᵢ"]
 
     ACCOUNT --> ELEMENT
     ELEMENT -->|"τ̄"| TIME
-    ELEMENT -->|"σ̄"| ORIENTATION
+    ELEMENT -->|"σ̄"| ORIENT
 ```
 
 ## Encoding a Bookkeeping Change
 
-勘定 $i$ の帳簿変化を、
+Account $i$ のBookkeeping Changeを、
 
 $$
 \Delta x_i
@@ -308,7 +457,7 @@ $$
 
 とする。
 
-D/C方向を、
+D/C directionを、
 
 $$
 d_i
@@ -361,7 +510,9 @@ d_{\mathrm{Cash}}
 +1
 $$
 
-したがってDebitである。
+である。
+
+したがってDebit。
 
 ## Example: Liability Increase
 
@@ -385,7 +536,7 @@ d_{\mathrm{Debt}}
 -1
 $$
 
-したがってCreditである。
+となりCredit。
 
 ## Example: Expense Increase
 
@@ -399,7 +550,13 @@ $$
 \sigma_C=+1
 $$
 
-なのでDebit。
+なので、
+
+$$
+d_C=+1
+$$
+
+となりDebit。
 
 ## Example: Revenue Increase
 
@@ -413,11 +570,17 @@ $$
 \sigma_R=-1
 $$
 
-なのでCreditである。
+なので、
+
+$$
+d_R=-1
+$$
+
+となりCredit。
 
 ## Journal Entry
 
-帳簿変化 $\Delta x$ の非ゼロ成分を、
+Bookkeeping Change $\Delta x$ の非ゼロ成分集合を、
 
 $$
 \boxed{
@@ -449,57 +612,41 @@ $$
 
 とする。
 
-各組は、
-
-- Account
-- D/C direction
-- Amount
-
-を保持する。
-
 ## Journal Entry Is a Representation
 
-仕訳は経済的事象そのものではない。
+Journal Entryは、
+Bookkeeping ChangeのD/C encodingである。
 
 $$
 \boxed{
-\text{Economic Event}
-\neq
-\text{Accounting Effect}
-\neq
-\text{Bookkeeping Change}
-\neq
-\text{Journal Entry}
-}
-$$
-
-である。
-
-ASMでは、
-
-$$
-\boxed{
-e
-\to
-(\Delta s,f_{\mathrm{PL}})
-\to
 \Delta x
-\to
+\xrightarrow{\mathrm{D/C\ Encoding}}
 J
 }
 $$
 
-と分ける。
+したがって、
 
-## Balance of a Journal Entry
+$$
+\boxed{
+J
+\neq
+\Delta x
+}
+$$
 
-仕訳 $J$ のDebit合計を、
+だが、
+$\sigma$ が既知なら相互変換できる。
+
+## Debit and Credit Totals
+
+Journal Entry $J$ のDebit totalを、
 
 $$
 D(J)
 $$
 
-Credit合計を、
+Credit totalを、
 
 $$
 C(J)
@@ -507,7 +654,9 @@ $$
 
 とする。
 
-有効な複式仕訳は、
+## Balance of a Journal Entry
+
+複式仕訳では、
 
 $$
 \boxed{
@@ -515,9 +664,9 @@ D(J)=C(J)
 }
 $$
 
-を満たす。
+を要求する。
 
-残差を、
+Journal Residualを、
 
 $$
 \boxed{
@@ -528,6 +677,7 @@ D(J)-C(J)
 $$
 
 とすれば、
+Balanced Journalでは、
 
 $$
 \boxed{
@@ -535,31 +685,11 @@ r_J=0
 }
 $$
 
-がRecording LayerのStructural Constraintである。
+である。
 
 ## Journal Balance as a Linear Constraint
 
-$d_i=+1$ をDebit、
-$d_i=-1$ をCreditとしたので、
-
-$$
-r_J
-=
-\sum_i
-d_i|\Delta x_i|
-$$
-
-と書ける。
-
-一方、
-
-$$
-d_i
-=
-\operatorname{sgn}(\Delta x_i)\sigma_i
-$$
-
-なので、
+各Book changeについて、
 
 $$
 d_i|\Delta x_i|
@@ -567,9 +697,7 @@ d_i|\Delta x_i|
 \sigma_i\Delta x_i
 $$
 
-である。
-
-したがって、
+なので、
 
 $$
 \boxed{
@@ -580,9 +708,9 @@ r_J
 }
 $$
 
-を得る。
+となる。
 
-よって、
+したがって、
 
 $$
 \boxed{
@@ -603,14 +731,11 @@ $$
 }
 $$
 
-と書ける。
-
-これは複式仕訳のBalanceを、
-帳簿変化 $\Delta x$ に対する線形制約として表したものである。
+である。
 
 ## Reporting Accounts Only
 
-Temporary Accountを含まない場合、
+Provisional Accountを含まない場合、
 
 $$
 \sigma_A=\sigma_C=+1
@@ -621,102 +746,122 @@ $$
 $$
 
 なので、
-会計要素レベルでは概念的に、
+Account-element levelのBook change aggregateについて、
 
 $$
 \boxed{
-\Delta A
+\Delta A_B
 +
-\Delta C
+\Delta C_B
 -
-\Delta L
+\Delta L_B
 -
-\Delta E
+\Delta E_B
 -
-\Delta R
+\Delta R_B
 =
 0
 }
 $$
 
-というD/C balance structureが現れる。
+となる。
 
-ただし、ここでの $\Delta A,\Delta L,\ldots$ は
-**帳簿勘定変化 $\Delta x$ を会計要素別に集約した量**であり、
+添字 $B$ は、
 
-03のSemantic Stock Transition、
+> Bookkeeping Change aggregate
+
+であることを示す。
+
+## Book Constraint and Semantic Constraint Are Different
+
+Semantic Stock Transitionでは、
 
 $$
 \Delta A-\Delta L-\Delta E=0
 $$
 
-とは別の式である。
+である。
+
+一方Book layerでは、
+
+$$
+\Delta A_B
++
+\Delta C_B
+-
+\Delta L_B
+-
+\Delta E_B
+-
+\Delta R_B
+=
+0
+$$
+
+である。
+
+したがって、
+
+$$
+\boxed{
+\text{Semantic Transition Constraint}
+\neq
+\text{Book / Journal Constraint}
+}
+$$
+
+である。
 
 ## Double-entry Does Not Mean Exactly Two Accounts
 
-複式簿記は、
-必ず2勘定だけを使うという意味ではない。
+Double-entry bookkeepingは、
+
+> 1取引に必ず2Accountだけが登場する
+
+という意味ではない。
+
+複数のDebit / Credit linesを持っても、
 
 $$
-|\operatorname{supp}(\Delta x)|
-\neq2
+D(J)=C(J)
 $$
 
-であっても、
-
-$$
-\sigma^\top\Delta x=0
-$$
-
-を満たしうる。
+ならBalanced Journalを構成できる。
 
 ## Stock–Stock Journal Pattern
 
-両方がStock-valued Reporting Accountである例：
+Asset exchangeでは、
+Stock-valued Accounts同士のBook changeが起こる。
+
+例えば、
 
 $$
-\mathrm{Dr}\ Cash
+\mathrm{Dr}\ Equipment\ 100
 /
-\mathrm{Cr}\ Debt
+\mathrm{Cr}\ Cash\ 100
 $$
 
-$$
-\mathrm{Dr}\ Equipment
-/
-\mathrm{Cr}\ Cash
-$$
-
-この場合、
-
-$$
-f_{\mathrm{PL}}=0
-$$
-
-であることが多い。
+である。
 
 ## Stock–Flow Journal Pattern
 
-Stock-valued accountとFlow-valued accountが対応する例：
+Profit-forming transactionでは、
+Stock AccountとFlow Accountが組み合わされる。
+
+例えばCredit Saleなら、
 
 $$
-\mathrm{Dr}\ AR
+\mathrm{Dr}\ AccountsReceivable\ 100
 /
-\mathrm{Cr}\ Sales
+\mathrm{Cr}\ Sales\ 100
 $$
 
-$$
-\mathrm{Dr}\ Expense
-/
-\mathrm{Cr}\ Cash
-$$
-
-この場合、
-利益形成Flowが存在する。
+である。
 
 ## Formal and Economic Correctness
 
-貸借一致は必要だが、
-会計的正しさの十分条件ではない。
+Balanced Journalであっても、
+Classificationが正しいとは限らない。
 
 $$
 \boxed{
@@ -726,14 +871,13 @@ r_J=0
 }
 $$
 
-誤った勘定を使用しても、
-貸借を一致させることはできる。
+である。
 
 ## State, Transition, and Journal Constraints
 
-ASMでは次の制約を分離する。
+ASMでは三種類の制約を分離する。
 
-### State Constraint
+**State Constraint：**
 
 $$
 \boxed{
@@ -741,7 +885,7 @@ A-L-E=0
 }
 $$
 
-### Semantic Transition Constraint
+**Semantic Transition Constraint：**
 
 $$
 \boxed{
@@ -749,7 +893,7 @@ $$
 }
 $$
 
-### Journal Constraint
+**Book / Journal Constraint：**
 
 $$
 \boxed{
@@ -767,26 +911,9 @@ $$
 
 である。
 
-これらは同じ式ではない。
-
-```mermaid
-flowchart TD
-    STATE["Reporting State<br/>A − L − E = 0"]
-
-    TRANS["Semantic Transition<br/>ΔA − ΔL − ΔE = 0"]
-
-    BOOK["Bookkeeping Change<br/>σᵀΔx = 0"]
-
-    JOURNAL["Journal<br/>D(J) − C(J) = 0"]
-
-    STATE --> TRANS
-    TRANS --> BOOK
-    BOOK --> JOURNAL
-```
-
 ## Double-entry Interpretation
 
-ASMでは現段階で、
+ASMでは、
 
 $$
 \boxed{
@@ -798,33 +925,88 @@ $$
 
 と解釈する。
 
-より詳細には、
+これは、
 
-$$
-(\Delta s,f_{\mathrm{PL}})
-\to
-\Delta x
-\to
-J
-$$
+- Recognized transaction representation
+- ClosingなどのBook transformation
 
-という変換において、
+の双方に対して適用できる。
+
+## Core Equations
+
+**Transaction Representation：**
 
 $$
 \boxed{
-\sigma^\top\Delta x=0
+\Delta x_{\mathrm{tx}}(e)
+=
+\beta(\alpha(e))
 }
 $$
 
-および、
+**Normal Orientation：**
+
+$$
+\boxed{
+\sigma_i
+=
+\bar\sigma(c(i))
+}
+$$
+
+**D/C Encoding：**
+
+$$
+\boxed{
+d_i
+=
+\operatorname{sgn}(\Delta x_i)\sigma_i
+}
+$$
+
+**Journal Representation：**
+
+$$
+\boxed{
+J(\Delta x)
+=
+\{
+(i,d_i,|\Delta x_i|)
+\mid
+i\in\operatorname{supp}(\Delta x)
+\}
+}
+$$
+
+**Journal Residual：**
+
+$$
+\boxed{
+r_J
+=
+D(J)-C(J)
+}
+$$
+
+**Linear Journal Constraint：**
+
+$$
+\boxed{
+r_J
+=
+\sigma^\top\Delta x
+}
+$$
+
+**Balanced Double-entry：**
 
 $$
 \boxed{
 D(J)=C(J)
+\quad\Longleftrightarrow\quad
+\sigma^\top\Delta x=0
 }
 $$
-
-を満たす記録表現を構成する。
 
 ## Relationship to Other Modules
 
@@ -845,8 +1027,8 @@ $$
 
 ## Open Questions
 
-- $(\Delta s,f_{\mathrm{PL}})\to\Delta x$ の正式な写像。
-- Flow accountがEquity変化を期間中に展開する構造。
-- ClosingによるFlow accountとEquityの接続。
-- Temporary Account orientationの一般原則。
-- $\sigma^\top\Delta x=0$ とSemantic Stock Constraintのより一般的な代数的関係。
+- Representation map $\beta$ の正式な定義。
+- Accounting standardによる $\beta$ の変化。
+- Provisional Account orientationの一般原則。
+- Semantic Stock ConstraintとJournal Constraintの一般的代数関係。
+- Book-only transformationを一般的にどう分類するか。

@@ -3,17 +3,18 @@
 ## Scope
 
 このモジュールは、
-ASM全体に現れる、
+ASM全体の、
 
 - Structural Validity
 - Semantic Validity
 - Empirical Validity
 - Residual
+- Journal Validation
+- Posting Validation
 - Reconciliation
 - Trial Balance
-- Posting Preservation
 - Reporting Reconstruction Validation
-- Closing Preservation
+- Closing Preservation Validation
 
 を扱う。
 
@@ -29,13 +30,9 @@ $$
 
 と考える。
 
-会計情報は、
-異なるレイヤーで異なる種類の正しさを要求される。
-
 ## Validity as Multiple Axes
 
-ASMでは、
-会計情報のValidityを少なくとも、
+Accounting Validityを少なくとも、
 
 1. Structural Validity
 2. Semantic Validity
@@ -45,36 +42,22 @@ ASMでは、
 
 ```mermaid
 flowchart TD
-    VALID["Accounting Validity"]
+    V["Accounting Validity"]
 
-    STRUCT["Structural Validity<br/>形式・構造"]
+    STRUCT["Structural Validity"]
+    SEM["Semantic Validity"]
+    EMP["Empirical Validity"]
 
-    SEM["Semantic Validity<br/>認識・分類・測定"]
-
-    EMP["Empirical Validity<br/>証拠・観察との対応"]
-
-    VALID --> STRUCT
-    VALID --> SEM
-    VALID --> EMP
+    V --> STRUCT
+    V --> SEM
+    V --> EMP
 ```
-
-これらは単純な上下関係ではない。
-
-むしろ、
-
-$$
-\boxed{
-\text{different validation axes}
-}
-$$
-
-として考える方がよい。
 
 ## Structural Validity
 
 Structural Validityとは、
 
-> ASMや帳簿システムで定義された形式的関係や制約を満たしていること
+> ASMまたはBookkeeping systemで定義された形式的関係を満たすこと
 
 である。
 
@@ -94,19 +77,13 @@ $$
 
 などである。
 
-Structural Validityは、
-
-> 定義された構造の内部で整合しているか
-
-を検査する。
-
 ## Semantic Validity
 
 Semantic Validityとは、
 
-> 現実の経済事象を会計上適切に意味づけているか
+> RealityをAccounting上適切に意味づけていること
 
-を表す。
+である。
 
 少なくとも、
 
@@ -114,22 +91,7 @@ Semantic Validityとは、
 - Classification
 - Measurement
 
-に分解できる。
-
-```mermaid
-flowchart TD
-    SEM["Semantic Validity"]
-
-    RECOG["Recognition Validity"]
-    CLASS["Classification Validity"]
-    MEASURE["Measurement Validity"]
-
-    SEM --> RECOG
-    SEM --> CLASS
-    SEM --> MEASURE
-```
-
-したがって概念的に、
+に分けられる。
 
 $$
 \boxed{
@@ -143,64 +105,44 @@ V_{\mathrm{measurement}}
 }
 $$
 
-と考えられる。
-
-例えば貸借が一致していても、
-Equipmentとして認識すべきものを
-Expenseへ誤分類していれば、
-
-Structural Validityは満たしていても、
-Semantic Validityは満たさない。
-
 ## Empirical Validity
 
 Empirical Validityとは、
 
-> 会計値が観察可能な証拠と対応しているか
+> Accounting valueが観察可能なEvidenceと対応していること
 
-を表す。
+である。
 
-証拠には例えば、
+例えば、
 
-- 現金実査
-- 棚卸
-- 銀行残高確認
-- 請求書
-- 契約書
-- 外部確認
-- その他の証憑
+- Cash count
+- Inventory count
+- Bank confirmation
+- Invoice
+- Contract
+- External confirmation
 
-がある。
-
-例えばCashについて、
-
-$$
-\boxed{
-\mathrm{Cash}_{\mathrm{book}}
-=
-\mathrm{Cash}_{\mathrm{observed}}
-}
-$$
-
-を確認する。
+などと比較する。
 
 ## Evidence Is Not Reality Itself
 
-証拠も、
-現実 $\omega$ そのものではない。
+Realityを、
 
-現実から観察可能な証拠を得る作用を、
-概念的に、
+$$
+\omega
+$$
+
+とする。
+
+Realityから観測可能Evidenceを得る作用を、
 
 $$
 \boxed{
 \mathcal O(\omega)
-=
-\text{observable evidence}
 }
 $$
 
-と考えることができる。
+とする。
 
 したがって、
 
@@ -216,20 +158,17 @@ $$
 
 である。
 
-本モジュールでは、
-$\mathcal O$ の正式な構造までは定義しない。
-
 ## Residual
 
-制約、
+Constraintを、
 
 $$
 h(x)=0
 $$
 
-を考える。
+とする。
 
-この制約に対するResidualを、
+Residualを、
 
 $$
 \boxed{
@@ -242,12 +181,29 @@ $$
 正常なら、
 
 $$
-\boxed{
 r=0
-}
 $$
 
 である。
+
+## Residual May Be Scalar, Vector, or Matrix
+
+ASMのResidualは、
+必ずしもscalarとは限らない。
+
+- Scalar residual
+- Vector residual
+- Matrix residual
+
+がありうる。
+
+必要に応じてNormを取って、
+
+$$
+\|R\|
+$$
+
+をscalar diagnosticとして使える。
 
 ## Meaning of Zero Residual
 
@@ -259,11 +215,11 @@ r=0
 }
 $$
 
-が意味するのは、
+が保証するのは、
 
-> そのResidualが検査している特定の関係が成立している
+> そのResidualが検査する特定の関係
 
-ということだけである。
+だけである。
 
 したがって、
 
@@ -277,27 +233,9 @@ $$
 
 である。
 
-さらに、
-
-$$
-\boxed{
-r_a=0
-\not\Rightarrow
-r_b=0
-}
-$$
-
-も一般に成立する。
-
-異なるResidualは、
-異なる構造を検査する。
-
 ## Residual Family
 
-ASMでは、
-会計システム全体に複数のResidualが存在する。
-
-概念的には、
+ASMのResidual familyを概念的に、
 
 $$
 \boxed{
@@ -307,34 +245,23 @@ $$
 r_S,
 r_T,
 r_J,
-r_P,
-r_{\mathrm{rec}},
+R_P,
+r_i^S,
+r_i^F,
 r_{\mathrm{TB}},
-r_\Phi,
-r_C,
+R_\Phi,
+R_\Gamma,
 r_{\mathrm{emp}},
 \ldots
 \}
 }
 $$
 
-と考えられる。
-
-各Residualは、
-異なるレイヤーの異なる関係を検査する。
+とする。
 
 ## State Residual
 
-[02 — State](02-state.md)
-で定義したReporting Stock Stateについて、
-
-$$
-A-L-E=0
-$$
-
-が成立する。
-
-State Residualを、
+Reporting Stock Stateについて、
 
 $$
 \boxed{
@@ -346,7 +273,7 @@ $$
 
 とする。
 
-有効なReporting Stateでは、
+正常なら、
 
 $$
 \boxed{
@@ -358,17 +285,7 @@ $$
 
 ## Transition Residual
 
-[03 — Transition](03-transition.md)
-では、
 Semantic Stock Transitionについて、
-
-$$
-\Delta A-\Delta L-\Delta E=0
-$$
-
-を得た。
-
-したがって、
 
 $$
 \boxed{
@@ -380,7 +297,7 @@ $$
 
 とする。
 
-Constraint-preserving transitionでは、
+正常なら、
 
 $$
 \boxed{
@@ -392,16 +309,7 @@ $$
 
 ## Journal Residual
 
-[05 — Double Entry](05-double-entry.md)
-ではJournal Entryについて、
-
-$$
-D(J)=C(J)
-$$
-
-を要求した。
-
-したがって、
+Journal Entry $J$ について、
 
 $$
 \boxed{
@@ -413,52 +321,7 @@ $$
 
 とする。
 
-有効な複式仕訳では、
-
-$$
-\boxed{
-r_J=0
-}
-$$
-
-である。
-
-## Journal Residual and Bookkeeping Change
-
-05では、
-
-$$
-d_i
-=
-\operatorname{sgn}(\Delta x_i)\sigma_i
-$$
-
-と定義した。
-
-したがって、
-
-$$
-d_i|\Delta x_i|
-=
-\sigma_i\Delta x_i
-$$
-
-である。
-
-よって、
-
-$$
-\boxed{
-r_J
-=
-\sum_i
-\sigma_i\Delta x_i
-}
-$$
-
-となる。
-
-ベクトル表記では、
+05より、
 
 $$
 \boxed{
@@ -470,39 +333,14 @@ $$
 
 である。
 
-したがって、
-
-$$
-\boxed{
-D(J)=C(J)
-\quad\Longleftrightarrow\quad
-\sigma^\top\Delta x=0
-}
-$$
-
-である。
-
-## Journal Balance Does Not Guarantee Correct Accounting Meaning
-
-例えば、
-
-$$
-\mathrm{Dr}\ Expense\ 100
-/
-\mathrm{Cr}\ Cash\ 100
-$$
-
-という仕訳は、
+## Journal Balance Does Not Guarantee Correct Meaning
 
 $$
 r_J=0
 $$
 
-を満たす。
-
-しかし、
-本来Equipmentとして認識すべき取引なら
-Classificationは誤っている。
+でも、
+誤ったAccountへ記録している可能性がある。
 
 したがって、
 
@@ -516,72 +354,78 @@ $$
 
 である。
 
-## Posting Residual
+## Posting Matrix Residual
 
-[06 — Journal and Ledger](06-journal-and-ledger.md)
-では、
-PostingはJournalとLedgerの記録内容を保存する
-Re-indexingであるとした。
-
-理想的には、
+06で、
+Journalから復号したBookkeeping Matrixを、
 
 $$
-\operatorname{Decode}(\mathcal J)
-=
-\operatorname{Decode}(\mathcal L)
+M^J
 $$
 
-である。
+Ledgerから再構成したMatrixを、
 
-したがってPosting Residualを、
+$$
+M^L
+$$
+
+とした。
+
+Posting Matrix Residualを、
 
 $$
 \boxed{
-r_P
+R_P
 =
-\operatorname{Decode}(\mathcal L)
--
-\operatorname{Decode}(\mathcal J)
+M^L-M^J
 }
 $$
 
 とする。
 
+## Posting Correctness
+
 正常なPostingでは、
 
 $$
 \boxed{
-r_P=0
+R_P=0
 }
 $$
 
 である。
 
-## Meaning of Posting Residual
-
-$r_P=0$ が保証するのは、
-
-> Journalの記録内容がLedgerへ正しく移された
-
-ということだけである。
-
-元のJournal自体がSemanticに誤っていても、
-
-正確にPostingされれば、
+Scalar diagnosticが必要なら、
 
 $$
-r_P=0
+\boxed{
+r_P
+=
+\|R_P\|
+}
 $$
 
-になりうる。
+とする。
+
+## Posting Correctness Is Local
+
+$$
+R_P=0
+$$
+
+は、
+
+> Journal contentがLedgerへ正しく移った
+
+ことだけを保証する。
 
 したがって、
 
 $$
 \boxed{
-r_P=0
+R_P=0
 \not\Rightarrow
-\text{Journal is economically correct}
+\text{Journal is semantically correct}
 }
 $$
 
@@ -589,20 +433,7 @@ $$
 
 ## Stock Reconciliation Residual
 
-[08 — Aggregation](08-aggregation.md)
-では、
-Stock-valued account $i$ について、
-
-$$
-b_i(t)
-=
-\sum_{j\in D_i}
-y_{ij}(t)
-$$
-
-というdetail / summary relationを定義した。
-
-Stock Reconciliation Residualを、
+Stock Account $i$ について、
 
 $$
 \boxed{
@@ -610,7 +441,7 @@ r_i^S(t)
 =
 b_i(t)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
@@ -620,27 +451,14 @@ $$
 正常なら、
 
 $$
-\boxed{
 r_i^S(t)=0
-}
 $$
 
 である。
 
 ## Flow Reconciliation Residual
 
-Flow-valued account $i$ について、
-
-$$
-f_i(I)
-=
-\sum_{j\in D_i}
-z_{ij}(I)
-$$
-
-とした。
-
-したがって、
+Flow coordinate $i$ について、
 
 $$
 \boxed{
@@ -648,7 +466,7 @@ r_i^F(I)
 =
 f_i(I)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
@@ -658,20 +476,15 @@ $$
 正常なら、
 
 $$
-\boxed{
 r_i^F(I)=0
-}
 $$
 
 である。
 
 ## Reconciliation Does Not Guarantee Classification Correctness
 
-例えば、
-A社の売掛金100を
-B社へ誤分類したとしても、
-
-総売掛金残高が一致する場合がある。
+Detail classificationが誤っていても、
+totalが一致する場合がある。
 
 したがって、
 
@@ -683,10 +496,6 @@ r_i^S=0
 }
 $$
 
-である。
-
-Flowについても同様に、
-
 $$
 \boxed{
 r_i^F=0
@@ -695,201 +504,87 @@ r_i^F=0
 }
 $$
 
-である。
+## Selected Journal Entry Set
+
+Trial Balanceを一般化するため、
+Journal Entry indexの任意の部分集合を、
+
+$$
+\boxed{
+H
+\subseteq
+K_J(I)
+}
+$$
+
+とする。
+
+例えば、
+
+- Unadjusted entries
+- Adjusted pre-closing entries
+- Full post-closing entries
+
+などを選べる。
 
 ## Debit and Credit Totals
 
-Trial Balanceを定義するため、
-勘定 $i$ の期間中Debit totalを、
+Account $i$ について、
+選択したJournal set $H$ のDebit totalを、
 
 $$
-D_i
+\boxed{
+\mathrm{Dr}_i(H)
+}
 $$
 
 Credit totalを、
 
 $$
-C_i
+\boxed{
+\mathrm{Cr}_i(H)
+}
 $$
 
 とする。
 
-ベクトルとして、
+## D/C-signed Period Movement
 
-$$
-D=
-\begin{pmatrix}
-D_1\\
-\vdots\\
-D_n
-\end{pmatrix}
-$$
-
-$$
-C=
-\begin{pmatrix}
-C_1\\
-\vdots\\
-C_n
-\end{pmatrix}
-$$
-
-とする。
-
-## D/C-signed Net Balance
-
-Debitを正、
-Creditを負とするD/C-signed net amountを、
+D/C-signed net movementを、
 
 $$
 \boxed{
-q_i
+q_i(H)
 =
-D_i-C_i
+\mathrm{Dr}_i(H)
+-
+\mathrm{Cr}_i(H)
 }
 $$
 
-と定義する。
-
-ベクトルでは、
-
-$$
-\boxed{
-q=D-C
-}
-$$
-
-である。
+とする。
 
 重要なのは、
 
 $$
 \boxed{
-q
+q_i
 \neq
-b
-}
-$$
-
-である。
-
-## Natural Book Balance and D/C-signed Balance
-
-06で定義した、
-
-$$
-b_i(t)
-$$
-
-は、
-
-> 勘定の意味上の増加方向を正としたBook Balance
-
-である。
-
-一方、
-
-$$
-q_i=D_i-C_i
-$$
-
-は、
-
-> Debitを正、Creditを負としたD/C-signed amount
-
-である。
-
-両者はNormal Orientation、
-
-$$
-\sigma_i
-$$
-
-によって接続される。
-
-$$
-\boxed{
 b_i
-=
-\sigma_i q_i
 }
 $$
 
 である。
 
-## Examples
+## Natural-direction Book Movement
 
-### Cash
-
-CashはDebit-normalなので、
-
-$$
-\sigma_{\mathrm{Cash}}=+1
-$$
-
-である。
-
-Debit balance 100なら、
-
-$$
-q_{\mathrm{Cash}}=100
-$$
-
-なので、
-
-$$
-b_{\mathrm{Cash}}
-=
-(+1)(100)
-=
-100
-$$
-
-となる。
-
-### Debt
-
-DebtはCredit-normalなので、
-
-$$
-\sigma_{\mathrm{Debt}}=-1
-$$
-
-である。
-
-Credit balance 100なら、
-
-$$
-q_{\mathrm{Debt}}=-100
-$$
-
-なので、
-
-$$
-b_{\mathrm{Debt}}
-=
-(-1)(-100)
-=
-100
-$$
-
-となる。
-
-## Vector Form of Book Balance
-
-Normal Orientationを対角行列、
+Account $i$ の自然方向のBook movementを、
 
 $$
 \boxed{
-\Sigma_\sigma
+m_i(H)
 =
-\operatorname{diag}
-(
-\sigma_1,
-\sigma_2,
-\ldots,
-\sigma_n
-)
+\sigma_iq_i(H)
 }
 $$
 
@@ -899,160 +594,289 @@ $$
 
 $$
 \boxed{
-b
+m_i(H)
 =
-\Sigma_\sigma q
+\sum_{k\in H}
+\Delta x_i^{(k)}
 }
 $$
 
 である。
 
-また、
+## Book Balance and Period Movement
 
-$$
-\Sigma_\sigma^2=I
-$$
-
-なので、
+Stock-valued Account $i$ について、
 
 $$
 \boxed{
-q
+b_i(t_{\mathrm{end}})
 =
-\Sigma_\sigma b
+b_i(t_{\mathrm{begin}})
++
+m_i(H)
 }
 $$
 
-でもある。
+である。
 
-## Trial Balance Residual
+つまり、
 
-Trial Balanceでは、
-全勘定のDebit / Credit totalが一致するかを検査する。
+$$
+\boxed{
+b_i(t_{\mathrm{end}})
+=
+b_i(t_{\mathrm{begin}})
++
+\sigma_i
+\left(
+\mathrm{Dr}_i(H)
+-
+\mathrm{Cr}_i(H)
+\right)
+}
+$$
+
+である。
+
+## Example: Cash
+
+期首Cashが50、
+期間中Debit 100、
+Credit 30とする。
+
+$$
+\sigma_{\mathrm{Cash}}=+1
+$$
+
+$$
+q_{\mathrm{Cash}}=100-30=70
+$$
 
 したがって、
 
 $$
-\boxed{
-r_{\mathrm{TB}}
-=
-\mathbf 1^\top(D-C)
-}
-$$
-
-すなわち、
-
-$$
-\boxed{
-r_{\mathrm{TB}}
-=
-\mathbf 1^\top q
-}
+m_{\mathrm{Cash}}=70
 $$
 
 である。
 
-貸借一致が保存されていれば、
+期末Book Balanceは、
 
 $$
-\boxed{
-r_{\mathrm{TB}}=0
-}
+b_{\mathrm{Cash}}(t_1)
+=
+50+70
+=
+120
 $$
 
 となる。
 
-## Trial Balance and Journal Balance
+## Example: Debt
 
-各仕訳について、
-
-$$
-r_{J_k}=0
-$$
-
-が成立し、
-Postingも正しく保存されているなら、
-
-期間全体についても、
+期首Debtが40、
+期間中Debit 10、
+Credit 50とする。
 
 $$
-r_{\mathrm{TB}}=0
+\sigma_{\mathrm{Debt}}=-1
 $$
 
-となることが期待される。
+$$
+q_{\mathrm{Debt}}
+=
+10-50
+=
+-40
+$$
 
-概念的には、
+したがって、
 
-```mermaid
-flowchart LR
-    J["Journal Entries<br/>rJₖ = 0"]
+$$
+m_{\mathrm{Debt}}
+=
+(-1)(-40)
+=
+40
+$$
 
-    P["Posting Preservation<br/>rP = 0"]
+となる。
 
-    TB["Trial Balance<br/>rTB = 0"]
+期末Book Balanceは、
 
-    J --> P --> TB
-```
+$$
+b_{\mathrm{Debt}}(t_1)
+=
+40+40
+=
+80
+$$
 
-Trial Balanceは、
-新しい経済法則ではない。
+である。
 
-Journalで成立したD/C balanceが、
-Ledger levelまで保存されたかを検査する
-集約的なStructural Validationと考えられる。
+## Vector Form of Period Movement
 
-## Trial Balance Roles
-
-Trial Balanceには少なくとも、
-
-1. Validation
-2. Aggregation
-
-の2つの役割がある。
+Orientation diagonal matrixを、
 
 $$
 \boxed{
-\text{Trial Balance}
+\Sigma_\sigma
 =
-\text{Validation}
-+
-\text{Aggregation}
+\operatorname{diag}
+(
+\sigma_1,\ldots,\sigma_n
+)
+}
+$$
+
+とする。
+
+D/C-signed movement vectorを、
+
+$$
+q(H)
+$$
+
+とすれば、
+
+$$
+\boxed{
+m(H)
+=
+\Sigma_\sigma q(H)
 }
 $$
 
 である。
 
-### Validation
-
-全Ledgerを集約して、
-Debit / Credit balanceが保存されているか確認する。
-
-### Aggregation
-
-各勘定の、
-
-- Debit total
-- Credit total
-- Balance
-
-を一覧化し、
-後続のReporting処理へ渡す。
-
-## Limits of Trial Balance
+重要なのは、
 
 $$
-r_{\mathrm{TB}}=0
+\boxed{
+m(H)
+\neq
+b(t)
+}
 $$
 
-でも、例えば、
+である。
 
-- 取引を丸ごと記録していない
-- 誤った勘定へ同額を記録した
-- 複数の誤記が相殺した
-- 現実の現金と帳簿残高が異なる
-- Revenue recognition timingを誤った
+## Trial Balance Residual
 
-などは検出できない場合がある。
+Selected Journal set $H$ のTrial Balance Residualを、
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)
+=
+\sum_i
+\mathrm{Dr}_i(H)
+-
+\sum_i
+\mathrm{Cr}_i(H)
+}
+$$
+
+とする。
+
+同値に、
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)
+=
+\mathbf 1^\top q(H)
+}
+$$
+
+である。
+
+## Trial Balance Theorem
+
+各Journal Entry $J_k$ のResidualを、
+
+$$
+r_{J_k}
+$$
+
+とする。
+
+すると、
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)
+=
+\sum_{k\in H}
+r_{J_k}
+}
+$$
+
+である。
+
+## Proof
+
+Account / Entryの有限和の順序を交換すれば、
+
+$$
+\begin{aligned}
+r_{\mathrm{TB}}(H)
+&=
+\sum_i
+\mathrm{Dr}_i(H)
+-
+\sum_i
+\mathrm{Cr}_i(H)\\
+&=
+\sum_{k\in H}
+\left(
+D(J_k)-C(J_k)
+\right)\\
+&=
+\sum_{k\in H}
+r_{J_k}.
+\end{aligned}
+$$
+
+したがって証明された。
+
+## Consequence
+
+もし、
+
+$$
+\forall k\in H,
+\qquad
+r_{J_k}=0
+$$
+
+なら、
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)=0
+}
+$$
+
+である。
+
+## Converse Does Not Hold
+
+しかし、
+
+$$
+r_{\mathrm{TB}}(H)=0
+$$
+
+だからといって、
+
+$$
+\forall k,\ r_{J_k}=0
+$$
+
+とは限らない。
+
+複数のJournal Errorが相殺する可能性がある。
 
 したがって、
 
@@ -1060,42 +884,149 @@ $$
 \boxed{
 r_{\mathrm{TB}}=0
 \not\Rightarrow
-\text{accounting correctness}
+\forall k,\ r_{J_k}=0
 }
 $$
 
 である。
 
-## Reporting Reconstruction Residual
+## Trial Balance Roles
 
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
-では、
+Trial Balanceには、
 
-$$
-s(t_1)
-=
-\Phi_I
-\left(
-b_S^-(t_1),
-f(I)
-\right)
-$$
+1. Aggregation
+2. Structural Validation
 
-というReporting Reconstructionを定義した。
-
-この関係を検査するResidualを、
+の2つの役割がある。
 
 $$
 \boxed{
-r_\Phi
+\text{Trial Balance}
 =
-s(t_1)
+\text{Aggregation}
++
+\text{Validation}
+}
+$$
+
+## Limits of Trial Balance
+
+$$
+r_{\mathrm{TB}}=0
+$$
+
+でも、
+
+- Missing transaction
+- Wrong account classification
+- Equal offsetting errors
+- Incorrect recognition timing
+- Book / reality mismatch
+
+は検出できない場合がある。
+
+## Semantic / Book Reconstruction Residual
+
+07で、
+
+Semantic routeを、
+
+$$
+s_{\mathrm{sem}}(t_1)
+=
+s(t_0)+F_S(I)
+$$
+
+Book routeを、
+
+$$
+\hat s_B(t_1)
+=
+\Phi_I(B_I^-)
+$$
+
+とした。
+
+Reporting Reconstruction Residualを、
+
+$$
+\boxed{
+R_\Phi
+=
+s_{\mathrm{sem}}(t_1)
 -
+\Phi_I(B_I^-)
+}
+$$
+
+とする。
+
+## Reporting Reconstruction Validity
+
+正常なら、
+
+$$
+\boxed{
+R_\Phi=0
+}
+$$
+
+である。
+
+これは、
+
+> Semantic routeとBook routeが同じReporting Stateへ到達する
+
+ことを表す。
+
+## Structural and Semantic Meaning of Phi
+
+$$
+R_\Phi=0
+$$
+
+であっても、
+
+$$
 \Phi_I
-\left(
-b_S^-(t_1),
-f(I)
-\right)
+$$
+
+そのものが不適切なAccounting ruleを実装している可能性がある。
+
+したがって、
+
+$$
+\boxed{
+R_\Phi=0
+\not\Rightarrow
+\Phi_I
+\text{ is semantically valid}
+}
+$$
+
+である。
+
+## Closing Preservation Residual
+
+Closing前後について、
+
+$$
+B_I^-
+\xrightarrow{\Gamma_I}
+B_I^+
+$$
+
+である。
+
+Closing Preservation Residualを、
+
+$$
+\boxed{
+R_\Gamma
+=
+\Phi_I(B_I^-)
+-
+\Phi_I(B_I^+)
 }
 $$
 
@@ -1105,75 +1036,7 @@ $$
 
 $$
 \boxed{
-r_\Phi=0
-}
-$$
-
-である。
-
-## Structural and Semantic Meaning of Reporting Reconstruction
-
-$r_\Phi=0$ が意味するのは、
-
-> 与えられたReporting Reconstruction rule $\Phi_I$ に従って、
-> InputとOutputが整合している
-
-ということである。
-
-しかし、
-
-$$
-\Phi_I
-$$
-
-そのものが
-不適切な会計ルールや分類を表している可能性は残る。
-
-したがって、
-
-$$
-\boxed{
-r_\Phi=0
-\not\Rightarrow
-\Phi_I
-\text{ is semantically correct}
-}
-$$
-
-である。
-
-## Closing Preservation Residual
-
-07では、
-Closing前後でReporting Meaningが保存されることを、
-
-$$
-\Phi_I(B_I^-)
-=
-\Phi_I(B_I^+)
-$$
-
-と表した。
-
-したがってClosing Preservation Residualを、
-
-$$
-\boxed{
-r_C
-=
-\Phi_I(B_I^-)
--
-\Phi_I(B_I^+)
-}
-$$
-
-とする。
-
-正しいClosingでは、
-
-$$
-\boxed{
-r_C=0
+R_\Gamma=0
 }
 $$
 
@@ -1181,36 +1044,53 @@ $$
 
 ## Meaning of Closing Residual
 
-Closingでは、
-
 $$
-\Delta x_{\mathrm{closing}}\neq0
-$$
-
-だが、
-
-$$
-\Delta s_{\mathrm{closing}}=0
-$$
-
-である。
-
-したがって、
-
-$$
-r_C=0
+R_\Gamma=0
 $$
 
 は、
 
-> Book Representationは変わったが、
-> Reporting Meaningは保存された
+> ClosingによってBook representationは変化したがReporting meaningは変化していない
 
-ことを検査する。
+ことを検証する。
+
+## Flow Representation Residual
+
+Semantic FlowとBook Flow Accumulatorの関係、
+
+$$
+\Lambda_F(u_F^-)
+=
+f(I)
+$$
+
+に対して、
+
+$$
+\boxed{
+R_F
+=
+f(I)
+-
+\Lambda_F(u_F^-(I))
+}
+$$
+
+を定義できる。
+
+正常なら、
+
+$$
+\boxed{
+R_F=0
+}
+$$
+
+である。
 
 ## Empirical Residual
 
-会計値と観察証拠との差を、
+Accounting valueとObserved Evidenceとの差を、
 
 $$
 \boxed{
@@ -1225,8 +1105,6 @@ $$
 とする。
 
 ## Example: Cash Count
-
-Cashについて、
 
 $$
 \boxed{
@@ -1243,16 +1121,12 @@ $$
 正常なら、
 
 $$
-\boxed{
-r_{\mathrm{Cash}}^{\mathrm{emp}}(t)=0
-}
+r_{\mathrm{Cash}}^{\mathrm{emp}}=0
 $$
 
 である。
 
 ## Example: Inventory
-
-Inventoryについて、
 
 $$
 \boxed{
@@ -1266,15 +1140,10 @@ $$
 
 とする。
 
-これにより、
-帳簿上の在庫と棚卸結果との差異を測れる。
+## Empirical Match Does Not Guarantee Semantic Correctness
 
-## Empirical Match Does Not Guarantee Full Semantic Correctness
-
-実査結果と帳簿残高が一致しても、
-その価値測定や分類が会計的に適切とは限らない。
-
-したがって、
+Observed amountがBook amountと一致しても、
+ClassificationやMeasurement basisが適切とは限らない。
 
 $$
 \boxed{
@@ -1284,47 +1153,25 @@ V_{\mathrm{sem}}=1
 }
 $$
 
-である。
-
 ## Validation Matrix
-
-3つのValidityは独立した観点を持つ。
-
-概念的には、
 
 | Structural | Semantic | Empirical | Interpretation |
 | --- | --- | --- | --- |
 | ✓ | ✓ | ✓ | 理想的に整合 |
-| ✓ | ✗ | ? | 形式は正しいが意味が誤っている |
-| ✓ | ✓ | ✗ | 会計処理は整合するが証拠と不一致 |
+| ✓ | ✗ | ? | 形式は正しいが意味が誤る |
+| ✓ | ✓ | ✗ | Accounting structureは正しいがEvidenceと不一致 |
 | ✗ | ? | ? | 形式構造自体に問題 |
-| ✓ | ✗ | ✓ | 証拠総額は合うが分類・認識が誤る可能性 |
-
-したがって、
-
-$$
-\boxed{
-\text{Structural}
-\neq
-\text{Semantic}
-\neq
-\text{Empirical}
-}
-$$
-
-である。
+| ✓ | ✗ | ✓ | Totalは合うが分類等が誤る可能性 |
 
 ## Validation Graph
-
-ASM全体のValidationを整理すると、
 
 ```mermaid
 flowchart TD
     V["Accounting Validation"]
 
-    STRUCT["Structural Validity"]
-    SEM["Semantic Validity"]
-    EMP["Empirical Validity"]
+    STRUCT["Structural"]
+    SEM["Semantic"]
+    EMP["Empirical"]
 
     V --> STRUCT
     V --> SEM
@@ -1333,58 +1180,21 @@ flowchart TD
     STRUCT --> STATE["State<br/>rS"]
     STRUCT --> TRANS["Transition<br/>rT"]
     STRUCT --> JOURNAL["Journal<br/>rJ"]
-    STRUCT --> POST["Posting<br/>rP"]
-    STRUCT --> RECON["Reconciliation<br/>rSᵢ / rFᵢ"]
+    STRUCT --> POST["Posting<br/>RP"]
+    STRUCT --> RECON["Reconciliation"]
     STRUCT --> TB["Trial Balance<br/>rTB"]
-    STRUCT --> REPORT["Reporting Reconstruction<br/>rΦ"]
-    STRUCT --> CLOSE["Closing Preservation<br/>rC"]
+    STRUCT --> FLOW["Flow Representation<br/>RF"]
+    STRUCT --> REPORT["Reporting Reconstruction<br/>RΦ"]
+    STRUCT --> CLOSE["Closing Preservation<br/>RΓ"]
 
     SEM --> RECOG["Recognition"]
     SEM --> CLASS["Classification"]
     SEM --> MEASURE["Measurement"]
 
-    EMP --> EVIDENCE["Accounting Value ↔ Evidence"]
-```
-
-## Validation Along the Accounting Pipeline
-
-Accounting pipelineに沿って見ると、
-異なる場所で異なるValidationが行われる。
-
-```mermaid
-flowchart LR
-    REALITY["Reality"]
-
-    RECOG["Recognition"]
-
-    SEM["Accounting Meaning<br/>Δs, fPL"]
-
-    BOOK["Book Change<br/>Δx"]
-
-    JOURNAL["Journal"]
-
-    LEDGER["Ledger"]
-
-    REPORT["Reporting State"]
-
-    REALITY --> RECOG --> SEM --> BOOK --> JOURNAL --> LEDGER --> REPORT
-
-    V1["Semantic"]
-    V2["Transition"]
-    V3["Journal"]
-    V4["Posting / Reconciliation"]
-    V5["Reporting"]
-
-    V1 -.-> RECOG
-    V2 -.-> SEM
-    V3 -.-> JOURNAL
-    V4 -.-> LEDGER
-    V5 -.-> REPORT
+    EMP --> EVIDENCE["Accounting ↔ Evidence"]
 ```
 
 ## Local Correctness Does Not Imply Global Correctness
-
-各検査は局所的である。
 
 例えば、
 
@@ -1392,22 +1202,17 @@ $$
 r_J=0
 $$
 
-かつ、
-
 $$
-r_P=0
+R_P=0
 $$
-
-かつ、
 
 $$
 r_{\mathrm{TB}}=0
 $$
 
 でも、
-
-取引を最初から認識していなければ、
-すべてのStructural checksを通過する場合がある。
+そもそもRecognitionすべき取引を記録していなければ、
+Accounting全体は正しくない。
 
 したがって、
 
@@ -1419,18 +1224,7 @@ $$
 }
 $$
 
-である。
-
 ## Error Localization
-
-一方、
-複数のResidualを分離して持つ利点は、
-
-> どのレイヤーで不整合が発生したか
-
-を切り分けられることである。
-
-例えば、
 
 ### Case 1
 
@@ -1439,30 +1233,29 @@ r_J\neq0
 $$
 
 なら、
-Journal Entry自体のD/C balanceに問題がある。
+Journal balanceに問題がある。
 
 ### Case 2
 
 $$
 r_J=0,
 \qquad
-r_P\neq0
+R_P\neq0
 $$
 
 なら、
-Journalは整合しているがPostingに問題がある。
+JournalはBalancedだがPostingに問題がある。
 
 ### Case 3
 
 $$
-r_P=0,
+R_P=0,
 \qquad
 r_i^S\neq0
 $$
 
 なら、
-Journal / Ledger間は一致しているが、
-Subsidiary detailとの整合に問題がある。
+General LedgerとSubsidiary Detailの不一致が疑われる。
 
 ### Case 4
 
@@ -1473,21 +1266,19 @@ r_{\mathrm{emp}}\neq0
 $$
 
 なら、
-帳簿内部では貸借一致しているが、
-現実証拠との不一致がある。
+Bookkeeping内部は整合していてもEvidenceとの不一致がある。
 
 ## Validation as Layered Diagnostics
 
-したがって、
 ASMのResidual familyは、
 
 $$
 \boxed{
-\text{binary correctness test}
+\text{one global pass/fail test}
 }
 $$
 
-というより、
+ではなく、
 
 $$
 \boxed{
@@ -1495,26 +1286,11 @@ $$
 }
 $$
 
-として理解する方がよい。
-
-```mermaid
-flowchart LR
-    ERROR["Observed Problem"]
-
-    R["Residual Family"]
-
-    LAYER["Error Layer"]
-
-    CAUSE["Candidate Cause"]
-
-    ERROR --> R --> LAYER --> CAUSE
-```
+として機能する。
 
 ## Core Residuals
 
-本モジュールの中心Residualをまとめる。
-
-### State
+**State Residual：**
 
 $$
 \boxed{
@@ -1524,7 +1300,7 @@ A-L-E
 }
 $$
 
-### Transition
+**Transition Residual：**
 
 $$
 \boxed{
@@ -1534,7 +1310,7 @@ r_T
 }
 $$
 
-### Journal
+**Journal Residual：**
 
 $$
 \boxed{
@@ -1546,19 +1322,17 @@ D(J)-C(J)
 }
 $$
 
-### Posting
+**Posting Residual：**
 
 $$
 \boxed{
-r_P
+R_P
 =
-\operatorname{Decode}(\mathcal L)
--
-\operatorname{Decode}(\mathcal J)
+M^L-M^J
 }
 $$
 
-### Stock Reconciliation
+**Stock Reconciliation Residual：**
 
 $$
 \boxed{
@@ -1566,12 +1340,12 @@ r_i^S(t)
 =
 b_i(t)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 y_{ij}(t)
 }
 $$
 
-### Flow Reconciliation
+**Flow Reconciliation Residual：**
 
 $$
 \boxed{
@@ -1579,44 +1353,95 @@ r_i^F(I)
 =
 f_i(I)
 -
-\sum_{j\in D_i}
+\sum_{j\in\mathcal D_i}
 z_{ij}(I)
 }
 $$
 
-### Trial Balance
+**D/C-signed Period Movement：**
 
 $$
 \boxed{
-r_{\mathrm{TB}}
+q_i(H)
 =
-\mathbf 1^\top q
-=
-\mathbf 1^\top(D-C)
-}
-$$
-
-### Reporting Reconstruction
-
-$$
-\boxed{
-r_\Phi
-=
-s(t_1)
+\mathrm{Dr}_i(H)
 -
-\Phi_I
-\left(
-b_S^-(t_1),
-f(I)
-\right)
+\mathrm{Cr}_i(H)
 }
 $$
 
-### Closing Preservation
+**Natural Book Movement：**
 
 $$
 \boxed{
-r_C
+m_i(H)
+=
+\sigma_iq_i(H)
+}
+$$
+
+**Book Balance Evolution：**
+
+$$
+\boxed{
+b_i(t_{\mathrm{end}})
+=
+b_i(t_{\mathrm{begin}})
++
+m_i(H)
+}
+$$
+
+**Trial Balance Residual：**
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)
+=
+\mathbf 1^\top q(H)
+}
+$$
+
+**Trial Balance Theorem：**
+
+$$
+\boxed{
+r_{\mathrm{TB}}(H)
+=
+\sum_{k\in H}
+r_{J_k}
+}
+$$
+
+**Flow Representation Residual：**
+
+$$
+\boxed{
+R_F
+=
+f(I)
+-
+\Lambda_F(u_F^-(I))
+}
+$$
+
+**Reporting Reconstruction Residual：**
+
+$$
+\boxed{
+R_\Phi
+=
+s_{\mathrm{sem}}(t_1)
+-
+\Phi_I(B_I^-)
+}
+$$
+
+**Closing Preservation Residual：**
+
+$$
+\boxed{
+R_\Gamma
 =
 \Phi_I(B_I^-)
 -
@@ -1624,7 +1449,7 @@ r_C
 }
 $$
 
-### Empirical
+**Empirical Residual：**
 
 $$
 \boxed{
@@ -1638,9 +1463,7 @@ $$
 
 ## Core Principles
 
-ASM Validationの中心原則は次の通りである。
-
-### Principle 1
+**Principle 1：**
 
 $$
 \boxed{
@@ -1650,7 +1473,7 @@ r=0
 }
 $$
 
-### Principle 2
+**Principle 2：**
 
 $$
 \boxed{
@@ -1660,7 +1483,7 @@ $$
 }
 $$
 
-### Principle 3
+**Principle 3：**
 
 $$
 \boxed{
@@ -1670,7 +1493,7 @@ $$
 }
 $$
 
-### Principle 4
+**Principle 4：**
 
 $$
 \boxed{
@@ -1680,7 +1503,7 @@ $$
 }
 $$
 
-### Principle 5
+**Principle 5：**
 
 $$
 \boxed{
@@ -1711,12 +1534,11 @@ $$
 
 ## Open Questions
 
-- Semantic ValidityをBoolean predicateだけでなく、ルール体系としてどう表現するか。
-- Recognition / Classification / Measurement errorを個別Residualへ落とせるか。
-- Evidence作用 $\mathcal O(\omega)$ をどこまで形式化するか。
-- Measurement uncertaintyをEmpirical Residualへどう組み込むか。
-- Posting Residual $r_P$ をJournal / Ledger matrix上でより厳密に定義するか。
-- Trial Balance residualと個別Journal residualの関係を線形代数として証明するか。
-- Reporting Reconstruction $\Phi_I$ 自体のSemantic Validityをどう検証するか。
-- Closing Preservation residualを決算振替仕訳から直接計算できるか。
-- Residual familyを監査・内部統制の診断モデルへ拡張できるか。
+- Semantic Validityをrule systemとしてどう形式化するか。
+- Recognition / Classification / Measurementごとのdiagnosticを構成できるか。
+- Evidence operator $\mathcal O$ をどこまで形式化するか。
+- Measurement uncertaintyをResidualへどう含めるか。
+- Matrix Residualのnormをどう選ぶか。
+- $\Phi_I$ 自体のSemantic Validityをどう評価するか。
+- $\Lambda_F$ のValidationをAccounting standardにどう接続するか。
+- Residual familyをAudit / Internal Controlへどう拡張するか。

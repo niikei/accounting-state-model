@@ -2,38 +2,44 @@
 
 ## Scope
 
-このモジュールは、勘定科目について、
+このモジュールは、
 
-- 勘定の役割
-- 会計5要素
-- Stock / Flowという時間型
-- 帳簿残高
-- 情報粒度
-- 一時勘定
+- Account Set
+- Reporting Account
+- Provisional Account
+- Accounting Element Classification
+- Stock / Flow Temporal Type
+- Book Balance
+- Semantic Period Flow
+- Flow-account Book Accumulator
+- Classification Map
+- Account Granularity
 
-を整理する。
+を扱う。
 
 ASMでは、
 
 $$
 \boxed{
-\text{Accounting Element}
-\neq
-\text{Temporal Type}
+\text{Account}
+=
+\text{bookkeeping classification unit}
 }
 $$
 
 と考える。
 
-ただし現在の会計5要素では、
-Temporal TypeはAccounting Elementから導出できる。
+AccountはRealityそのものではなく、
+認識された会計情報を帳簿上整理するための分類単位である。
 
-## Account Roles
+## Account Set
 
-帳簿で使われる勘定の集合を、
+帳簿で使用される全勘定集合を、
 
 $$
+\boxed{
 X
+}
 $$
 
 とする。
@@ -46,35 +52,57 @@ X
 =
 X_{\mathrm{report}}
 \mathbin{\dot\cup}
-X_{\mathrm{temporary}}
+X_{\mathrm{provisional}}
 }
 $$
 
-と分ける。
+とする。
 
 ここで、
 
-- $X_{\mathrm{report}}$：財務諸表の会計要素へ最終分類される勘定
-- $X_{\mathrm{temporary}}$：未分類額・処理途中額などを一時的に保持する勘定
+- $X_{\mathrm{report}}$：Reporting meaningが確定している勘定
+- $X_{\mathrm{provisional}}$：仮置き・未分類・処理途中の勘定
 
 である。
 
-```mermaid
-flowchart TD
-    X["Accounts X"]
+## Why Provisional Rather Than Temporary
 
-    REPORT["Reporting Accounts<br/>Xreport"]
-    TEMP["Temporary Accounts<br/>Xtemporary"]
+一般的なAccounting terminologyでは、
+Revenue / Expenseのように期末Closingされる勘定を
+Temporary Accountと呼ぶ場合がある。
 
-    X --> REPORT
-    X --> TEMP
+ASMでは混同を避けるため、
 
-    TEMP -->|"Reclassification"| REPORT
-```
+> 未分類・処理途中・仮置きのAccount
+
+を、
+
+$$
+\boxed{
+\text{Provisional Account}
+}
+$$
+
+と呼ぶ。
+
+## Account Roles
+
+Reporting Accountは、
+Financial Reporting上の意味を持つ。
+
+Provisional Accountは、
+
+- Suspense
+- Clearing
+- Unclassified Amount
+- Processing Intermediate
+
+など、
+最終的なReporting Classificationが未確定な情報を保持しうる。
 
 ## Accounting Element Classification
 
-報告勘定 $i\in X_{\mathrm{report}}$ に対し、
+Reporting AccountからAccounting Elementへの写像を、
 
 $$
 \boxed{
@@ -85,7 +113,7 @@ X_{\mathrm{report}}
 }
 $$
 
-を定義する。
+とする。
 
 ここで、
 
@@ -97,21 +125,9 @@ $$
 
 である。
 
-$c(i)$ は、
-
-> この勘定が何を意味するか
-
-を表す。
-
 ## Element-wise Account Sets
 
-任意の、
-
-$$
-q\in\{A,L,E,R,C\}
-$$
-
-について、
+各Accounting Elementに属するAccount集合を、
 
 $$
 \boxed{
@@ -149,11 +165,11 @@ $$
 
 ## Temporal Type
 
-会計要素から時間型への写像を、
+Accounting ElementからTemporal Typeへの写像を、
 
 $$
 \boxed{
-\bar{\tau}:
+\bar\tau:
 \{A,L,E,R,C\}
 \to
 \{\mathrm{Stock},\mathrm{Flow}\}
@@ -162,27 +178,23 @@ $$
 
 とする。
 
-基本的には、
-
 $$
 \boxed{
-\bar{\tau}(A)
+\bar\tau(A)
 =
-\bar{\tau}(L)
+\bar\tau(L)
 =
-\bar{\tau}(E)
+\bar\tau(E)
 =
 \mathrm{Stock}
 }
 $$
 
-かつ、
-
 $$
 \boxed{
-\bar{\tau}(R)
+\bar\tau(R)
 =
-\bar{\tau}(C)
+\bar\tau(C)
 =
 \mathrm{Flow}
 }
@@ -190,17 +202,19 @@ $$
 
 である。
 
-各報告勘定の時間型は、
+## Account Temporal Type
+
+Reporting Account $i$ のTemporal Typeを、
 
 $$
 \boxed{
 \tau(i)
 =
-\bar{\tau}(c(i))
+\bar\tau(c(i))
 }
 $$
 
-である。
+とする。
 
 したがって、
 
@@ -208,104 +222,30 @@ $$
 \boxed{
 \tau
 =
-\bar{\tau}\circ c
+\bar\tau\circ c
 }
 $$
 
-となる。
+である。
 
 ## Accounting Element and Temporal Type
 
-Accounting ElementとTemporal Typeは、
-概念として同一ではない。
-
-例えばCashは、
-
-$$
-c(\mathrm{Cash})=A
-$$
-
-であり、
-
-$$
-\tau(\mathrm{Cash})
-=
-\bar{\tau}(A)
-=
-\mathrm{Stock}
-$$
-
-である。
-
-Salesは、
-
-$$
-c(\mathrm{Sales})=R
-$$
-
-であり、
-
-$$
-\tau(\mathrm{Sales})
-=
-\bar{\tau}(R)
-=
-\mathrm{Flow}
-$$
-
-である。
-
-したがって、
-
-$$
-\boxed{
-\text{Accounting Element}
-\neq
-\text{Temporal Type}
-}
-$$
-
-だが、
-
-$$
-\boxed{
-\text{Temporal Type is derivable from Accounting Element}
-}
-$$
-
-である。
-
 ```mermaid
 flowchart LR
-    ACCOUNT["Reporting Account i"]
-
+    ACCOUNT["Reporting Account<br/>i"]
     ELEMENT["Accounting Element<br/>c(i)"]
+    TYPE["Temporal Type<br/>τ(i)"]
 
-    TYPE["Temporal Type<br/>τ(i)=τ̄(c(i))"]
-
-    ACCOUNT -->|"c"| ELEMENT
+    ACCOUNT --> ELEMENT
     ELEMENT -->|"τ̄"| TYPE
 ```
 
+Accounting Elementが決まることで、
+そのAccountの基本的な時間型も決まる。
+
 ## Stock-valued Accounts
 
-Stock-valued account集合を、
-
-$$
-\boxed{
-X_S
-=
-\{
-i\in X_{\mathrm{report}}
-\mid
-\tau(i)=\mathrm{Stock}
-\}
-}
-$$
-
-とする。
-
-したがって、
+Stock-valued Reporting Account集合を、
 
 $$
 \boxed{
@@ -319,12 +259,19 @@ X_E
 }
 $$
 
+とする。
+
+$i\in X_S$ について、
+
+$$
+\tau(i)=\mathrm{Stock}
+$$
+
 である。
 
 ## Book Balance of a Stock-valued Account
 
-Stock-valued bookkeeping account $i$ の
-帳簿上の残高を、
+Stock-valued Account $i$ のBook Balanceを、
 
 $$
 \boxed{
@@ -332,79 +279,49 @@ b_i(t)
 }
 $$
 
-と書く。
+とする。
 
 これは、
 
-> 時点 $t$ で帳簿上その勘定に記録されている残高
+> 時刻 $t$ におけるAccount $i$ の帳簿残高
 
 である。
 
-例えば、
-
-$$
-b_{\mathrm{Cash}}(t)
-$$
-
-$$
-b_{\mathrm{AccountsReceivable}}(t)
-$$
-
-$$
-b_{\mathrm{Debt}}(t)
-$$
-
-などである。
-
 ## Book Balance and Reporting State
 
-重要なのは、
+Book Balance、
+
+$$
+b_i(t)
+$$
+
+と、
+Reporting State coordinate、
+
+$$
+s_i(t)
+$$
+
+は、
+一般には区別する。
 
 $$
 \boxed{
 b_i(t)
 \neq
 s_i(t)
+\quad\text{in general}
 }
 $$
 
-を一般には区別することである。
+である。
 
-$b_i(t)$ はBook / Ledger layerの値であり、
+Cashなどでは一致することが多い。
 
-$$
-s_i(t)
-$$
+しかしEquityなどでは、
+Closing前に異なる場合がある。
 
-はReporting / semantic Stock Stateの座標である。
-
-多くの場合、
-
-$$
-b_i(t)=s_i(t)
-$$
-
-と対応する。
-
-しかしこれはすべてのStock dimensionについて
-常に成立する恒等式ではない。
-
-特に期間中の利益形成では、
-
-- Revenue / ExpenseはFlow accountに蓄積される
-- Reporting Stateでは利益効果がEquityへ反映される
-
-ため、
-
-$$
-\boxed{
-\Delta x_E
-\neq
-\Delta s_E
-}
-$$
-
-となる場合がある。
+## Stock-valued Account Is Not Definitionally a State Coordinate
 
 したがって、
 
@@ -418,66 +335,12 @@ $$
 
 である。
 
-両者の接続は、
-Reporting Reconstructionとして07で扱う。
-
-## Stock and Accumulated Effects
-
-Reporting Stock Stateについては、
-
-$$
-s(t_1)
-=
-s(t_0)
-+
-\sum_{k\in K(I)}
-\Delta s^{(k)}
-$$
-
-である。
-
-したがって、
-
-$$
-\boxed{
-\text{Stock}\neq\text{Flow}
-}
-$$
-
-である一方、
-
-$$
-\boxed{
-\text{Stock may reflect the accumulated effects of past Flows}
-}
-$$
-
-でもある。
-
-これはFlow自体がStockになるという意味ではない。
-
-Flowを生じさせた取引の効果が、
-Stock Transitionとして累積されるという意味である。
+AccountはBook layerの分類単位、
+State coordinateはSemantic / Reporting layerの量である。
 
 ## Flow-valued Accounts
 
-Flow-valued account集合を、
-
-$$
-\boxed{
-X_F
-=
-\{
-i\in X_{\mathrm{report}}
-\mid
-\tau(i)=\mathrm{Flow}
-\}
-}
-$$
-
-とする。
-
-したがって、
+Flow-valued Reporting Account集合を、
 
 $$
 \boxed{
@@ -489,10 +352,20 @@ X_C
 }
 $$
 
+とする。
+
+$j\in X_F$ について、
+
+$$
+\tau(j)=\mathrm{Flow}
+$$
+
 である。
 
-Flow-valued account $j$ の
-期間 $I$ に属する値を、
+## Semantic Period Flow
+
+Flow-valued account coordinate $j$ に対応する、
+期間 $I$ のSemantic / Reporting Flow quantityを、
 
 $$
 \boxed{
@@ -500,36 +373,36 @@ f_j(I)
 }
 $$
 
-と書く。
+とする。
 
 例えば、
 
 $$
-\mathrm{Sales}(I)
+Sales(I)
 $$
 
 $$
-\mathrm{SalaryExpense}(I)
+SalaryExpense(I)
 $$
 
 $$
-\mathrm{DepreciationExpense}(I)
+DepreciationExpense(I)
 $$
 
 などである。
 
 ## Stock Quantity and Flow Quantity
 
-Stock-valued bookkeeping accountには、
+Stock-valued Accountに対応するBook quantityは、
 
 $$
 b_i(t)
 $$
 
-という時点帳簿残高がある。
+という時点量である。
 
 一方、
-Flow-valued accountの会計的意味は、
+Flow-valued Accounting Informationは、
 
 $$
 f_j(I)
@@ -549,48 +422,21 @@ $$
 
 は異なる時間型を持つ。
 
-## Running Ledger Balance of a Flow Account
+## Flow Space
 
-実際の帳簿上では、
-Flow accountにも期間途中のRunning Balanceが存在しうる。
-
-しかしそれは、
-
-> 期間開始から現在時点までのFlowを累積するための帳簿上のAccumulator
-
-であり、
-Reporting Stockとはみなさない。
-
-したがって、
+すべてのFlow coordinateをまとめて、
 
 $$
 \boxed{
-\text{Ledger Balance of a Flow Account}
-\neq
-\text{Stock Quantity}
+f(I)
+=
+\left(
+f_j(I)
+\right)_{j\in X_F}
 }
 $$
 
-である。
-
-## Flow Space
-
-Flow-valued accountの期間値をまとめて、
-
-$$
-f(I)
-=
-\begin{pmatrix}
-f_1(I)\\
-f_2(I)\\
-\vdots\\
-f_m(I)
-\end{pmatrix}
-$$
-
-と考える。
-
-概念的に、
+とする。
 
 $$
 \boxed{
@@ -598,17 +444,110 @@ f(I)\in\mathcal F
 }
 $$
 
-とする。
-
-ここで、
+とし、
 
 $$
 \mathcal F
 $$
 
-はFlow-valued accounting quantitiesの空間である。
+をPeriod Flow Spaceと呼ぶ。
 
-正式な構造は07で定義する。
+## Running Book Accumulator of a Flow Account
+
+実際のLedgerでは、
+Flow-valued accountにも期間途中のRunning Balanceが存在する。
+
+期間 $I=(t_0,t_1]$ において、
+時刻 $t$ までのFlow-account Book Accumulatorを、
+
+$$
+\boxed{
+u_j(t;I)
+}
+$$
+
+とする。
+
+これは、
+
+> 期間開始から時刻 $t$ までにAccount $j$ へ記録されたBook changesの累積
+
+である。
+
+## Pre-closing Flow Book Accumulator
+
+期末Closing直前のAccumulatorを、
+
+$$
+\boxed{
+u_j^-(I)
+}
+$$
+
+とする。
+
+Flow accounts全体について、
+
+$$
+\boxed{
+u_F^-(I)
+=
+\left(
+u_j^-(I)
+\right)_{j\in X_F}
+}
+$$
+
+とする。
+
+## Flow Quantity and Book Accumulator Are Different
+
+重要なのは、
+
+$$
+\boxed{
+f_j(I)
+\neq
+u_j^-(I)
+\quad\text{by definition}
+}
+$$
+
+である。
+
+$f_j(I)$ はSemantic / Reporting period quantity、
+$u_j^-(I)$ はBook / Ledger accumulatorである。
+
+正しいClassification / Representationの下では、
+両者が対応することが要求されるが、
+同一概念ではない。
+
+## Flow Account Accumulator Is Not Stock
+
+$$
+u_j(t;I)
+$$
+
+は時刻 $t$ に値を持つが、
+Reporting Stockではない。
+
+それは、
+
+> Period Flowを帳簿上累積するための技術的状態
+
+である。
+
+したがって、
+
+$$
+\boxed{
+\text{Flow-account Book Accumulator}
+\neq
+\text{Reporting Stock}
+}
+$$
+
+である。
 
 ## Classification Maps
 
@@ -620,19 +559,24 @@ $$
 
 とする。
 
-認識対象を帳簿勘定へ分類する写像を、
+認識対象をBookkeeping Accountへ分類する写像を、
 
 $$
 \boxed{
-\kappa:Z\to X
+\kappa:
+Z\to X
 }
 $$
 
 とする。
 
+## Reporting Classification Pipeline
+
 Reporting Accountについては、
 
 $$
+z
+\xrightarrow{\kappa}
 i
 \xrightarrow{c}
 c(i)
@@ -640,61 +584,36 @@ c(i)
 \tau(i)
 $$
 
-となる。
-
-したがって、
+という分類構造を持つ。
 
 ```mermaid
 flowchart LR
     DETAIL["Recognized Detail<br/>z"]
-
     ACCOUNT["Bookkeeping Account<br/>i"]
-
-    ROLE{"Reporting?"}
-
-    TEMP["Temporary Account"]
-
-    REPORT["Reporting Account"]
-
     ELEMENT["Accounting Element<br/>c(i)"]
-
     TYPE["Temporal Type<br/>τ(i)"]
 
     DETAIL -->|"κ"| ACCOUNT
-    ACCOUNT --> ROLE
-
-    ROLE -->|"Yes"| REPORT
-    ROLE -->|"Not yet"| TEMP
-
-    TEMP -->|"Reclassification"| REPORT
-
-    REPORT -->|"c"| ELEMENT
+    ACCOUNT -->|"c"| ELEMENT
     ELEMENT -->|"τ̄"| TYPE
 ```
 
-## Temporary Accounts
+## Provisional Accounts
 
-Temporary Account、
+Provisional Account、
 
 $$
-i\in X_{\mathrm{temporary}}
+i\in X_{\mathrm{provisional}}
 $$
 
-は、
-
-- 未分類額
-- 原因未確定額
-- 処理途中額
-
-などを保持する。
-
-通常、
+については、
+Accounting Element、
 
 $$
 c(i)
 $$
 
-はまだ確定していない。
+が未確定の場合がある。
 
 したがって、
 
@@ -704,24 +623,34 @@ $$
 
 も一般には定義できない。
 
-Temporary Accountの時間型やReporting Stateとの対応は、
-用途ごとに定義する。
+Provisional Accountの、
 
-## Temporary Account Lifecycle
+- Temporal Type
+- Normal Orientation
+- Reporting treatment
 
-一時勘定は、
+は、
+用途に応じて別途定義する。
+
+## Provisional Account Lifecycle
+
+Provisional Accountは概念的に、
 
 $$
-\text{Unclassified Amount}
+\boxed{
+\text{Unclassified Information}
 \to
-X_{\mathrm{temporary}}
+X_{\mathrm{provisional}}
 \to
 X_{\mathrm{report}}
+}
 $$
 
-というライフサイクルを持ちうる。
+というLifecycleを持ちうる。
 
-期末までに解消すべき一時勘定 $i$ については、
+## Provisional Account Closing Condition
+
+期末までに解消すべきProvisional Account $i$ については、
 
 $$
 \boxed{
@@ -729,14 +658,17 @@ b_i(t_{\mathrm{close}})=0
 }
 $$
 
-を終了条件として課すことができる。
+を終了条件として要求できる。
 
-これは全Temporary Accountへ
-無条件に課す公理ではない。
+ただし、
+これはすべてのProvisional Accountへ無条件に課す公理ではない。
 
 ## Granularity
 
-会計情報には、
+Accountは、
+会計情報の粒度を決定する。
+
+概念的には、
 
 $$
 \boxed{
@@ -750,18 +682,12 @@ $$
 }
 $$
 
-という粒度階層がある。
-
-粒度を細かくすると追跡性が高まるが、
-記録コストも増える。
-
-粗くすると扱いやすくなるが、
-一般に詳細情報を完全には復元できない。
+という情報解像度の階層がある。
 
 ## Classification Is Not Reality
 
 現実の対象が、
-自然に特定の勘定科目に属するわけではない。
+自然に特定のAccountへ属しているわけではない。
 
 $$
 \boxed{
@@ -787,14 +713,14 @@ $$
 
 ## Semantic Errors
 
-貸借が一致していても、
-Classificationが誤っている可能性がある。
+Journalが貸借一致していても、
+Classificationが正しいとは限らない。
 
 $$
 D(J)=C(J)
 $$
 
-であっても、
+でも、
 
 $$
 \boxed{
@@ -818,19 +744,150 @@ $$
 
 である。
 
+## Core Equations
+
+**Account Set：**
+
+$$
+\boxed{
+X
+=
+X_{\mathrm{report}}
+\mathbin{\dot\cup}
+X_{\mathrm{provisional}}
+}
+$$
+
+**Accounting Element Classification：**
+
+$$
+\boxed{
+c:
+X_{\mathrm{report}}
+\to
+\{A,L,E,R,C\}
+}
+$$
+
+**Reporting Account Partition：**
+
+$$
+\boxed{
+X_{\mathrm{report}}
+=
+X_A
+\mathbin{\dot\cup}
+X_L
+\mathbin{\dot\cup}
+X_E
+\mathbin{\dot\cup}
+X_R
+\mathbin{\dot\cup}
+X_C
+}
+$$
+
+**Temporal Type：**
+
+$$
+\boxed{
+\tau
+=
+\bar\tau\circ c
+}
+$$
+
+**Stock-valued Accounts：**
+
+$$
+\boxed{
+X_S
+=
+X_A
+\mathbin{\dot\cup}
+X_L
+\mathbin{\dot\cup}
+X_E
+}
+$$
+
+**Flow-valued Accounts：**
+
+$$
+\boxed{
+X_F
+=
+X_R
+\mathbin{\dot\cup}
+X_C
+}
+$$
+
+**Stock Account Book Balance：**
+
+$$
+\boxed{
+b_i(t),
+\qquad
+i\in X_S
+}
+$$
+
+**Semantic Period Flow：**
+
+$$
+\boxed{
+f_j(I),
+\qquad
+j\in X_F
+}
+$$
+
+**Flow Book Accumulator：**
+
+$$
+\boxed{
+u_j(t;I),
+\qquad
+j\in X_F
+}
+$$
+
+**Flow Space：**
+
+$$
+\boxed{
+f(I)
+=
+\left(
+f_j(I)
+\right)_{j\in X_F}
+\in\mathcal F
+}
+$$
+
+**Classification Map：**
+
+$$
+\boxed{
+\kappa:
+Z\to X
+}
+$$
+
 ## Relationship to Other Modules
 
 - Reality / Recognition:
   [01 — Reality and Recognition](01-reality-and-recognition.md)
-- Reporting State $s(t)$:
+- Reporting State:
   [02 — State](02-state.md)
-- Stock Transition:
+- Semantic Transition:
   [03 — Transition](03-transition.md)
-- Bookkeeping Change:
+- Bookkeeping Change / D/C:
   [05 — Double Entry](05-double-entry.md)
-- Ledger / Book Balance:
+- Ledger / Book Accumulators:
   [06 — Journal and Ledger](06-journal-and-ledger.md)
-- Reporting Reconstruction:
+- Period Flow / Reporting Reconstruction:
   [07 — Period and Stock-Flow](07-period-stock-flow.md)
 - Aggregation:
   [08 — Aggregation](08-aggregation.md)
@@ -839,8 +896,9 @@ $$
 
 ## Open Questions
 
-- Flow空間 $\mathcal F$ の正式な構造。
-- $f_j(I)$ と個別取引 $f_{\mathrm{PL}}(e)$ の接続。
-- Book Balance $b_i(t)$ とReporting State $s_i(t)$ の一般的対応写像。
-- Temporary Accountの時間型。
+- $\mathcal F$ の正式なベクトル空間構造。
+- $f_j(I)$ と $u_j^-(I)$ を接続するReporting interpretation map。
+- Book Balance $b_i(t)$ とReporting State $s_i(t)$ の一般的対応。
+- Provisional AccountのTemporal Typeの一般理論。
 - 会計基準差による $c$ の変化。
+- 多通貨Accountや数量Accountを同じ型体系へどう含めるか。

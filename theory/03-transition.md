@@ -3,27 +3,40 @@
 ## Scope
 
 このモジュールは、
-認識された経済的事象が
-Reporting Stock Stateをどのように変化させるかを扱う。
+
+- Semantic Stock Transition
+- Transaction-level PL Flow
+- Stock-only Transition
+- Profit-forming Transition
+- Constraint Preservation
+- Transaction accumulation
+- Semantic / Book layer separation
+
+を扱う。
 
 ASMでは、
-
-- Stock状態そのものの変化
-- Revenue / Expenseのような期間Flow
-- 帳簿勘定上の変化
-- Journal / Postingのような記録上の変換
-
-を区別する。
-
-本モジュールの中心対象は、
 
 $$
 \boxed{
 \Delta s
+=
+\text{semantic change of Reporting Stock State}
 }
 $$
 
-すなわちStock State Transitionである。
+とする。
+
+重要なのは、
+
+$$
+\boxed{
+\Delta s
+\neq
+\Delta x
+}
+$$
+
+である。
 
 ## Basic Transition
 
@@ -33,7 +46,7 @@ $$
 s^-
 $$
 
-直後を、
+取引直後を、
 
 $$
 s^+
@@ -41,7 +54,7 @@ $$
 
 とする。
 
-状態変化を、
+Semantic Stock Transitionを、
 
 $$
 \boxed{
@@ -65,20 +78,31 @@ $$
 
 である。
 
+## State Transition Diagram
+
 ```mermaid
 flowchart LR
     BEFORE["Before<br/>s⁻"]
-    CHANGE["Semantic Stock Transition<br/>Δs"]
+    TRANS["Semantic Transition<br/>Δs"]
     AFTER["After<br/>s⁺"]
 
-    BEFORE --> CHANGE --> AFTER
+    BEFORE --> TRANS --> AFTER
 ```
+
+ここで $\Delta s$ は、
+Journal Entryではなく、
+会計的意味のStock変化である。
 
 ## Discrete Transaction Steps
 
-$s_k$ を、
-$k$ 件目の認識済み取引処理後の
-Reporting Stock Stateとする。
+取引を離散的なstep $k$ で表す。
+
+$$
+s_k
+$$
+
+を第 $k$ step直前のState、
+$\Delta s_k$ をその取引のStock Transitionとする。
 
 すると、
 
@@ -90,83 +114,81 @@ s_k+\Delta s_k
 }
 $$
 
-と書ける。
+である。
 
-ここで、
+## Real Time and Transaction Index Are Different
 
-- $t$：実時間
-- $k$：取引・状態遷移のインデックス
+実時間を、
 
-として区別する。
+$$
+t
+$$
+
+取引indexを、
+
+$$
+k
+$$
+
+とする。
+
+両者は異なる。
+
+$$
+\boxed{
+t
+\neq
+k
+}
+$$
+
+である。
+
+取引 $k$ が発生・認識された時刻を、
+
+$$
+t_k
+$$
+
+とする。
 
 ## Transition Is a Semantic Stock Change
 
 $\Delta s$ は、
 
-> 企業のReporting / semantic Stock Stateそのものの変化
-
-を表す。
-
-これは帳簿勘定変化、
-
-$$
-\Delta x
-$$
-
-とは異なる。
-
-したがって、
-
-$$
-\boxed{
-\Delta s
-\neq
-\Delta x
-}
-$$
+> Reporting meaning上のStock変化
 
 である。
+
+例えば、
+
+- Cashが100増える
+- Debtが100増える
+- Equityが100増える
+
+といった意味論的変化を表す。
+
+帳簿上どの勘定をDebit / Creditするかは、
+まだこの段階では決めていない。
 
 ## Transition and Profit/Loss Flow
 
-RevenueやExpenseのような期間量は、
-Stock Stateの独立座標ではない。
-
-したがって、
-
-$$
-\boxed{
-\text{Stock Transition}
-\neq
-\text{PL Flow}
-}
-$$
-
-である。
-
-しかし、
-同じ経済的事象が両方を生じさせる場合がある。
-
-経済的事象 $e$ のStock Transitionを、
-
-$$
-\Delta s(e)
-$$
-
-利益形成Flow情報を、
+認識取引 $e$ は、
+Stock Transitionに加え、
 
 $$
 f_{\mathrm{PL}}(e)
 $$
 
-とする。
+というProfit/Loss Flow Effectを持ちうる。
 
-すると認識された事象は概念的に、
+したがって、
+取引のSemantic Accounting Effectは、
 
 $$
 \boxed{
-e
-\longmapsto
+\alpha(e)
+=
 \left(
 \Delta s(e),
 f_{\mathrm{PL}}(e)
@@ -174,93 +196,106 @@ f_{\mathrm{PL}}(e)
 }
 $$
 
-と表せる。
+である。
 
-ここで、
+## Stock and PL Flow Are Different Components
 
-- $\Delta s(e)$：Stock Stateへの効果
-- $f_{\mathrm{PL}}(e)$：利益形成に関する期間情報
+$$
+\Delta s(e)
+$$
+
+と、
+
+$$
+f_{\mathrm{PL}}(e)
+$$
+
+は異なる情報である。
+
+$$
+\boxed{
+\Delta s
+\neq
+f_{\mathrm{PL}}
+}
+$$
 
 である。
 
-すべての取引について、
-
-$$
-f_{\mathrm{PL}}(e)\neq0
-$$
-
-となるわけではない。
+$\Delta s$ はStock Stateの変化、
+$f_{\mathrm{PL}}$ はProfit/Loss形成に関するFlow情報である。
 
 ## Stock-only Transition
 
-Stock状態を変化させるが、
-利益形成Flowを生じさせない場合、
+利益形成Flowを伴わず、
+Stockだけが変化する取引がある。
 
 $$
 \boxed{
-\Delta s(e)\neq0,
+\Delta s\neq0,
 \qquad
-f_{\mathrm{PL}}(e)=0
+f_{\mathrm{PL}}=0
 }
 $$
 
-とする。
+である。
 
-例：
+代表例は、
 
+- 資産交換
 - 借入
-- 借入金返済
-- 備品購入
-- 売掛金回収
+- 借入返済
 - 出資
+
+などである。
 
 ## Profit-forming Transition
 
-Stock状態を変化させると同時に、
-利益形成Flowを生じさせる場合、
+Revenue / Expenseを生じる取引では、
 
 $$
 \boxed{
-\Delta s(e)\neq0,
+\Delta s\neq0,
 \qquad
-f_{\mathrm{PL}}(e)\neq0
+f_{\mathrm{PL}}\neq0
 }
 $$
 
-となる。
+となりうる。
 
-例：
+例えばCredit Saleでは、
 
-- 売上
-- 費用発生
-- 減価償却
-- 貸倒費用認識
+- Accounts Receivable増加
+- Equity増加
+- Revenue Flow発生
+
+が同時に起こる。
 
 ## Constraint Preservation
 
-有効なReporting Stock Stateは、
+有効なReporting Stateでは、
 
 $$
 A-L-E=0
 $$
 
-を満たす。
+である。
 
-取引前後がともに有効状態なら、
+取引前後の両Stateが有効なら、
 
 $$
-A^- -L^- -E^-=0
+A^- - L^- - E^-=0
 $$
 
 かつ、
 
 $$
-A^+ -L^+ -E^+=0
+A^+ - L^+ - E^+=0
 $$
 
 である。
 
-両式の差から、
+両者の差を取ると、
 
 $$
 \boxed{
@@ -268,68 +303,92 @@ $$
 }
 $$
 
-を得る。
+となる。
+
+## Semantic Transition Constraint
 
 したがって、
-
-$$
-s^-\in\mathcal S_{\mathrm{valid}}
-$$
-
-なら、
+有効なSemantic Stock Transitionは、
 
 $$
 \boxed{
-s^-+\Delta s
-\in
-\mathcal S_{\mathrm{valid}}
+\Delta A-\Delta L-\Delta E=0
 }
 $$
 
-でなければならない。
+を満たす。
+
+これは、
+
+> Balance Sheet Constraintを保存するTransition
+
+という意味である。
 
 ## Example: Asset Exchange
 
-現金100を支払い、
-備品100を取得する。
+Cash 100でEquipment 100を購入する。
+
+Semantic Transitionは、
 
 $$
-\Delta\mathrm{Cash}=-100
+\Delta Cash=-100
 $$
 
 $$
-\Delta\mathrm{Equipment}=+100
+\Delta Equipment=+100
 $$
 
-なので、
+である。
+
+したがってAggregate Assetsは、
 
 $$
 \Delta A=0
 $$
 
+Liabilitiesは、
+
+$$
+\Delta L=0
+$$
+
+Equityは、
+
+$$
+\Delta E=0
+$$
+
 である。
 
-したがって、
+よって、
 
 $$
-\boxed{
-\Delta A-\Delta L-\Delta E=0
-}
+0-0-0=0
 $$
 
-である。
+となる。
 
-また、
+この取引では、
 
 $$
-f_{\mathrm{PL}}(e)=0
+f_{\mathrm{PL}}=0
 $$
 
 である。
 
 ## Example: Borrowing
 
-現金100を借りる。
+Cash 100を借り入れる。
+
+$$
+\Delta Cash=+100
+$$
+
+$$
+\Delta Debt=+100
+$$
+
+なので、
 
 $$
 \Delta A=+100
@@ -343,21 +402,20 @@ $$
 \Delta E=0
 $$
 
-なので、
+である。
+
+したがって、
 
 $$
 100-100-0=0
 $$
 
-となる。
-
-したがって、
-BS Constraintは保存される。
+である。
 
 また、
 
 $$
-f_{\mathrm{PL}}(e)=0
+f_{\mathrm{PL}}=0
 $$
 
 である。
@@ -366,26 +424,19 @@ $$
 
 掛売上100を認識する。
 
-Reporting Stock Stateでは、
+Semantic Stock Transitionは、
 
 $$
-\Delta\mathrm{AccountsReceivable}=+100
+\Delta AR=+100
+$$
+
+$$
+\Delta E=+100
 $$
 
 である。
 
-同時に、
-利益形成Flowとして、
-
-$$
-f_{\mathrm{PL}}(e)
-=
-\mathrm{Revenue}\ 100
-$$
-
-が発生する。
-
-利益形成効果を含むReporting Stateでは、
+したがって、
 
 $$
 \Delta A=+100
@@ -399,69 +450,43 @@ $$
 \Delta E=+100
 $$
 
-となる。
-
-したがって、
+となり、
 
 $$
-\boxed{
 100-0-100=0
-}
 $$
 
 である。
 
-```mermaid
-flowchart LR
-    SALE["Credit Sale 100"]
-
-    AR["Semantic Stock Effect<br/>AR +100"]
-
-    EQ["Semantic Stock Effect<br/>Equity +100"]
-
-    REV["PL Flow<br/>Revenue +100"]
-
-    SALE --> AR
-    SALE --> EQ
-    SALE --> REV
-```
-
-ここで、
+同時に、
 
 $$
 \boxed{
-\mathrm{Revenue}
-\neq
-\mathrm{Equity}
+f_{\mathrm{PL}}(e)
+=
+Revenue\ 100
 }
 $$
 
-である。
-
-Revenueは期間Flowであるが、
-その利益形成効果は
-Reporting Stock StateではEquity変化として反映される。
+が存在する。
 
 ## Example: Expense Paid in Cash
 
-現金80を支払い、
-当期費用80を認識する。
+Expense 80をCashで支払う。
+
+Semantic Stock Transitionは、
 
 $$
-\Delta\mathrm{Cash}=-80
+\Delta Cash=-80
 $$
 
-利益形成Flowは、
-
 $$
-f_{\mathrm{PL}}(e)
-=
-\mathrm{Expense}\ 80
+\Delta E=-80
 $$
 
 である。
 
-Reporting Stateでは、
+したがって、
 
 $$
 \Delta A=-80
@@ -481,45 +506,87 @@ $$
 -80-0-(-80)=0
 $$
 
-となる。
+である。
 
-したがって、
+同時に、
 
 $$
 \boxed{
-\text{Profit-forming transitions also preserve the BS constraint}
+f_{\mathrm{PL}}(e)
+=
+Expense\ 80
 }
 $$
 
 である。
 
-## Transition and Accumulation
+## Accounting Period Assignment
 
-期間を、
+会計期間を、
 
 $$
-I=[t_0,t_1]
+\boxed{
+I=(t_0,t_1]
+}
 $$
 
 とする。
 
-期間中に発生した取引インデックス集合を、
+期間 $I$ に帰属するRecognized Accounting Transactionのindex集合を、
 
 $$
 \boxed{
 K(I)
 =
-\{k\mid t_k\in I\}
+\{
+k
+\mid
+t_0<t_k\le t_1
+\}
 }
 $$
 
-と定義する。
+とする。
+
+この定義により、
+隣接する期間へ同じ取引が重複して所属することを避ける。
+
+## What Belongs to K(I)
+
+$K(I)$ は、
+
+> 期間 $I$ にSemantic Accounting Effectを認識する取引
+
+の集合である。
+
+したがって、
+
+- 通常取引
+- 必要な期末Adjusting Recognition
+
+は含まれうる。
+
+一方、
+Closingは新しいSemantic Accounting Effectを生じさせないため、
+
+$$
+\boxed{
+\text{Closing}\notin K(I)
+}
+$$
+
+とする。
+
+Closing EntryのJournal indexは、
+06で別に扱う。
+
+## Transition and Accumulation
 
 期間中のStock Transitionの累積を、
 
 $$
 \boxed{
-F(I)
+F_S(I)
 =
 \sum_{k\in K(I)}
 \Delta s^{(k)}
@@ -534,59 +601,61 @@ $$
 \boxed{
 s(t_1)
 =
-s(t_0)+F(I)
+s(t_0)
++
+F_S(I)
 }
 $$
 
 である。
-
-したがって、
-
-$$
-\boxed{
-s(t_1)
-=
-s(t_0)
-+
-\sum_{k\in K(I)}
-\Delta s^{(k)}
-}
-$$
-
-となる。
 
 ## Stock Transition and PL Are Not the Same
 
-$F(I)$ は、
-Stock状態に対する期間中の累積変化である。
+$F_S(I)$ は、
 
-一方、PLは
-利益形成Flowの分類・集約である。
+> 期間中のSemantic Stock Transitionの累積
+
+である。
+
+一方、
+
+$$
+f(I)
+$$
+
+は、
+
+> 期間中のProfit/Loss Flow情報の累積
+
+である。
 
 したがって、
 
 $$
 \boxed{
-F(I)
+F_S(I)
 \neq
-\mathrm{PL}(I)
+f(I)
 }
 $$
 
 である。
 
-両者の接続は、
+また、
 
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
+$$
+\boxed{
+F_S(I)
+\neq
+PL(I)
+}
+$$
 
-で形式化する。
+である。
 
 ## From Transition to Bookkeeping Representation
 
-$\Delta s$ と $f_{\mathrm{PL}}$ は、
-まだ仕訳そのものではない。
-
-帳簿へ記録するために、
+Semantic Accounting Effect、
 
 $$
 \left(
@@ -595,35 +664,22 @@ f_{\mathrm{PL}}
 \right)
 $$
 
-を帳簿勘定変化、
+は、
+まだJournal Entryではない。
+
+帳簿へ記録するために、
+Bookkeeping Change、
 
 $$
 \Delta x
 $$
 
-へ表現する。
+へRepresentationする。
 
-さらに、
-
-$$
-\Delta x
-$$
-
-をD/Cへ符号化して、
-Journal Entry、
-
-$$
-J
-$$
-
-を得る。
-
-したがって、
+概念的には、
 
 $$
 \boxed{
-e
-\longrightarrow
 (\Delta s,f_{\mathrm{PL}})
 \longrightarrow
 \Delta x
@@ -636,19 +692,66 @@ $$
 
 ```mermaid
 flowchart LR
-    E["Economic Event<br/>e"]
-    S["Accounting Meaning<br/>Δs, fPL"]
-    X["Bookkeeping Change<br/>Δx"]
-    J["Journal Entry<br/>J"]
+    E["Recognized Event<br/>e"]
+    SEM["Accounting Meaning<br/>Δs, fPL"]
+    BOOK["Bookkeeping Change<br/>Δx"]
+    J["Journal"]
 
-    E --> S --> X --> J
+    E --> SEM --> BOOK --> J
 ```
+
+## Semantic Transition and Bookkeeping Change Are Different
+
+例えばCredit Sale 100では、
+
+Semantic layerでは、
+
+$$
+\Delta AR=+100
+$$
+
+$$
+\Delta E=+100
+$$
+
+である。
+
+しかしBook layerでは、
+
+$$
+\Delta x_{AR}=+100
+$$
+
+$$
+\Delta x_{Sales}=+100
+$$
+
+となり、
+
+$$
+\Delta x_E=0
+$$
+
+の場合がある。
+
+したがって、
+
+$$
+\boxed{
+\Delta s
+\neq
+\Delta x
+}
+$$
+
+である。
 
 ## Transition and Posting
 
-Postingは新しい経済的事象ではない。
+Postingは、
+JournalからLedgerへのRe-indexingである。
 
-したがって、
+Postingによって新しいSemantic Stock Transitionは生じない。
 
 $$
 \boxed{
@@ -656,10 +759,7 @@ $$
 }
 $$
 
-である。
-
-さらにPostingは、
-新しい帳簿勘定変化を生成する処理でもない。
+さらに新しいBookkeeping Changeも生じない。
 
 $$
 \boxed{
@@ -671,9 +771,40 @@ $$
 
 $$
 \boxed{
-\text{economic-layer transition}
+\text{Semantic Transition}
 \neq
-\text{recording-layer transformation}
+\text{Posting}
+}
+$$
+
+である。
+
+## Transition and Closing
+
+Closingも、
+新しいSemantic Stock Transitionを生じない。
+
+$$
+\boxed{
+\Delta s_{\mathrm{closing}}=0
+}
+$$
+
+しかしClosingは帳簿勘定を振り替えるため、
+
+$$
+\Delta x_{\mathrm{closing}}\neq0
+$$
+
+である。
+
+したがって、
+
+$$
+\boxed{
+\text{Posting}
+\neq
+\text{Closing}
 }
 $$
 
@@ -692,35 +823,146 @@ $$
 
 として捉える。
 
-ただし完全な定義には、
+完全な定義には、
 
-- Stock Transition
+- Semantic Stock Transition
 - Profit/Loss Flow
 - Bookkeeping Change
 - D/C Encoding
 - Journal Balance
 - Closing
 
-の接続が必要である。
+の関係を含める必要がある。
+
+## Core Equations
+
+**Semantic Stock Transition：**
+
+$$
+\boxed{
+\Delta s
+=
+s^+-s^-
+}
+$$
+
+**State Update：**
+
+$$
+\boxed{
+s^+
+=
+s^-+\Delta s
+}
+$$
+
+**Discrete Evolution：**
+
+$$
+\boxed{
+s_{k+1}
+=
+s_k+\Delta s_k
+}
+$$
+
+**Accounting Effect：**
+
+$$
+\boxed{
+\alpha(e)
+=
+\left(
+\Delta s(e),
+f_{\mathrm{PL}}(e)
+\right)
+}
+$$
+
+**Semantic Transition Constraint：**
+
+$$
+\boxed{
+\Delta A-\Delta L-\Delta E=0
+}
+$$
+
+**Period：**
+
+$$
+\boxed{
+I=(t_0,t_1]
+}
+$$
+
+**Transaction Index Set：**
+
+$$
+\boxed{
+K(I)
+=
+\{
+k\mid t_0<t_k\le t_1
+\}
+}
+$$
+
+**Accumulated Stock Transition：**
+
+$$
+\boxed{
+F_S(I)
+=
+\sum_{k\in K(I)}
+\Delta s^{(k)}
+}
+$$
+
+**Period State Evolution：**
+
+$$
+\boxed{
+s(t_1)
+=
+s(t_0)+F_S(I)
+}
+$$
+
+**Layer Separation：**
+
+$$
+\boxed{
+e
+\to
+(\Delta s,f_{\mathrm{PL}})
+\to
+\Delta x
+\to
+J
+}
+$$
 
 ## Relationship to Other Modules
 
 - Reality / Recognition:
   [01 — Reality and Recognition](01-reality-and-recognition.md)
-- Reporting State:
+- Reporting Stock State:
   [02 — State](02-state.md)
 - Account semantics:
   [04 — Accounts and Classification](04-accounts-and-classification.md)
-- $\Delta x$ とD/C:
+- Bookkeeping Change / D/C:
   [05 — Double Entry](05-double-entry.md)
 - Journal / Posting:
   [06 — Journal and Ledger](06-journal-and-ledger.md)
-- Stock / Flow / Closing:
+- Period Flow / Closing:
   [07 — Period and Stock-Flow](07-period-stock-flow.md)
+- Validation:
+  [09 — Validation](09-validation.md)
 
 ## Open Questions
 
-- $f_{\mathrm{PL}}(e)$ の正式な型。
-- $\Delta E$ の利益形成・所有者取引などへの分解。
-- 決算整理取引と通常取引の一般的分類。
-- $(\Delta s,f_{\mathrm{PL}})\to\Delta x$ の正式な写像。
+- $f_{\mathrm{PL}}(e)$ の正式なベクトル空間をどう定義するか。
+- $\Delta E$ をProfit形成・Owner Transactionなどへどう分解するか。
+- Adjusting Recognitionの時刻をどう定義するか。
+- $(\Delta s,f_{\mathrm{PL}})\to\Delta x$ の正式なRepresentation map。
+- 非線形Measurement changeをTransitionへどう含めるか。

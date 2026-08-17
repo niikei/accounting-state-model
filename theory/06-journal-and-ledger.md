@@ -5,11 +5,14 @@
 このモジュールは、
 
 - Journal
+- Journal Index
+- Ledger
 - Posting
-- General Ledger
+- Matrix Representation
 - Traceability
 - Book Balance Reconstruction
-- Flow Accumulation
+- Flow Book Accumulator
+- Pre-closing / Post-closing Book Representation
 
 を扱う。
 
@@ -24,79 +27,133 @@ $$
 }
 $$
 
-という同じ帳簿勘定変化データを、
-異なるインデックスで整理した記録表現である。
-
-$$
-\boxed{
-\text{Journal}
-\leftrightarrow
-\text{Ledger}
-}
-$$
-
-は、
-
-$$
-\boxed{
-\text{transaction-oriented}
-\leftrightarrow
-\text{account-oriented}
-}
-$$
-
-という関係である。
+という同じBookkeeping Change dataを、
+異なるindexで整理した記録表現である。
 
 ## Journal
 
-期間中の仕訳列を、
+期間中のJournal Entry列を、
 
 $$
 \boxed{
 \mathcal J
 =
-(J_1,J_2,\ldots,J_m)
+(J_k)_{k\in K_J(I)}
 }
 $$
 
 とする。
 
 各 $J_k$ は、
-帳簿勘定変化、
 
 $$
 \Delta x^{(k)}
 $$
 
-をD/Cへ符号化した記録である。
+をD/C形式へEncodingした記録である。
 
-したがって、
+## Semantic Transaction Set and Journal Set
+
+03で、
+Semantic Accounting Effectを認識する取引index集合を、
+
+$$
+K(I)
+$$
+
+とした。
+
+Closing Entryのindex集合を、
 
 $$
 \boxed{
-\text{Journal}
-=
-\text{transaction-indexed accounting-record view}
+K_{\mathrm{close}}(I)
 }
 $$
 
-である。
+とする。
 
-Journalは経済事象そのものの列ではない。
+期間Journal全体のindex集合を、
+
+$$
+\boxed{
+K_J(I)
+=
+K(I)
+\mathbin{\dot\cup}
+K_{\mathrm{close}}(I)
+}
+$$
+
+とする。
+
+## Meaning of K(I) and K_J(I)
+
+$$
+K(I)
+$$
+
+は、
+
+> Semantic Accounting Effectを持つRecognized transaction
+
+のindex集合である。
+
+一方、
+
+$$
+K_J(I)
+$$
+
+は、
+
+> Journalへ記録されるBookkeeping Change
+
+のindex集合である。
+
+Closingは、
+
+$$
+\Delta s_{\mathrm{closing}}=0
+$$
+
+だが、
+
+$$
+\Delta x_{\mathrm{closing}}\neq0
+$$
+
+なので、
+
+$$
+K_{\mathrm{close}}(I)
+\subset
+K_J(I)
+$$
+
+に属する。
+
+## Journal Is Not Economic Event History
+
+Journalは、
+Reality eventそのものの列ではない。
 
 ```mermaid
 flowchart LR
-    E["Economic Event"]
-    A["Accounting Meaning<br/>Δs, fPL"]
+    E["Recognized Event"]
+    SEM["Accounting Meaning<br/>Δs, fPL"]
     X["Bookkeeping Change<br/>Δx"]
     J["Journal Entry"]
 
-    E --> A --> X --> J
+    E --> SEM --> X --> J
 ```
+
+さらにClosingのようなBook-only operationも、
+Journal Entryを生成しうる。
 
 ## Journal Entry and Signed Account Change
 
-仕訳 $J_k$ の勘定 $i$ に関する行を、
+仕訳 $J_k$ におけるAccount $i$ のlineを、
 
 $$
 (i,d_i^{(k)},a_i^{(k)})
@@ -106,7 +163,6 @@ $$
 
 ここで、
 
-- $i$：Account
 - $d_i^{(k)}\in\{+1,-1\}$：D/C direction
 - $a_i^{(k)}\ge0$：Amount
 
@@ -115,30 +171,12 @@ $$
 05より、
 
 $$
-d_i
-=
-\operatorname{sgn}(\Delta x_i)\sigma_i
-$$
-
-である。
-
-$\sigma_i^2=1$ なので、
-
-$$
-\operatorname{sgn}(\Delta x_i)
-=
-d_i\sigma_i
-$$
-
-となる。
-
-したがって、
-
-$$
 \boxed{
-\Delta x_i
+\Delta x_i^{(k)}
 =
-d_i\sigma_i a_i
+d_i^{(k)}
+\sigma_i
+a_i^{(k)}
 }
 $$
 
@@ -168,7 +206,7 @@ $$
 +100
 $$
 
-となる。
+である。
 
 ## Example: Debt Credit 100
 
@@ -194,12 +232,12 @@ $$
 +100
 $$
 
-となる。
+である。
 
 ## Account Projection
 
-帳簿変化ベクトルから、
-勘定 $i$ を取り出す射影を、
+Bookkeeping Change vectorから、
+Account $i$ を取り出すprojectionを、
 
 $$
 \boxed{
@@ -211,11 +249,13 @@ $$
 
 とする。
 
-仕訳 $J_k$ から
-signed account changeを復号する作用を、
+## Journal Decoder
+
+Journal Entry $J_k$ から、
+Account $i$ のBook changeを復号する作用を、
 
 $$
-\delta_i(J_k)
+\delta_i
 $$
 
 とする。
@@ -230,6 +270,8 @@ a_i^{(k)}
 }
 $$
 
+である。
+
 したがって、
 
 $$
@@ -242,7 +284,7 @@ $$
 
 である。
 
-勘定 $i$ が仕訳に存在しない場合、
+Account $i$ が仕訳に存在しない場合、
 
 $$
 \delta_i(J_k)=0
@@ -252,18 +294,16 @@ $$
 
 ## Ledger Account
 
-すべての仕訳から、
-勘定 $i$ の帳簿変化を時系列に集める。
+すべてのJournal Entryから、
+Account $i$ に関するBook changeを集める。
 
 $$
 \boxed{
 L_i
 =
 \left(
-\Delta x_i^{(1)},
-\ldots,
-\Delta x_i^{(m)}
-\right)
+\Delta x_i^{(k)}
+\right)_{k\in K_J(I)}
 }
 $$
 
@@ -274,20 +314,8 @@ $$
 L_i
 =
 \left(
-\delta_i(J_1),
-\ldots,
-\delta_i(J_m)
-\right)
-}
-$$
-
-である。
-
-Ledger Accountは、
-
-$$
-\boxed{
-\text{account-indexed history of bookkeeping changes}
+\delta_i(J_k)
+\right)_{k\in K_J(I)}
 }
 $$
 
@@ -314,10 +342,9 @@ $$
 ここで $X$ は、
 
 - Reporting Accounts
-- Temporary Accounts
+- Provisional Accounts
 
-を含む、
-帳簿で使用される全勘定集合である。
+を含む全Bookkeeping Account集合である。
 
 ## Journal and Ledger
 
@@ -325,7 +352,7 @@ Journalは、
 
 $$
 \boxed{
-\text{transaction-oriented view}
+\text{transaction / entry-indexed view}
 }
 $$
 
@@ -333,29 +360,55 @@ Ledgerは、
 
 $$
 \boxed{
-\text{account-oriented view}
+\text{account-indexed view}
 }
 $$
 
 である。
 
+```mermaid
+flowchart LR
+    DATA["Bookkeeping Changes<br/>Δxᵢ⁽ᵏ⁾"]
+
+    J["Journal<br/>group by k"]
+
+    L["Ledger<br/>group by i"]
+
+    DATA --> J
+    DATA --> L
+```
+
 ## Posting
 
-Postingは、
-
-> transaction indexからaccount indexへの再編成
-
-である。
+Posting作用を、
 
 $$
 \boxed{
-\mathcal J
-\xrightarrow{\mathrm{Posting}}
+\operatorname{Post}
+}
+$$
+
+とする。
+
+$$
+\boxed{
+\operatorname{Post}(\mathcal J)
+=
 \mathcal L
 }
 $$
 
-Postingは新しい経済事象ではない。
+である。
+
+Postingは、
+
+> entry indexからaccount indexへの再編成
+
+である。
+
+## Posting Is Not a New Transition
+
+Postingは新しいSemantic transitionではない。
 
 $$
 \boxed{
@@ -363,7 +416,8 @@ $$
 }
 $$
 
-また新しい帳簿変化でもない。
+また、
+新しいBookkeeping Changeも生成しない。
 
 $$
 \boxed{
@@ -375,7 +429,9 @@ $$
 
 $$
 \boxed{
-\text{Posting is re-indexing, not a new accounting transition}
+\text{Posting}
+=
+\text{re-indexing}
 }
 $$
 
@@ -383,148 +439,133 @@ $$
 
 ## Matrix View
 
-期間中に、
+Account数を $n$、
+Journal Entry数を $m$ とする。
 
-- $m$件の取引
-- $n$個の勘定
-
-があるとする。
-
-帳簿変化を、
-
-$$
-M=
-\begin{pmatrix}
-\Delta x_1^{(1)}
-&
-\cdots
-&
-\Delta x_1^{(m)}
-\\
-\vdots
-&
-\ddots
-&
-\vdots
-\\
-\Delta x_n^{(1)}
-&
-\cdots
-&
-\Delta x_n^{(m)}
-\end{pmatrix}
-$$
-
-と表す。
-
-列を固定すると、
+Bookkeeping Change matrixを、
 
 $$
 \boxed{
-M_{:,k}
+M_{ik}
 =
-\text{transaction }k
+\Delta x_i^{(k)}
 }
-$$
-
-である。
-
-行を固定すると、
-
-$$
-\boxed{
-M_{i,:}
-=
-\text{account }i\text{ history}
-}
-$$
-
-である。
-
-```mermaid
-flowchart TD
-    M["Bookkeeping Change Data<br/>Mᵢₖ"]
-
-    J["Fix transaction k<br/>Journal View"]
-
-    L["Fix account i<br/>Ledger View"]
-
-    M --> J
-    M --> L
-```
-
-したがって、
-
-$$
-\boxed{
-\text{Journal and Ledger}
-=
-\text{two indexings of the same }\Delta x\text{ data}
-}
-$$
-
-である。
-
-## Posting Is Not Matrix Transposition
-
-Postingを文字通り、
-
-$$
-M\mapsto M^\top
-$$
-
-と定義するわけではない。
-
-実際の帳簿には、
-
-- 日付
-- 摘要
-- 参照番号
-- 伝票番号
-- 相手勘定
-
-などのメタデータが存在する。
-
-行列表現は、
-Journal / Ledger構造を理解するための抽象化である。
-
-## Traceability
-
-JournalからLedgerへ、
-LedgerからJournalへ参照可能である。
-
-$$
-\boxed{
-\mathcal J
-\leftrightarrow
-\mathcal L
-}
-$$
-
-この双方向性が
-Audit Trailの基礎となる。
-
-## Representation Preservation
-
-理想的Posting作用を、
-
-$$
-P
 $$
 
 とする。
 
 $$
-\boxed{
-P(\mathcal J)
+M
 =
-\mathcal L
+\begin{pmatrix}
+\Delta x_1^{(1)} & \cdots & \Delta x_1^{(m)}\\
+\vdots & \ddots & \vdots\\
+\Delta x_n^{(1)} & \cdots & \Delta x_n^{(m)}
+\end{pmatrix}
+$$
+
+である。
+
+## Journal and Ledger as Matrix Views
+
+Journalは、
+
+> Matrix $M$ をcolumn方向に読む表現
+
+である。
+
+Ledgerは、
+
+> Matrix $M$ をrow方向に読む表現
+
+である。
+
+## Posting Is Not Matrix Transposition
+
+Postingによって、
+別の数学的データ、
+
+$$
+M^\top
+$$
+
+を生成するわけではない。
+
+同じ、
+
+$$
+M_{ik}
+$$
+
+を異なるindexで参照する。
+
+したがって、
+
+$$
+\boxed{
+\text{Posting}
+\neq
+\text{matrix transposition}
 }
 $$
 
-Postingでは、
-並び方が変わっても、
-記録内容は保存されなければならない。
+である。
+
+## Journal Decode Matrix and Ledger Matrix
+
+Journalから復号したMatrixを、
+
+$$
+M^{J}
+$$
+
+Ledgerから復元したMatrixを、
+
+$$
+M^{L}
+$$
+
+とする。
+
+正しいPostingでは、
+
+$$
+\boxed{
+M^{J}=M^{L}
+}
+$$
+
+である。
+
+この関係は09でPosting Validationに使用する。
+
+## Traceability
+
+Journalからは、
+
+> この取引で何が変わったか
+
+を追跡しやすい。
+
+Ledgerからは、
+
+> このAccountがどの取引によって変化したか
+
+を追跡しやすい。
+
+したがって、
+
+$$
+\boxed{
+\text{Journal / Ledger dual indexing improves traceability}
+}
+$$
+
+である。
+
+## Representation Preservation
+
+正しいPostingでは、
 
 $$
 \boxed{
@@ -534,48 +575,29 @@ $$
 }
 $$
 
-あるいは、
+である。
+
+Matrix表現では、
 
 $$
 \boxed{
-\operatorname{Decode}(\mathcal J)
-=
-\operatorname{Decode}(\mathcal L)
+M^J=M^L
 }
 $$
 
-と考えられる。
-
-Postingが保存するのは、
-
-$$
-\boxed{
-\text{recorded accounting content}
-}
-$$
-
-であり、
-
-$$
-\boxed{
-\text{economic correctness}
-}
-$$
-
-そのものではない。
+である。
 
 ## Posting Error
 
-元仕訳が誤っていても、
-その誤った内容を正確に転記すればPosting自体は成功している。
+元Journalが誤っていても、
+その誤りを正確にLedgerへ移せば、
+Postingそのものは正しい。
 
-逆に元仕訳が正しくても、
+逆に元Journalが正しくても、
 転記を誤れば、
 
 $$
-\operatorname{Decode}(\mathcal J)
-\neq
-\operatorname{Decode}(\mathcal L)
+M^J\neq M^L
 $$
 
 となる。
@@ -586,16 +608,15 @@ $$
 \boxed{
 \text{Posting Correctness}
 \neq
-\text{Economic Correctness}
+\text{Semantic Correctness}
 }
 $$
 
 である。
 
-## Book Balance Reconstruction
+## Pre-closing Stock Book Balance
 
-Stock-valued Reporting Account $i$ の
-期首帳簿残高を、
+Stock-valued Reporting Account $i$ の期首Book Balanceを、
 
 $$
 b_i(t_0)
@@ -603,11 +624,18 @@ $$
 
 とする。
 
-期間中のLedger changeを累積すれば、
+Closingを除く期間取引、
+
+$$
+k\in K(I)
+$$
+
+を累積すると、
+Pre-closing Book Balanceは、
 
 $$
 \boxed{
-b_i(t_1)
+b_i^-(t_1)
 =
 b_i(t_0)
 +
@@ -616,44 +644,48 @@ b_i(t_0)
 }
 $$
 
-となる。
+である。
 
-Journalから書けば、
+## Post-closing Stock Book Balance
+
+Closing Entryを含めると、
 
 $$
 \boxed{
-b_i(t_1)
+b_i^+(t_1)
 =
-b_i(t_0)
+b_i^-(t_1)
 +
-\sum_{k\in K(I)}
-\delta_i(J_k)
+\sum_{k\in K_{\mathrm{close}}(I)}
+\Delta x_i^{(k)}
 }
 $$
 
-である。
+となる。
 
-## Flow Account Accumulation
+Equity AccountなどはClosingによって変化しうる。
 
-Flow-valued Reporting Account $j$ の
-期間値は、
+## Flow Account Book Accumulation
+
+Flow-valued Account $j$ について、
+Pre-closing Book Accumulatorを、
 
 $$
 \boxed{
-f_j(I)
+u_j^-(I)
 =
 \sum_{k\in K(I)}
 \Delta x_j^{(k)}
 }
 $$
 
-と構成できる。
+とする。
 
-Journalから書けば、
+Journal decoderを使えば、
 
 $$
 \boxed{
-f_j(I)
+u_j^-(I)
 =
 \sum_{k\in K(I)}
 \delta_j(J_k)
@@ -662,19 +694,70 @@ $$
 
 である。
 
-したがって、
-04のFlow quantity、
+## Semantic Flow Is Not Defined by the Ledger
+
+重要なのは、
+
+$$
+\boxed{
+u_j^-(I)
+\neq
+f_j(I)
+\quad\text{by definition}
+}
+$$
+
+である。
+
+- $u_j^-(I)$：Book / Ledger accumulator
+- $f_j(I)$：Semantic / Reporting Flow
+
+である。
+
+正しいBook representationでは、
+両者がReporting interpretationを通じて一致することが要求される。
+
+この接続は07で扱う。
+
+## Closing of Flow Account Accumulators
+
+Closing後、
+Revenue / Expense AccountのBook Accumulatorは、
+通常、
+
+$$
+\boxed{
+u_j^+(I)=0
+}
+$$
+
+となる。
+
+しかしSemantic Period Flow、
 
 $$
 f_j(I)
 $$
 
-は、
-個々の帳簿勘定変化を期間中に累積した量として表現できる。
+そのものは消えない。
 
 ## Book Balance Is Not Reporting State
 
-重要なのは、
+Book layerの、
+
+$$
+b(t)
+$$
+
+と、
+
+Reporting layerの、
+
+$$
+s(t)
+$$
+
+は区別する。
 
 $$
 \boxed{
@@ -682,34 +765,12 @@ b(t)\neq s(t)
 }
 $$
 
-を一般に区別することである。
-
-$b(t)$ はBook / Ledger layer、
-
-$$
-s(t)
-$$
-
-はReporting / semantic layerである。
-
-Cashなどについては、
-
-$$
-b_{\mathrm{Cash}}(t)
-=
-s_{\mathrm{Cash}}(t)
-$$
-
-と対応することが期待される。
-
-しかし利益形成取引では
-単純な恒等関係にならない場合がある。
+である。
 
 ## Example: Revenue and Equity
 
-掛売上100を考える。
-
-Reporting Stateでは、
+掛売上100では、
+Semantic layerで、
 
 $$
 \Delta AR=+100
@@ -721,15 +782,7 @@ $$
 
 である。
 
-しかし帳簿では、
-
-$$
-\mathrm{Dr}\ AR\ 100
-/
-\mathrm{Cr}\ Sales\ 100
-$$
-
-なので、
+一方Book layerでは、
 
 $$
 \Delta x_{AR}=+100
@@ -739,13 +792,15 @@ $$
 \Delta x_{Sales}=+100
 $$
 
+であり、
+
 $$
 \Delta x_E=0
 $$
 
-である。
+となる。
 
-したがって期間中、
+したがって、
 
 $$
 \boxed{
@@ -755,109 +810,81 @@ $$
 }
 $$
 
-となりうる。
-
-Revenue accountが、
-利益形成Equity効果を
-期間Flowとして展開しているからである。
-
-## Reporting Reconstruction
-
-Journal / LedgerからReporting Stateを得るには、
-
-単純なStock account balanceだけでは不十分である。
-
-必要なのは少なくとも、
-
-- Stock account book balances
-- Flow account accumulation
-- Profit aggregation
-- Equity bridge
-- Closing
-
 である。
 
-Stock-valued account balancesをまとめて、
+## Preliminary Book Representation at Period End
 
-$$
-b_S(t)
-$$
-
-Flow account valuesを、
-
-$$
-f(I)
-$$
-
-とする。
-
-Reporting Reconstructionを暫定的に、
+Pre-closing Book representationを概念的に、
 
 $$
 \boxed{
-\Phi_I
-}
-$$
-
-と書けば、
-
-$$
-\boxed{
-s(t_1)
+B_I^-
 =
-\Phi_I
 \left(
-b_S(t_1),
-f(I)
+b_S^-(t_1),
+u_F^-(I)
 \right)
 }
 $$
 
-という構造を考えられる。
+とする。
 
-```mermaid
-flowchart LR
-    HISTORY["Journal / Ledger"]
+ここで、
 
-    BOOK["Stock Book Balances<br/>bS(t₁)"]
+- $b_S^-$：Stock-account Book Balances
+- $u_F^-$：Flow-account Book Accumulators
 
-    FLOW["Period Flows<br/>f(I)"]
+である。
 
-    PHI["Reporting Reconstruction<br/>ΦI"]
+## Reporting Reconstruction
 
-    STATE["Reporting State<br/>s(t₁)"]
+Book representationからReporting Stateを再構成する作用を、
 
-    HISTORY --> BOOK
-    HISTORY --> FLOW
+$$
+\Phi_I
+$$
 
-    BOOK --> PHI
-    FLOW --> PHI
+とする。
 
-    PHI --> STATE
-```
+Book routeによるReporting State estimateを、
 
-$\Phi_I$ の具体的な構造は、
+$$
+\boxed{
+\hat s_B(t_1)
+=
+\Phi_I(B_I^-)
+}
+$$
 
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
+とする。
 
-で定義する。
+$\Phi_I$ の正式な構造は07で扱う。
 
 ## Closing
 
-Closingは単なるPostingではない。
+ClosingはPostingではない。
 
-Flow accountの期間累積を整理し、
-Reporting Equityとの接続を
-帳簿上確定させる処理を含む。
+Postingは、
 
-Closingの詳細は、
-07で扱う。
+$$
+\Delta x=0
+$$
 
-## Current State Does Not Determine History
+のRe-indexingである。
 
-履歴から現在残高を構成することはできる。
+Closingは、
 
-しかし逆方向は一般に一意ではない。
+$$
+\Delta x_{\mathrm{closing}}\neq0
+$$
+
+のBook transformationである。
+
+## Current Balance Does Not Determine History
+
+履歴からCurrent Balanceを構成できる。
+
+しかし逆方向は一般に一意でない。
 
 $$
 H_1\neq H_2
@@ -877,7 +904,7 @@ $$
 
 $$
 \boxed{
-\text{Current State}
+\text{Current Balance}
 \not\Rightarrow
 \text{Unique History}
 }
@@ -890,24 +917,154 @@ $$
 ```mermaid
 flowchart LR
     REALITY["Reality<br/>ω"]
-
     EFFECT["Accounting Effect<br/>Δs, fPL"]
-
     BOOK["Bookkeeping Change<br/>Δx"]
-
     JOURNAL["Journal"]
-
     LEDGER["Ledger"]
-
-    BF["bS(t), f(I)"]
-
-    RECON["Reporting Reconstruction<br/>Φ"]
-
+    BREPR["Book Representation<br/>bS⁻, uF⁻"]
+    RECON["Reporting Reconstruction<br/>ΦI"]
     STATE["Reporting State<br/>s(t)"]
 
-    REALITY --> EFFECT --> BOOK --> JOURNAL --> LEDGER
-    LEDGER --> BF --> RECON --> STATE
+    REALITY --> EFFECT --> BOOK --> JOURNAL
+    JOURNAL -->|"Post"| LEDGER
+    LEDGER --> BREPR --> RECON --> STATE
 ```
+
+## Core Equations
+
+**Journal：**
+
+$$
+\boxed{
+\mathcal J
+=
+(J_k)_{k\in K_J(I)}
+}
+$$
+
+**Journal Index Set：**
+
+$$
+\boxed{
+K_J(I)
+=
+K(I)
+\mathbin{\dot\cup}
+K_{\mathrm{close}}(I)
+}
+$$
+
+**Journal Decoder：**
+
+$$
+\boxed{
+\delta_i(J_k)
+=
+\Delta x_i^{(k)}
+}
+$$
+
+**Ledger Account：**
+
+$$
+\boxed{
+L_i
+=
+\left(
+\Delta x_i^{(k)}
+\right)_{k\in K_J(I)}
+}
+$$
+
+**General Ledger：**
+
+$$
+\boxed{
+\mathcal L
+=
+\{
+L_i\mid i\in X
+\}
+}
+$$
+
+**Posting：**
+
+$$
+\boxed{
+\operatorname{Post}(\mathcal J)
+=
+\mathcal L
+}
+$$
+
+**Bookkeeping Matrix：**
+
+$$
+\boxed{
+M_{ik}
+=
+\Delta x_i^{(k)}
+}
+$$
+
+**Posting Preservation：**
+
+$$
+\boxed{
+M^J=M^L
+}
+$$
+
+**Pre-closing Stock Book Balance：**
+
+$$
+\boxed{
+b_i^-(t_1)
+=
+b_i(t_0)
++
+\sum_{k\in K(I)}
+\Delta x_i^{(k)}
+}
+$$
+
+**Post-closing Stock Book Balance：**
+
+$$
+\boxed{
+b_i^+(t_1)
+=
+b_i^-(t_1)
++
+\sum_{k\in K_{\mathrm{close}}(I)}
+\Delta x_i^{(k)}
+}
+$$
+
+**Pre-closing Flow Book Accumulator：**
+
+$$
+\boxed{
+u_j^-(I)
+=
+\sum_{k\in K(I)}
+\Delta x_j^{(k)}
+}
+$$
+
+**Pre-closing Book Representation：**
+
+$$
+\boxed{
+B_I^-
+=
+\left(
+b_S^-(t_1),
+u_F^-(I)
+\right)
+}
+$$
 
 ## Relationship to Other Modules
 
@@ -930,8 +1087,8 @@ flowchart LR
 
 ## Open Questions
 
-- Posting作用 $P$ の正式なデータ構造。
-- Journal / Ledger同値性の正式な定義。
-- Reporting Reconstruction $\Phi_I$ の定義。
-- Closing前後の $b(t)$ と $s(t)$ の関係。
-- Temporary Accountを含むReporting Reconstruction。
+- Journal / Ledgerの正式なデータ型。
+- $\operatorname{Post}$ をpermutation / re-indexing operatorとしてどう形式化するか。
+- Provisional Accountを含むBook representationの型。
+- Flow book accumulatorからSemantic Flowへのinterpretation map。
+- Correcting EntryやReversing Entryを $K_J(I)$ 内でどう分類するか。

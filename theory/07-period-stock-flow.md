@@ -5,59 +5,41 @@
 このモジュールは、
 
 - Accounting Period
-- Stock / Flow
-- Flow account の期間累積
-- Revenue / Expense の集約
+- Semantic Stock Accumulation
+- Semantic Period Flow
+- Book Flow Accumulator
+- Revenue / Expense
 - Profit
 - Equity Bridge
-- Carry-forward
+- Semantic Route
+- Book Reconstruction Route
+- Reporting Reconstruction
 - Adjusting Entry
 - Closing
-- Reporting Reconstruction
+- Carry-forward
 
 を扱う。
 
-ASMでは、
+このモジュールは、
+ASMにおける、
 
 $$
 \boxed{
-\text{Stock}
-\neq
-\text{Flow}
+\text{Balance Sheet}
+\leftrightarrow
+\text{Profit / Loss}
 }
 $$
 
-と両者を区別する。
-
-しかし同時に、
-
-$$
-\boxed{
-\text{Stock / Flow distinction}
-\neq
-\text{Stock / Flow independence}
-}
-$$
-
-である。
-
-期間Flowの利益形成効果は、
-Reporting Stock Stateへ反映される。
-
-本モジュールの中心課題は、
-
-> 期間中に帳簿上Revenue / Expenseとして蓄積されたFlowが、
-> Reporting Stock State、とくにEquityとどのように接続されるか
-
-を形式化することである。
+の接続を形式化する。
 
 ## Accounting Period
 
-1つの会計期間を、
+会計期間を、
 
 $$
 \boxed{
-I=[t_0,t_1]
+I=(t_0,t_1]
 }
 $$
 
@@ -73,14 +55,16 @@ $$
 ```mermaid
 flowchart LR
     BEGIN["Beginning Boundary<br/>t₀"]
-    PERIOD["Accounting Period<br/>I"]
+    PERIOD["Accounting Period<br/>(t₀,t₁]"]
     END["Ending Boundary<br/>t₁"]
 
     BEGIN --> PERIOD --> END
 ```
 
-企業活動そのものは継続していても、
-会計報告のために人為的な期間境界を設定する。
+## Period as Reporting Partition
+
+企業活動そのものは連続していても、
+会計報告のために期間へ分割する。
 
 したがって、
 
@@ -92,37 +76,33 @@ $$
 }
 $$
 
-と考えられる。
+である。
 
-## Transaction Set of a Period
+## Semantic Transaction Set
 
-取引インデックス $k$ と実時間 $t_k$ を区別する。
-
-期間 $I=[t_0,t_1]$ に属する取引集合を、
+期間 $I$ にSemantic Accounting Effectを帰属させる取引index集合を、
 
 $$
 \boxed{
 K(I)
 =
-\{k\mid t_0<t_k\le t_1\}
+\{
+k\mid t_0<t_k\le t_1
+\}
 }
 $$
 
 とする。
 
-このように半開区間的な所属規則を用いることで、
-境界 $t_1$ の取引が隣接する2つの期間へ
-重複して所属することを避ける。
-
-重要なのは、
+Closingは新しいSemantic Accounting Effectを生じないため、
 
 $$
 \boxed{
-\text{each recognized transaction belongs to exactly one reporting period}
+\text{Closing}\notin K(I)
 }
 $$
 
-となるように期間所属規則を定めることである。
+である。
 
 ## Stock and Flow
 
@@ -136,7 +116,7 @@ s(t_1)
 }
 $$
 
-一方、Flowは期間に属する。
+一方Flowは期間に属する。
 
 $$
 \boxed{
@@ -150,7 +130,7 @@ $$
 \boxed{
 \text{Stock}
 =
-\text{時点量}
+\text{point-in-time quantity}
 }
 $$
 
@@ -158,43 +138,50 @@ $$
 \boxed{
 \text{Flow}
 =
-\text{期間量}
+\text{period quantity}
 }
 $$
 
 である。
 
-```mermaid
-flowchart LR
-    S0["Beginning Stock<br/>s(t₀)"]
-    F["Period Flow<br/>f(I)"]
-    S1["Ending Stock<br/>s(t₁)"]
-
-    S0 --> F --> S1
-```
-
-ただし、この図はFlowそのものをStockへ加算することを意味しない。
-
-Stock状態を変えるのは、
-各取引のSemantic Stock Transition、
+## Stock and Flow Are Distinct but Related
 
 $$
-\Delta s
+\boxed{
+\text{Stock}
+\neq
+\text{Flow}
+}
 $$
 
 である。
 
+しかし、
+
+$$
+\boxed{
+\text{Stock / Flow distinction}
+\neq
+\text{Stock / Flow independence}
+}
+$$
+
+でもある。
+
+Profit-forming Flowを生じさせる取引は、
+同時にStock Stateを変化させる。
+
 ## Semantic Stock Accumulation
 
-期間中の各取引 $k\in K(I)$ が、
+期間中の各認識取引 $k$ が、
 
 $$
 \Delta s^{(k)}
 $$
 
-というStock Transitionを生じさせるとする。
+というSemantic Stock Transitionを持つ。
 
-期間中の累積Stock Transitionを、
+その累積を、
 
 $$
 \boxed{
@@ -205,13 +192,13 @@ F_S(I)
 }
 $$
 
-と定義する。
+とする。
 
 すると、
 
 $$
 \boxed{
-s(t_1)
+s_{\mathrm{sem}}(t_1)
 =
 s(t_0)
 +
@@ -221,11 +208,13 @@ $$
 
 である。
 
-すなわち、
+## Semantic Route
+
+期間末Reporting StateへのSemantic routeは、
 
 $$
 \boxed{
-s(t_1)
+s_{\mathrm{sem}}(t_1)
 =
 s(t_0)
 +
@@ -234,230 +223,224 @@ s(t_0)
 }
 $$
 
-となる。
-
-ここで $F_S(I)$ は、
-
-> 期間中のSemantic Stock Transitionの累積
-
 である。
+
+```mermaid
+flowchart LR
+    S0["Beginning State<br/>s(t₀)"]
+    DS["Semantic Transitions<br/>ΣΔs"]
+    S1["Ending Semantic State<br/>ssem(t₁)"]
+
+    S0 --> DS --> S1
+```
 
 ## Stock Accumulation Is Not PL
 
-重要なのは、
+$F_S(I)$ は、
+期間中の全Semantic Stock changesを含む。
+
+一方PLは、
+Profit-forming Flowのみを扱う。
+
+したがって、
 
 $$
 \boxed{
 F_S(I)
 \neq
-\mathrm{PL}(I)
+PL(I)
 }
 $$
 
 である。
 
-$F_S(I)$ はStock Stateに対する変化の総体である。
-
-一方、PLは期間中の利益形成Flowを
-Revenue / Expenseとして分類・集約した表現である。
-
-例えば借入は、
+借入のように、
 
 $$
 \Delta s\neq0
 $$
 
-であるが、
+だが、
 
 $$
 f_{\mathrm{PL}}=0
 $$
 
-である。
+となる取引が存在する。
 
-したがって、
-期間中のStock変化のすべてが
-Profit / Lossを構成するわけではない。
+## Transaction-level PL Flow
 
-## Flow-valued Accounts
-
-[04 — Accounts and Classification](04-accounts-and-classification.md)
-では、Flow-valued account集合を、
+各認識取引 $e_k$ のProfit/Loss Flow Effectを、
 
 $$
-X_F
-=
-X_R
-\mathbin{\dot\cup}
-X_C
-$$
-
-とした。
-
-ここで、
-
-- $X_R$：Revenue accounts
-- $X_C$：Expense accounts
-
-である。
-
-Flow-valued account $j$ の期間値を、
-
-$$
-f_j(I)
+\boxed{
+f_{\mathrm{PL}}(e_k)
+}
 $$
 
 とする。
 
-## Flow Accumulation from Bookkeeping Changes
+## Semantic Period Flow
 
-[06 — Journal and Ledger](06-journal-and-ledger.md)
-では、個々の帳簿勘定変化を、
-
-$$
-\Delta x_j^{(k)}
-$$
-
-とした。
-
-Flow-valued account $j$ の期間値は、
-
-$$
-\boxed{
-f_j(I)
-=
-\sum_{k\in K(I)}
-\Delta x_j^{(k)}
-}
-$$
-
-として構成できる。
-
-Journalから直接書けば、
-
-$$
-\boxed{
-f_j(I)
-=
-\sum_{k\in K(I)}
-\delta_j(J_k)
-}
-$$
-
-である。
-
-したがって、
-
-```mermaid
-flowchart LR
-    DX["Individual Book Changes<br/>Δxⱼ⁽ᵏ⁾"]
-    F["Flow Account Value<br/>fⱼ(I)"]
-
-    DX -->|"period accumulation"| F
-```
-
-となる。
-
-## Flow Vector
-
-すべてのFlow-valued accountの期間値をまとめて、
+期間全体のSemantic PL Flowを、
 
 $$
 \boxed{
 f(I)
 =
-\begin{pmatrix}
-f_1(I)\\
-f_2(I)\\
-\vdots\\
-f_m(I)
-\end{pmatrix}
-\in\mathcal F
+\sum_{k\in K(I)}
+f_{\mathrm{PL}}(e_k)
 }
 $$
 
-とする。
-
-$\mathcal F$ は、
-Flow-valued accounting quantitiesの空間である。
+と定義する。
 
 したがって、
 
 $$
 \boxed{
-\mathcal S
-=
-\text{Stock-state space}
+f(I)\in\mathcal F
 }
 $$
 
+である。
+
+## Flow Coordinates
+
+Flow-valued account coordinate $j\in X_F$ に対応する期間値を、
+
+$$
+f_j(I)
+$$
+
+とする。
+
+したがって、
+
 $$
 \boxed{
+f(I)
+=
+\left(
+f_j(I)
+\right)_{j\in X_F}
+}
+$$
+
+と書ける。
+
+## Book Flow Accumulator
+
+Book / Ledger側では、
+期間FlowをFlow-valued Accountsへ記録する。
+
+Pre-closing Book Accumulatorを、
+
+$$
+\boxed{
+u_j^-(I)
+=
+\sum_{k\in K(I)}
+\Delta x_j^{(k)}
+}
+$$
+
+とする。
+
+Flow Accounts全体について、
+
+$$
+\boxed{
+u_F^-(I)
+=
+\left(
+u_j^-(I)
+\right)_{j\in X_F}
+}
+$$
+
+とする。
+
+## Semantic Flow and Book Accumulator Are Different
+
+重要なのは、
+
+$$
+\boxed{
+f(I)
+\neq
+u_F^-(I)
+\quad\text{by definition}
+}
+$$
+
+である。
+
+$f(I)$ はSemantic / Reporting quantity、
+$u_F^-(I)$ はBook representationである。
+
+## Flow Interpretation Map
+
+Flow-account Book Accumulatorを、
+Semantic / Reporting Flowへ解釈する作用を、
+
+$$
+\boxed{
+\Lambda_F
+}
+$$
+
+とする。
+
+$$
+\boxed{
+\Lambda_F:
+\mathcal U_F
+\to
 \mathcal F
-=
-\text{period-flow space}
 }
 $$
 
-と区別できる。
+とする。
 
-## Transaction-level PL Flow and Account-level Flow
-
-[03 — Transition](03-transition.md)
-では、個別取引 $e_k$ の利益形成Flowを、
-
-$$
-f_{\mathrm{PL}}(e_k)
-$$
-
-と書いた。
-
-本モジュールでは、
-その取引レベルのFlow情報が
-Flow-valued bookkeeping accountsへ分類されることで、
-
-$$
-\Delta x_j^{(k)}
-$$
-
-となり、
-さらに期間中に累積されて、
-
-$$
-f_j(I)
-$$
-
-になると考える。
-
-概念的には、
+正しいFlow representationでは、
 
 $$
 \boxed{
-f_{\mathrm{PL}}(e_k)
-\longrightarrow
-\Delta x_F^{(k)}
-\longrightarrow
+\Lambda_F(u_F^-(I))
+=
 f(I)
 }
 $$
 
-である。
+を要求する。
 
-```mermaid
-flowchart LR
-    E["Transaction-level PL Flow<br/>fPL(eₖ)"]
+## Direct-coordinate Case
 
-    X["Flow-account Book Change<br/>ΔxF⁽ᵏ⁾"]
+Book Flow AccountsとSemantic Flow coordinatesが
+完全に対応している単純なモデルでは、
 
-    F["Period Flow Vector<br/>f(I)"]
+$$
+\Lambda_F
+=
+\mathrm{id}
+$$
 
-    E -->|"classification / representation"| X
-    X -->|"accumulation"| F
-```
+とみなせる。
+
+この場合、
+
+$$
+u_F^-(I)=f(I)
+$$
+
+という数値的一致が得られる。
+
+ただし概念的なlayer区別は残る。
 
 ## Revenue Aggregation
 
-Revenue accountの期間値を集約して、
+Revenueを、
 
 $$
 \boxed{
@@ -468,19 +451,11 @@ f_j(I)
 }
 $$
 
-と定義する。
-
-したがって、
-
-$$
-R(I)
-$$
-
-は期間 $I$ に認識されたRevenueの総量である。
+とする。
 
 ## Expense Aggregation
 
-Expense accountの期間値を集約して、
+Expenseを、
 
 $$
 \boxed{
@@ -491,13 +466,50 @@ f_j(I)
 }
 $$
 
+とする。
+
+## Profit Functional
+
+Flow space上のProfit functionalを、
+
+$$
+\boxed{
+p:
+\mathcal F
+\to
+\mathbb R
+}
+$$
+
+とする。
+
+$$
+\boxed{
+p(f)
+=
+\sum_{j\in X_R}f_j
+-
+\sum_{j\in X_C}f_j
+}
+$$
+
 と定義する。
 
-ここで $C$ はCost / Expenseを表す。
+したがって期間Profitは、
+
+$$
+\boxed{
+P(I)
+=
+p(f(I))
+}
+$$
+
+である。
 
 ## Profit
 
-期間利益を、
+同値に、
 
 $$
 \boxed{
@@ -507,41 +519,10 @@ R(I)-C(I)
 }
 $$
 
-と定義する。
+である。
 
-したがって、
-
-$$
-\boxed{
-f(I)
-\longrightarrow
-(R(I),C(I))
-\longrightarrow
-P(I)
-}
-$$
-
-という集約構造を持つ。
-
-```mermaid
-flowchart LR
-    F["Flow Accounts<br/>fⱼ(I)"]
-
-    R["Revenue<br/>R(I)"]
-    C["Expense<br/>C(I)"]
-
-    P["Profit<br/>P(I)=R−C"]
-
-    F --> R
-    F --> C
-
-    R --> P
-    C --> P
-```
-
-## Profit Is a Flow
-
-Profitも期間に属する。
+ProfitはStockではなく、
+derived Flow quantityである。
 
 $$
 \boxed{
@@ -549,55 +530,27 @@ P=P(I)
 }
 $$
 
-であり、
+## Equity Bridge
 
-$$
-P(t)
-$$
-
-という単一時点Stockではない。
-
-したがって、
+PLを経由しないNet Equity Changeを、
 
 $$
 \boxed{
-\text{Profit}
-=
-\text{derived Flow quantity}
+N_E(I)
 }
 $$
-
-である。
-
-## Equity Bridge
-
-利益形成Flowの効果は、
-Reporting Stock StateのEquityへ反映される。
-
-期間中のRevenue / Expense以外にも、
-Equityを変化させる取引が存在しうる。
-
-そこで、
-
-$$
-N_E(I)
-$$
-
-を、
-
-> PLを経由しない期間中のNet Equity Change
 
 とする。
 
 例えば、
 
-- 出資
-- 所有者への分配
-- その他の直接Equity変動
+- Owner contribution
+- Distribution
+- Other direct Equity changes
 
 などが含まれうる。
 
-すると一般的には、
+すると、
 
 $$
 \boxed{
@@ -606,24 +559,6 @@ E(t_1)
 E(t_0)
 +
 P(I)
-+
-N_E(I)
-}
-$$
-
-と表せる。
-
-すなわち、
-
-$$
-\boxed{
-E(t_1)
-=
-E(t_0)
-+
-R(I)
--
-C(I)
 +
 N_E(I)
 }
@@ -633,33 +568,26 @@ $$
 
 ## Profit Does Not Wait for Closing
 
-重要なのは、
+Profit effectは、
+Closingで初めて発生するわけではない。
 
-> Profitの経済的・意味論的効果がClosing時に初めて発生するわけではない
-
-ということである。
-
-例えば掛売上100が発生した時点で、
+例えばCredit Sale 100では、
+取引時点でSemantic layerに、
 
 $$
 \Delta E=+100
 $$
 
-というSemantic Stock Effectは既に存在する。
+が存在する。
 
-しかし帳簿上は、
-
-$$
-\Delta x_{\mathrm{Sales}}=+100
-$$
-
-としてRevenue accountへ記録され、
+一方、
+Book layerではRevenue Accountに記録され、
 
 $$
 \Delta x_E=0
 $$
 
-の場合がある。
+である場合がある。
 
 したがって、
 
@@ -673,10 +601,9 @@ $$
 
 である。
 
-## Pre-closing Book State
+## Pre-closing Stock Book State
 
-期末直前、Closing前の
-Stock-valued account book balancesを、
+Closing直前のStock-account Book Balancesを、
 
 $$
 \boxed{
@@ -686,7 +613,7 @@ $$
 
 とする。
 
-そのうちBook Equity balanceを、
+Equity部分を、
 
 $$
 b_E^-(t_1)
@@ -694,19 +621,148 @@ $$
 
 とする。
 
-期間中にPLを経由しないEquity変化が
-帳簿へ直接記録されている場合、
-それらは既に、
+## Pre-closing Book Representation
+
+Closing前のBook representationを、
+
+$$
+\boxed{
+B_I^-
+=
+\left(
+b_S^-(t_1),
+u_F^-(I)
+\right)
+}
+$$
+
+とする。
+
+これは、
+
+> 期末時点でLedgerが保持しているBook representation
+
+である。
+
+## Reporting Reconstruction
+
+Book representationからReporting Stock Stateを構成する作用を、
+
+$$
+\boxed{
+\Phi_I
+}
+$$
+
+とする。
+
+Book routeによるState reconstructionを、
+
+$$
+\boxed{
+\hat s_B(t_1)
+=
+\Phi_I(B_I^-)
+}
+$$
+
+とする。
+
+## Two Routes to the Same Reporting State
+
+期間末Stateには2つのrouteがある。
+
+**Semantic Route：**
+
+$$
+s_{\mathrm{sem}}(t_1)
+=
+s(t_0)
++
+F_S(I)
+$$
+
+**Book Route：**
+
+$$
+\hat s_B(t_1)
+=
+\Phi_I(B_I^-)
+$$
+
+正しい会計システムでは、
+
+$$
+\boxed{
+s_{\mathrm{sem}}(t_1)
+=
+\hat s_B(t_1)
+}
+$$
+
+である。
+
+## Commuting Accounting Diagram
+
+```mermaid
+flowchart TD
+    EVENTS["Recognized Accounting History"]
+
+    SEM["Semantic Effects<br/>Δs, fPL"]
+
+    SROUTE["Semantic Stock Route<br/>ΣΔs"]
+
+    X["Book Representation<br/>Δx"]
+
+    LEDGER["Journal / Ledger"]
+
+    B["Pre-closing Book Representation<br/>B⁻"]
+
+    PHI["Reporting Reconstruction<br/>ΦI"]
+
+    STATE["Ending Reporting State"]
+
+    EVENTS --> SEM
+    SEM --> SROUTE --> STATE
+    SEM --> X --> LEDGER --> B --> PHI --> STATE
+```
+
+ASMでは、
+
+$$
+\boxed{
+\text{the accounting diagram should commute}
+}
+$$
+
+という形でSemantic / Book consistencyを捉えられる。
+
+## Reporting Reconstruction Is Not Simple Copying
+
+多くのStock Accountでは、
+
+$$
+b_i^-(t_1)
+=
+s_i(t_1)
+$$
+
+となることがある。
+
+しかしEquityでは、
+Revenue / Expense AccountにProfit effectが展開されているため、
 
 $$
 b_E^-(t_1)
+\neq
+s_E(t_1)
 $$
 
-に含まれている。
+となりうる。
 
-## Semantic Equity from Pre-closing Books
+## Simplified Pre-closing Equity Bridge
 
-単純化した通常のProfit / Loss構造では、
+単純な場合、
 
 $$
 \boxed{
@@ -718,7 +774,7 @@ P(I)
 }
 $$
 
-と考えられる。
+と表せる。
 
 すなわち、
 
@@ -734,145 +790,13 @@ $$
 
 である。
 
-この式は、
-
-> Revenue / Expense accountに展開されている利益形成効果を、
-> Reporting State上では既にEquityへ反映する
-
-ことを表す。
-
-ただし、
-Equityのより複雑な構成要素を扱う場合は
-追加のBridge項が必要になる可能性がある。
-
-## Reporting Reconstruction
-
-Closing前の帳簿情報から
-Reporting Stock Stateを構成する作用を、
-
-$$
-\boxed{
-\Phi_I
-}
-$$
-
-とする。
-
-Closing前のBook representationを、
-
-$$
-\boxed{
-B_I^-
-=
-\left(
-b_S^-(t_1),
-f(I)
-\right)
-}
-$$
-
-とする。
-
-すると、
-
-$$
-\boxed{
-s(t_1)
-=
-\Phi_I(B_I^-)
-}
-$$
-
-すなわち、
-
-$$
-\boxed{
-s(t_1)
-=
-\Phi_I
-\left(
-b_S^-(t_1),
-f(I)
-\right)
-}
-$$
-
-と表せる。
-
-```mermaid
-flowchart LR
-    BOOK["Pre-closing Stock Book Balances<br/>bS⁻(t₁)"]
-
-    FLOW["Period Flow<br/>f(I)"]
-
-    PHI["Reporting Reconstruction<br/>ΦI"]
-
-    STATE["Reporting Stock State<br/>s(t₁)"]
-
-    BOOK --> PHI
-    FLOW --> PHI
-
-    PHI --> STATE
-```
-
-これがASMにおける
-Stock / Flow接続の中心写像である。
-
-## Reporting Reconstruction Is Not Simple Copying
-
-多くのStock-valued accountについては、
-
-$$
-s_i(t_1)
-=
-b_i^-(t_1)
-$$
-
-と対応する。
-
-例えば、
-
-- Cash
-- Accounts Receivable
-- Debt
-
-などである。
-
-しかしEquityについては、
-Closing前にはRevenue / Expense側へ
-利益形成効果が展開されているため、
-
-$$
-\boxed{
-s_E(t_1)
-\neq
-b_E^-(t_1)
-}
-$$
-
-となりうる。
-
-単純な場合、
-
-$$
-\boxed{
-s_E(t_1)
-=
-b_E^-(t_1)
-+
-P(I)
-}
-$$
-
-である。
-
 ## Example: Credit Sale
 
-期首Equityを100とする。
+期首Book Equityが100とする。
 
-期間中に掛売上20だけが発生したとする。
+Credit Sale 20を認識した。
 
-帳簿上、
+Bookkeeping Changeは、
 
 $$
 \Delta x_{AR}=+20
@@ -884,11 +808,19 @@ $$
 
 である。
 
-Closing前には、
+したがってClosing前、
 
 $$
 b_E^-=100
 $$
+
+$$
+u_{\mathrm{Sales}}^-=20
+$$
+
+である。
+
+Semantic Flowは、
 
 $$
 R(I)=20
@@ -906,48 +838,20 @@ $$
 
 である。
 
-したがってReporting Equityは、
+Reporting Equityは、
 
 $$
-E(t_1)
-=
-100+20
-=
-120
+E(t_1)=120
 $$
 
 となる。
 
-つまり、
-
-$$
-\boxed{
-b_E^-=100
-\neq
-E(t_1)=120
-}
-$$
-
-である。
-
 ## Carry-forward of Stock
 
-Reporting Stock Stateは、
-次期へ接続される。
+第 $n$ 期末Reporting Stateと、
+次期Beginning Stateは、
 
-第 $n$ 期の期末状態を、
-
-$$
-s_{\mathrm{end}}^{(n)}
-$$
-
-次期の期首状態を、
-
-$$
-s_{\mathrm{begin}}^{(n+1)}
-$$
-
-とすれば、
+介在するeventがなければ、
 
 $$
 \boxed{
@@ -959,18 +863,15 @@ $$
 
 である。
 
-これはStockが時点状態として
-期間境界を越えて接続されることを表す。
+## Semantic Flow Does Not Reset
 
-## Flow Does Not Literally Reset
-
-数学的なFlow quantity、
+Semantic Flow、
 
 $$
 f_j(I)
 $$
 
-はそもそも期間を引数に持つ。
+は期間をargumentに持つ。
 
 したがって、
 
@@ -984,55 +885,57 @@ $$
 f_j(I_{n+1})
 $$
 
-は別の期間に対応する異なる値である。
+は別のperiod quantityである。
 
-この意味では、
-
-$$
-\boxed{
-\text{Flow quantity itself does not need a reset operation}
-}
-$$
-
-とも言える。
-
-新しい期間では、
-新しい期間引数に対するFlowを測定するだけである。
-
-## Flow-account Book Accumulator Resets
-
-一方、帳簿上のRevenue / Expense accountsは、
-期間中のFlowを累積するAccumulatorとして動作する。
-
-Closingによって、
-次期の累積を開始できるように、
-これらの帳簿残高はゼロ化される。
-
-したがって、
+この意味で、
 
 $$
 \boxed{
-\text{Flow quantity}
-\neq
-\text{Flow-account running balance}
+\text{Semantic Flow does not need a reset operation}
 }
 $$
 
 である。
 
-より正確には、
-
-$$
-\boxed{
-\text{the Flow quantity changes with the period argument}
-}
-$$
+## Flow Book Accumulator Resets
 
 一方、
 
 $$
+u_j^-(I)
+$$
+
+はBook accumulatorである。
+
+Closingによって次期累積を開始できるように、
+
+$$
 \boxed{
-\text{the Flow-account book accumulator is reset by Closing}
+u_j^+(I)=0
+}
+$$
+
+となる。
+
+## Semantic Flow Survives Closing
+
+Closing後も、
+
+$$
+\boxed{
+f_j(I)
+}
+$$
+
+はその期間のReporting informationとして存在する。
+
+したがって、
+
+$$
+\boxed{
+f_j(I)
+\neq
+u_j^+(I)
 }
 $$
 
@@ -1040,32 +943,17 @@ $$
 
 ## Period-end Procedures
 
-期末処理には、
-少なくとも異なる二種類の処理を区別する必要がある。
+Period-end operationには、
+少なくとも、
 
 1. Adjusting Entry
 2. Closing Entry
 
-両者は同じものではない。
-
-```mermaid
-flowchart TD
-    END["Period-end Procedures"]
-
-    ADJ["Adjusting Entries"]
-    CLOSE["Closing Entries"]
-
-    END --> ADJ
-    END --> CLOSE
-
-    ADJ --> SEM["Recognition / Measurement"]
-    CLOSE --> REP["Book Representation Transfer"]
-```
+を区別する必要がある。
 
 ## Adjusting Entry
 
 Adjusting Entryは、
-期末時点で必要な、
 
 - Recognition
 - Measurement
@@ -1075,34 +963,23 @@ Adjusting Entryは、
 
 例えば、
 
-- 減価償却
-- 未払費用
-- 前払費用の費用化
-- 未収収益
-- 貸倒見積り
+- Depreciation
+- Accrued Expense
+- Prepaid Expense allocation
+- Accrued Revenue
 
 などである。
-
-これらは会計的意味を新たに認識・測定するため、
 
 一般に、
 
 $$
-\boxed{
-\Delta s_{\mathrm{adjusting}}
-\neq0
-}
+\Delta s_{\mathrm{adjusting}}\neq0
 $$
 
-となりうる。
-
-また、
+および、
 
 $$
-\boxed{
-f_{\mathrm{PL,adjusting}}
-\neq0
-}
+f_{\mathrm{PL,adjusting}}\neq0
 $$
 
 となりうる。
@@ -1121,9 +998,9 @@ $$
 
 ## Example: Depreciation Adjustment
 
-減価償却費10を認識する。
+Depreciation Expense 10を認識する。
 
-Semantic Stock Stateでは、
+Semantic layerでは、
 
 $$
 \Delta A=-10
@@ -1133,19 +1010,15 @@ $$
 \Delta E=-10
 $$
 
-となる。
-
-利益形成Flowとして、
-
 $$
 f_{\mathrm{PL}}
 =
 Expense\ 10
 $$
 
-が発生する。
+である。
 
-帳簿では例えば、
+Book layerでは例えば、
 
 $$
 \mathrm{Dr}\ DepreciationExpense\ 10
@@ -1153,35 +1026,29 @@ $$
 \mathrm{Cr}\ AccumulatedDepreciation\ 10
 $$
 
-と表現される。
-
-これは単なる帳簿の並べ替えではなく、
-会計的認識・測定である。
+となる。
 
 ## Closing Entry
 
-Closing Entryは、
-既に認識された期間Flowを
-帳簿表現上でEquityへ集約する処理である。
+Closingは、
+既に認識されたperiod Flowを、
+Book representation上でEquityへ振り替える。
 
-したがってClosingは、
+したがって、
 
 $$
 \boxed{
-\text{a book-representation transformation}
+\text{Closing}
+=
+\text{Book representation transformation}
 }
 $$
 
-であり、
+である。
 
-新しい利益を生じさせる経済的事象ではない。
+## Closing Does Not Change Semantic State
 
-## Closing Does Not Change Semantic Stock State
-
-利益効果はClosing以前から
-Semantic Reporting Stateへ反映されている。
-
-したがってClosingそのものについて、
+Closingそのものについて、
 
 $$
 \boxed{
@@ -1189,10 +1056,9 @@ $$
 }
 $$
 
-とする。
+である。
 
 一方、
-帳簿勘定は振り替えられるので、
 
 $$
 \boxed{
@@ -1202,47 +1068,29 @@ $$
 
 である。
 
-これは、
+## Closing Operator
+
+Closing operatorを、
 
 $$
 \boxed{
-\text{semantic state change}
-\neq
-\text{book representation change}
-}
-$$
-
-を示す重要な例である。
-
-## Closing as a Book Transformation
-
-Closing作用を、
-
-$$
-\boxed{
-\mathcal C_I
+\Gamma_I
 }
 $$
 
 とする。
 
-Closing前のBook representationを、
+Closing後のBook representationを、
 
 $$
-B_I^-
+\boxed{
+B_I^+
 =
 \left(
-b_S^-(t_1),
-f(I)
+b_S^+(t_1),
+0
 \right)
-$$
-
-とする。
-
-Closing後を、
-
-$$
-B_I^+
+}
 $$
 
 とする。
@@ -1251,7 +1099,7 @@ $$
 
 $$
 \boxed{
-\mathcal C_I:
+\Gamma_I:
 B_I^-
 \longmapsto
 B_I^+
@@ -1260,24 +1108,9 @@ $$
 
 である。
 
-## Closing of Flow Accounts
+## Closing of Equity
 
-Closing後、
-Revenue / Expense accountの
-期間Accumulatorはゼロになる。
-
-概念的には、
-
-$$
-\boxed{
-f_{\mathrm{book}}^+=0
-}
-$$
-
-である。
-
-単純な場合、
-期間ProfitはBook Equityへ振り替えられるので、
+単純なaggregate modelでは、
 
 $$
 \boxed{
@@ -1289,9 +1122,17 @@ $$
 
 となる。
 
+同時に、
+
+$$
+u_F^+=0
+$$
+
+となる。
+
 ## Example of Closing
 
-Closing前に、
+Closing前、
 
 $$
 b_E^-=100
@@ -1307,15 +1148,15 @@ $$
 
 とする。
 
-利益は、
+Profitは、
 
 $$
-P(I)=100-80=20
+P(I)=20
 $$
 
 である。
 
-Reporting Stateでは既に、
+Semantic Reporting Equityはすでに、
 
 $$
 E(t_1)=120
@@ -1329,52 +1170,25 @@ $$
 b_E^+=120
 $$
 
-となり、
-
-Revenue / Expense accountのAccumulatorは、
-
 $$
-0
+u_F^+=0
 $$
 
 となる。
 
-したがって、
-
-### Before Closing
+しかし、
 
 $$
-b_E^-=100,
-\qquad
-R=100,
-\qquad
-C=80
+P(I)=20
 $$
 
-### Reporting Meaning
-
-$$
-E=120
-$$
-
-### After Closing
-
-$$
-b_E^+=120,
-\qquad
-R=0,
-\qquad
-C=0
-$$
-
-となる。
+というperiod Flow informationは消えない。
 
 ## Closing Preserves Reporting Meaning
 
-Closing前後で
-帳簿表現は変化する。
+Closing前後でBook representationは変わる。
 
-しかしReporting Stateは変わらない。
+しかしReporting meaningは変化しない。
 
 したがって、
 
@@ -1388,76 +1202,41 @@ $$
 
 である。
 
-さらに、
+正しいAccounting Systemではさらに、
 
 $$
 \boxed{
+s_{\mathrm{sem}}(t_1)
+=
 \Phi_I(B_I^-)
 =
 \Phi_I(B_I^+)
-=
-s(t_1)
 }
 $$
 
 となる。
 
-これは、
-
-$$
-\boxed{
-\text{Closing preserves reporting meaning while changing book representation}
-}
-$$
-
-ことを表す。
-
 ## Closing and Posting Are Different
 
-PostingもClosingも
-新しい経済的事象を生じさせない。
-
-しかし両者は異なる。
-
-### Posting
+Postingは、
 
 $$
-\boxed{
-\Delta s_{\mathrm{posting}}=0
-}
-$$
-
-かつ、
-
-$$
-\boxed{
-\Delta x_{\mathrm{posting}}=0
-}
+\Delta s=0,
+\qquad
+\Delta x=0
 $$
 
 である。
 
-Postingは既存記録のRe-indexingである。
-
-### Closing
+Closingは、
 
 $$
-\boxed{
-\Delta s_{\mathrm{closing}}=0
-}
-$$
-
-だが、
-
-$$
-\boxed{
-\Delta x_{\mathrm{closing}}\neq0
-}
+\Delta s=0,
+\qquad
+\Delta x\neq0
 $$
 
 である。
-
-Closingは帳簿勘定間の振替を伴う。
 
 したがって、
 
@@ -1473,155 +1252,72 @@ $$
 
 ## Adjusting, Closing, and Posting
 
-三者を整理すると、
-
 | Operation | $\Delta s$ | $\Delta x$ | Meaning |
 | --- | ---: | ---: | --- |
 | Adjusting | may be nonzero | nonzero | Recognition / Measurement |
-| Closing | $0$ | nonzero | Book representation transfer |
+| Closing | $0$ | nonzero | Book representation transformation |
 | Posting | $0$ | $0$ | Re-indexing |
-
-したがって、
-
-```mermaid
-flowchart TD
-    OPS["Accounting Operations"]
-
-    ADJ["Adjusting"]
-    CLOSE["Closing"]
-    POST["Posting"]
-
-    OPS --> ADJ
-    OPS --> CLOSE
-    OPS --> POST
-
-    ADJ --> A["may change semantic state"]
-    CLOSE --> C["changes book representation only"]
-    POST --> P["changes indexing only"]
-```
 
 ## One Ledger, Different Temporal Types
 
-CashはStock-valued accountであり、
-帳簿残高として、
+CashはStock-valued Accountであり、
 
 $$
 b_{\mathrm{Cash}}(t)
 $$
 
-を持つ。
+というBook Balanceを持つ。
 
-SalesはFlow-valued accountであり、
-期間値として、
+SalesはFlow-valued Accountであり、
+Semantic meaningは、
 
 $$
 f_{\mathrm{Sales}}(I)
 $$
 
-を持つ。
+というperiod quantityである。
 
-しかし両者は同じ、
-
-- Journal
-- Ledger
-- D/C system
-
-の中へ記録される。
-
-したがって、
+Book layerでは、
 
 $$
-\boxed{
-\text{Unified bookkeeping representation}
-\neq
-\text{identical temporal type}
-}
+u_{\mathrm{Sales}}(t;I)
 $$
 
-である。
+というAccumulatorを持つ。
 
-これが、
-
-> 同じ元帳体系の中にStock accountとFlow accountが共存できる
-
-理由である。
+これらは同じJournal / Ledger system内に共存する。
 
 ## BS and PL as Two Views of the Same Accounting History
 
-期間中の会計履歴を、
+Period Accounting Historyを、
 
 $$
 \mathcal H(I)
+=
+\{
+(\Delta s^{(k)},f_{\mathrm{PL}}^{(k)})
+\}_{k\in K(I)}
 $$
 
 とする。
 
-この履歴には、
-各取引の、
-
-$$
-\left(
-\Delta s^{(k)},
-f_{\mathrm{PL}}^{(k)}
-\right)
-$$
-
-が含まれる。
-
 BSは、
-その履歴から得られる期末Stock Stateである。
 
 $$
 \boxed{
-BS(t_1)
-=
 \text{Stock-state view of }\mathcal H(I)
 }
 $$
 
 PLは、
-同じ期間履歴から利益形成Flowを抽出・集約したものである。
 
 $$
 \boxed{
-PL(I)
-=
-\text{profit-flow view of }\mathcal H(I)
-}
-$$
-
-したがって、
-
-$$
-\boxed{
-BS
-\neq
-PL
-}
-$$
-
-だが、
-
-$$
-\boxed{
-BS\text{ and }PL
-\text{ are derived from the same accounting history}
+\text{Profit-flow view of }\mathcal H(I)
 }
 $$
 
 である。
-
-```mermaid
-flowchart LR
-    H["Period Accounting History<br/>ℋ(I)"]
-
-    BS["Balance Sheet View<br/>s(t₁)"]
-
-    PL["Profit/Loss View<br/>R(I), C(I), P(I)"]
-
-    H --> BS
-    H --> PL
-```
 
 ## Does the BS Contain Flow?
 
@@ -1629,195 +1325,161 @@ flowchart LR
 
 $$
 \boxed{
-\text{BS does not contain Flow quantities as Stock coordinates}
+\text{BS does not contain Flow as Stock coordinates}
 }
 $$
 
 である。
 
-Revenue / Expenseそのものは、
-BSのStock coordinateではない。
-
-しかし、
+しかしFlow-forming transactionのStock effectsは、
 
 $$
-\boxed{
-\text{the effects of profit-forming Flows are reflected in the ending Stock state}
-}
+\Delta s
 $$
 
-である。
-
-したがって、
-
-$$
-\boxed{
-\text{Ending Stock}
-=
-\text{Beginning Stock}
-+
-\text{Accumulated Semantic Stock Effects}
-}
-$$
-
-であり、
-そのSemantic Stock Effectsの一部が
-利益形成Flowと対応している。
-
-よって、
-
-> BSにFlowそのものが入っている
-
-ではなく、
-
-> BSには過去のFlowを生じさせた取引の効果が、
-> Stockとして反映されている
-
-と表現する方が正確である。
+を通じてEnding BSへ反映される。
 
 ## Period Boundary
 
-期末処理が完了すると、
-Closing後のStock account balancesが
+Closing後のStock Book Balancesは、
 次期へ繰り越される。
 
 概念的には、
 
 $$
 \boxed{
-b_S^{+,(n)}(t_1)
+b_S^{+,(n)}(t_n)
 =
-b_S^{-,(n+1)}(t_1)
-}
-$$
-
-と考えられる。
-
-Reporting Stateについても、
-
-$$
-\boxed{
-s_{\mathrm{end}}^{(n)}
-=
-s_{\mathrm{begin}}^{(n+1)}
+b_S^{-,(n+1)}(t_n)
 }
 $$
 
 である。
 
 一方、
-新しい期間のFlowは、
+次期Flowは新しい、
 
 $$
 f(I_{n+1})
 $$
 
-として新たに測定される。
+として測定される。
 
 ## Full Period Pipeline
 
-1期間の会計処理をまとめると、
-
 ```mermaid
 flowchart LR
-    S0["Beginning Reporting State<br/>s(t₀)"]
+    S0["Beginning State<br/>s(t₀)"]
 
     EVENTS["Recognized Events"]
 
     SEM["Semantic Effects<br/>Δs, fPL"]
 
-    DX["Book Changes<br/>Δx"]
+    F["Semantic Period Flow<br/>f(I)"]
+
+    X["Book Changes<br/>Δx"]
 
     J["Journal"]
 
     L["Ledger"]
 
-    BSBOOK["Pre-closing Stock Balances<br/>bS⁻"]
-
-    FLOW["Period Flow<br/>f(I)"]
-
-    PROFIT["Profit<br/>P(I)"]
+    B["Pre-closing Book Representation<br/>B⁻=(bS⁻,uF⁻)"]
 
     PHI["Reporting Reconstruction<br/>ΦI"]
 
-    S1["Ending Reporting State<br/>s(t₁)"]
+    S1["Ending Reporting State"]
 
-    CLOSE["Closing<br/>𝒞I"]
+    CLOSE["Closing<br/>ΓI"]
 
-    NEXT["Next-period Book State"]
+    BP["Post-closing Book<br/>B⁺"]
 
     S0 --> EVENTS
-    EVENTS --> SEM --> DX --> J --> L
+    EVENTS --> SEM
 
-    L --> BSBOOK
-    L --> FLOW
+    SEM -->|"ΣΔs"| S1
+    SEM --> F
 
-    FLOW --> PROFIT
+    SEM --> X --> J --> L --> B
+    B --> PHI --> S1
 
-    BSBOOK --> PHI
-    FLOW --> PHI
+    B --> CLOSE --> BP
+    BP --> PHI
 
-    PHI --> S1
-
-    BSBOOK --> CLOSE
-    FLOW --> CLOSE
-
-    CLOSE --> NEXT
+    F -. "ΛF consistency" .-> B
 ```
-
-これにより、
-
-$$
-\boxed{
-\text{Reality}
-\to
-\text{Accounting Meaning}
-\to
-\text{Bookkeeping}
-\to
-\text{Period Aggregation}
-\to
-\text{Reporting}
-}
-$$
-
-というASMの全体構造が接続される。
 
 ## Core Equations
 
-本モジュールの中心式をまとめる。
+**Accounting Period：**
 
-**Transaction Set：**
+$$
+\boxed{
+I=(t_0,t_1]
+}
+$$
+
+**Semantic Transaction Set：**
 
 $$
 \boxed{
 K(I)
 =
-\{k\mid t_0<t_k\le t_1\}
+\{
+k\mid t_0<t_k\le t_1
+\}
 }
 $$
 
-**Stock Accumulation：**
+**Semantic Stock Accumulation：**
 
 $$
 \boxed{
-s(t_1)
+F_S(I)
 =
-s(t_0)
-+
 \sum_{k\in K(I)}
 \Delta s^{(k)}
 }
 $$
 
-**Flow-account Accumulation：**
+**Semantic State Route：**
 
 $$
 \boxed{
-f_j(I)
+s_{\mathrm{sem}}(t_1)
+=
+s(t_0)+F_S(I)
+}
+$$
+
+**Semantic Period Flow：**
+
+$$
+\boxed{
+f(I)
+=
+\sum_{k\in K(I)}
+f_{\mathrm{PL}}(e_k)
+}
+$$
+
+**Pre-closing Flow Book Accumulator：**
+
+$$
+\boxed{
+u_j^-(I)
 =
 \sum_{k\in K(I)}
 \Delta x_j^{(k)}
+}
+$$
+
+**Flow Representation Consistency：**
+
+$$
+\boxed{
+\Lambda_F(u_F^-(I))
+=
+f(I)
 }
 $$
 
@@ -1843,11 +1505,13 @@ f_j(I)
 }
 $$
 
-**Profit：**
+**Profit Functional：**
 
 $$
 \boxed{
 P(I)
+=
+p(f(I))
 =
 R(I)-C(I)
 }
@@ -1867,46 +1531,51 @@ N_E(I)
 }
 $$
 
-**Pre-closing Equity Bridge：**
-
-単純な場合、
+**Pre-closing Book Representation：**
 
 $$
 \boxed{
-E(t_1)
+B_I^-
 =
-b_E^-(t_1)
-+
-P(I)
-}
-$$
-
-**Reporting Reconstruction：**
-
-$$
-\boxed{
-s(t_1)
-=
-\Phi_I
 \left(
 b_S^-(t_1),
-f(I)
+u_F^-(I)
 \right)
 }
 $$
 
-**Closing：**
+**Book Reconstruction Route：**
 
 $$
 \boxed{
-\mathcal C_I:
+\hat s_B(t_1)
+=
+\Phi_I(B_I^-)
+}
+$$
+
+**Semantic / Book Consistency：**
+
+$$
+\boxed{
+s_{\mathrm{sem}}(t_1)
+=
+\Phi_I(B_I^-)
+}
+$$
+
+**Closing Operator：**
+
+$$
+\boxed{
+\Gamma_I:
 B_I^-
-\longmapsto
+\to
 B_I^+
 }
 $$
 
-**Closing Does Not Change Reporting State：**
+**Closing Semantic Invariance：**
 
 $$
 \boxed{
@@ -1914,7 +1583,7 @@ $$
 }
 $$
 
-**Closing Changes Book Representation：**
+**Closing Book Change：**
 
 $$
 \boxed{
@@ -1922,15 +1591,13 @@ $$
 }
 $$
 
-**Reporting Meaning Preservation：**
+**Closing Meaning Preservation：**
 
 $$
 \boxed{
 \Phi_I(B_I^-)
 =
 \Phi_I(B_I^+)
-=
-s(t_1)
 }
 $$
 
@@ -1940,13 +1607,13 @@ $$
   [01 — Reality and Recognition](01-reality-and-recognition.md)
 - Reporting Stock State:
   [02 — State](02-state.md)
-- Semantic Stock Transition / PL Flow:
+- Semantic Stock Transition:
   [03 — Transition](03-transition.md)
-- Stock / Flow account classification:
+- Stock / Flow Account Classification:
   [04 — Accounts and Classification](04-accounts-and-classification.md)
 - Bookkeeping Change / D/C:
   [05 — Double Entry](05-double-entry.md)
-- Journal / Ledger / Book Balance:
+- Journal / Ledger / Book Accumulators:
   [06 — Journal and Ledger](06-journal-and-ledger.md)
 - Aggregation:
   [08 — Aggregation](08-aggregation.md)
@@ -1955,12 +1622,11 @@ $$
 
 ## Open Questions
 
-- $\mathcal F$ を正式なベクトル空間としてどこまで構造化するか。
-- $f_{\mathrm{PL}}(e)$ からFlow account変化 $\Delta x_F$ への写像をどう形式化するか。
-- Reporting Reconstruction $\Phi_I$ の一般形をどう定義するか。
-- $N_E(I)$ を、出資・分配・その他Equity変動へどう分解するか。
-- Closing作用 $\mathcal C_I$ を帳簿ベクトル上の線形写像として定義できるか。
-- Adjusting EntryをRecognition作用 $\mathcal A$ とどう接続するか。
-- Accrual / DeferralをStock–Flow間の期間配分としてどう一般化するか。
-- Closing後のBook StateとReporting Stateが一致する条件をどう定義するか。
-- Revenue / Expense以外の期間型会計情報を$\mathcal F$へどう含めるか。
+- $\mathcal F$ の正式な構造。
+- $\Lambda_F$ をAccount classificationからどう構成するか。
+- $\Phi_I$ の一般形。
+- $N_E(I)$ の正式な分解。
+- $\Gamma_I$ を線形作用として表現できる条件。
+- Accrual / DeferralをStock–Flow allocationとしてどう一般化するか。
+- OCIなどPLを経由しないFlow-like informationの扱い。
+- Tax / Consolidation adjustmentをどのlayerへ配置するか。

@@ -3,29 +3,48 @@
 ## Scope
 
 このモジュールは、
-企業をある時点で表現する
-Stock型の会計状態を定義する。
 
-ASMでは、この状態を、
+- Reporting Stock State
+- Stock coordinate
+- Book Balanceとの区別
+- Balance Sheet Constraint
+- Aggregated State
+- Degrees of Freedom
+- State and History
+- Accumulated Stock Transition
+
+を扱う。
+
+ASMでは、
 
 $$
 \boxed{
-s(t)\in\mathcal S
+s(t)
+=
+\text{semantic / reporting Stock state at time }t
 }
 $$
 
-とし、
+とする。
 
-> 会計上意味づけられた Reporting / semantic Stock state
+重要なのは、
 
-として扱う。
+$$
+\boxed{
+s(t)
+\neq
+b(t)
+}
+$$
 
-これは帳簿の各勘定残高を
-そのまま並べたベクトルとは限らない。
+である。
+
+$s(t)$ はReporting / Semantic layer、
+$b(t)$ はBook / Ledger layerに属する。
 
 ## Stock State
 
-時刻 $t$ の Stock 型会計状態を、
+時刻 $t$ におけるReporting Stock Stateを、
 
 $$
 \boxed{
@@ -35,13 +54,183 @@ $$
 
 とする。
 
-各成分は、
+ここで、
 
-> 時点 $t$ における会計上のStock量
+$$
+\mathcal S
+$$
 
-を表す。
+は、
 
-概念的には、
+> Reporting上意味を持つStock quantitiesの状態空間
+
+である。
+
+例えば、
+
+- Cash
+- Accounts Receivable
+- Inventory
+- Equipment
+- Debt
+- Equity
+
+などの時点量が含まれうる。
+
+## Stock Means Point-in-time Quantity
+
+Stockとは、
+
+> ある特定時点において成立している量
+
+である。
+
+したがって、
+
+$$
+\boxed{
+s=s(t)
+}
+$$
+
+という時間依存性を持つ。
+
+例えば、
+
+$$
+Cash(t)
+$$
+
+は時刻 $t$ におけるCashのReporting quantityである。
+
+## Stock State Is Not a Flow Vector
+
+RevenueやExpenseは、
+一定期間について測られるFlowである。
+
+したがって、
+
+$$
+\boxed{
+\text{Stock State}
+\neq
+\text{Profit/Loss Flow}
+}
+$$
+
+である。
+
+具体的には、
+
+$$
+s(t)\in\mathcal S
+$$
+
+に対し、
+
+$$
+f(I)\in\mathcal F
+$$
+
+は異なる時間型を持つ。
+
+ここで、
+
+- $\mathcal S$：Stock-state space
+- $\mathcal F$：Period-flow space
+
+である。
+
+## Reporting State and Book Balance
+
+帳簿上のStock-valued account $i$ の残高を、
+
+$$
+\boxed{
+b_i(t)
+}
+$$
+
+とする。
+
+一方、
+Reporting State上の座標を、
+
+$$
+s_i(t)
+$$
+
+とする。
+
+両者は対応する場合が多いが、
+定義上同一ではない。
+
+したがって、
+
+$$
+\boxed{
+b_i(t)
+\neq
+s_i(t)
+\quad\text{in general}
+}
+$$
+
+である。
+
+## Example: Cash
+
+単純なCash accountでは、
+
+$$
+b_{\mathrm{Cash}}(t)
+=
+s_{\mathrm{Cash}}(t)
+$$
+
+となることが期待される。
+
+しかしこれは、
+
+> Book BalanceとReporting Stateが概念的に同じである
+
+ことを意味しない。
+
+単に、
+
+> このAccountについてReporting Reconstructionが恒等的になる
+
+という特別な場合である。
+
+## Example: Equity During the Period
+
+Revenueが発生した場合、
+Reporting Equityはすでに増加している。
+
+しかしClosing前のBook Equity accountへは、
+その利益効果がまだ直接振り替えられていないことがある。
+
+したがって、
+
+$$
+\boxed{
+s_E(t)
+\neq
+b_E(t)
+}
+$$
+
+となりうる。
+
+この関係は、
+
+[07 — Period and Stock-Flow](07-period-stock-flow.md)
+
+で扱う。
+
+## Reporting Coordinates
+
+Reporting Stateを、
 
 $$
 s(t)
@@ -54,198 +243,83 @@ s_n(t)
 \end{pmatrix}
 $$
 
-と書ける。
+と考える。
 
-例えば、
-
-- Cash
-- Accounts Receivable
-- Equipment
-- Accounts Payable
-- Debt
-- Equity position
-
-などに対応するReporting Stock dimensionを考えられる。
-
-Stockとは、
+各、
 
 $$
-\boxed{
-\text{Stock}
-=
-\text{時点に属する量}
-}
-$$
-
-である。
-
-## Stock State Is Not a Flow Vector
-
-RevenueやExpenseのような期間量は、
-
-$$
-s(t)
-$$
-
-の独立したStock座標として直接混ぜない。
-
-したがって、
-
-$$
-\boxed{
-\text{Stock State}
-\neq
-\text{PL Flow}
-}
-$$
-
-である。
-
-ただし、
-Revenue / Expenseを生じさせる取引の効果は、
-
-$$
-\Delta s
-$$
-
-としてStock状態にも反映されうる。
-
-例えばRevenueが発生すると、
-その利益形成効果は最終的にEquity側のStock状態へ反映される。
-
-この接続は、
-
-[03 — Transition](03-transition.md)
-
-および
-
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
-
-で扱う。
-
-## Reporting State and Book Balance
-
-ASMでは、
-
-$$
-s(t)
-$$
-
-と帳簿勘定残高を区別する。
-
-Stock-valued account $i$ の帳簿残高を、
-
-$$
-b_i(t)
-$$
-
-と書く。
-
-多くの勘定では、
-
-$$
-b_i(t)
-=
 s_i(t)
 $$
 
-と対応する。
+は、
 
-例えば、
+> Reporting Stock coordinate
 
-- Cash
-- Accounts Receivable
-- Debt
+である。
 
-などでは、
-通常この対応を期待できる。
-
-しかし一般には、
+重要なのは、
 
 $$
 \boxed{
-b(t)\neq s(t)
-}
-$$
-
-と区別する。
-
-特に期間中の利益形成については、
-利益効果がRevenue / Expense accountへ展開されるため、
-
-$$
-\Delta s_E
-$$
-
-と、
-
-$$
-\Delta x_E
-$$
-
-が一致しない場合がある。
-
-したがって、
-
-$$
-\boxed{
-\text{Book Balance}
-\neq
-\text{Reporting State}
-}
-$$
-
-をASMの基本的なレイヤー分離とする。
-
-## Reporting Coordinates
-
-$s_i(t)$ は、
-Reporting Stock State $\mathcal S$ の座標である。
-
-$$
-\boxed{
-s_i(t)
-=
-\text{coordinate of the semantic Stock state}
-}
-$$
-
-Stock-valued bookkeeping accountは、
-このReporting coordinateと対応する場合が多い。
-
-ただし、
-
-$$
-\boxed{
-\text{Stock Account}
+\text{Stock-valued Book Account}
 \not\equiv
-\text{State Coordinate}
+\text{Reporting State Coordinate}
 }
 $$
 
-を一般原則とする。
+である。
 
-両者の対応は、
-帳簿履歴・Flow・Closingなどを考慮した
-Reporting Reconstructionによって定まる。
+## Account Space and State Space Are Different
 
-詳細は、
+帳簿勘定集合を、
 
-[06 — Journal and Ledger](06-journal-and-ledger.md)
+$$
+X
+$$
 
-および
+とする。
 
-[07 — Period and Stock-Flow](07-period-stock-flow.md)
+Reporting State spaceを、
 
-で扱う。
+$$
+\mathcal S
+$$
+
+とする。
+
+両者は異なる概念である。
+
+$$
+\boxed{
+X
+\neq
+\mathcal S
+}
+$$
+
+である。
+
+$X$ はBookkeeping representationのインデックス集合であり、
+$\mathcal S$ はReporting meaningの状態空間である。
 
 ## Aggregated Stock
 
-詳細なReporting Stock State $s$ を、
-会計要素へ集約する写像を、
+Reporting Stock Stateから、
+主要な会計要素、
+
+- Assets
+- Liabilities
+- Equity
+
+を集約する作用を、
 
 $$
-G_S
+\boxed{
+G_S:
+\mathcal S
+\to
+\mathbb R^3
+}
 $$
 
 とする。
@@ -262,6 +336,8 @@ E(s)
 }
 $$
 
+である。
+
 ここで、
 
 - $A(s)$：Assets
@@ -270,38 +346,31 @@ $$
 
 である。
 
-したがって、
-
-$$
-(A,L,E)
-$$
-
-は詳細状態そのものではなく、
-状態の集約表現である。
-
 ## Balance Sheet Constraint
 
-有効なReporting Stock Stateは、
+有効なReporting Stock Stateでは、
 
 $$
 \boxed{
-A=L+E
+A(s)=L(s)+E(s)
 }
 $$
 
-を満たす。
+が成立する。
 
 同値に、
 
 $$
 \boxed{
-A-L-E=0
+A(s)-L(s)-E(s)=0
 }
 $$
 
 である。
 
-制約関数を、
+## State Constraint Function
+
+State Constraint functionを、
 
 $$
 \boxed{
@@ -311,9 +380,21 @@ A(s)-L(s)-E(s)
 }
 $$
 
-と定義する。
+とする。
 
-すると有効状態集合は、
+有効状態では、
+
+$$
+\boxed{
+g(s)=0
+}
+$$
+
+である。
+
+## Valid State Space
+
+Balance Sheet Constraintを満たす状態集合を、
 
 $$
 \boxed{
@@ -327,29 +408,28 @@ g(s)=0
 }
 $$
 
-である。
+とする。
 
-```mermaid
-flowchart TD
-    SPACE["State Space<br/>𝒮"]
+したがって、
 
-    CONSTRAINT["BS Constraint<br/>A − L − E = 0"]
+$$
+\boxed{
+s(t)\in\mathcal S_{\mathrm{valid}}
+}
+$$
 
-    VALID["Valid Reporting States<br/>𝒮valid"]
-
-    SPACE --> VALID
-    CONSTRAINT --> VALID
-```
+であることが、
+Reporting StateのStructural Validity条件となる。
 
 ## Degrees of Freedom at the Aggregated Level
 
-集約表現、
+Aggregate levelで、
 
 $$
-(A,L,E)
+(A,L,E)\in\mathbb R^3
 $$
 
-には3つの変数がある。
+とする。
 
 しかし、
 
@@ -357,10 +437,10 @@ $$
 A-L-E=0
 $$
 
-という独立な制約が1つ存在する。
+という1本の独立な制約が存在する。
 
 したがって、
-集約レベルでの自由度は、
+自由度は、
 
 $$
 \boxed{
@@ -373,107 +453,159 @@ $$
 例えば、
 
 $$
-E=A-L
+A
 $$
 
-と計算できる。
-
-ただしこれは、
-Equityだけが本質的に従属変数だという意味ではない。
-
-同様に、
+と、
 
 $$
-A=L+E
+L
 $$
 
-$$
-L=A-E
-$$
-
-とも書ける。
-
-したがって数学的には、
-
-> 3変数が1つの制約面上に存在する
-
-と理解する方が正確である。
-
-## State and History
-
-$s(t)$ は現在のReporting Stateであり、
-そこへ至る履歴そのものではない。
-
-異なる履歴が
-同じ現在状態へ到達しうる。
-
-$$
-H_1\neq H_2
-$$
-
-であっても、
+が決まれば、
 
 $$
 \boxed{
-\operatorname{fold}(H_1)
-=
-\operatorname{fold}(H_2)
-=
-s(t)
+E=A-L
 }
 $$
 
-となりうる。
+として決定される。
+
+## Equity as a Dependent Aggregate Coordinate
+
+Aggregate Balance Sheet上では、
+
+$$
+\boxed{
+E=A-L
+}
+$$
+
+なので、
+Equityは独立な第三の自由度ではない。
+
+ただしこれは、
+
+> Equityが経済的に重要でない
+
+という意味ではない。
+
+意味論上は、
+Assetsに対する残余請求権・所有者持分を表す重要なAccounting Elementである。
+
+## Aggregate Degrees of Freedom Do Not Eliminate Detail
+
+Aggregate levelの自由度が2であっても、
+個別勘定レベルの情報が2個しか存在しないわけではない。
+
+例えばAssetsは、
+
+- Cash
+- Accounts Receivable
+- Inventory
+- Equipment
+
+など多数の座標へ分解されうる。
 
 したがって、
 
 $$
 \boxed{
-\text{State}
+\text{aggregate degrees of freedom}
 \neq
-\text{History}
+\text{number of detailed accounting coordinates}
 }
 $$
 
 である。
 
-## State as Accumulated Transition
+## State and History
 
-Stockは履歴そのものではないが、
-過去の状態変化を累積した結果である。
+Current Stateは、
+過去の履歴をすべて含むわけではない。
 
-期間、
+異なるAccounting History、
 
 $$
-I=[t_0,t_1]
+H_1\neq H_2
 $$
 
-を考える。
-
-期間 $I$ に属する取引インデックス集合を、
+が、
 
 $$
 \boxed{
-K(I)
+s_{H_1}(t)
 =
-\{k\mid t_k\in I\}
+s_{H_2}(t)
 }
+$$
+
+という同じCurrent Stateへ到達する場合がある。
+
+したがって、
+
+$$
+\boxed{
+\text{Current State}
+\not\Rightarrow
+\text{Unique History}
+}
+$$
+
+である。
+
+## Example: Same Cash, Different History
+
+企業Aが、
+
+1. 出資100を受ける
+
+ことでCash 100になった場合と、
+
+企業Bが、
+
+1. 売上150を得る
+2. 費用50を支払う
+
+ことでCash 100になった場合では、
+Cashの現在値は同じでも履歴は異なる。
+
+したがってCurrent Stockだけでは、
+過去のFlowやTransaction Historyを復元できない。
+
+## State as Accumulated Transition
+
+各認識取引 $k$ のSemantic Stock Transitionを、
+
+$$
+\Delta s^{(k)}
 $$
 
 とする。
 
-期間中のStock Transitionの累積を、
+期間 $I$ に属する取引インデックス集合を、
+
+$$
+K(I)
+$$
+
+とする。
+
+期間中の累積Stock Transitionを、
 
 $$
 \boxed{
-F(I)
+F_S(I)
 =
 \sum_{k\in K(I)}
 \Delta s^{(k)}
 }
 $$
 
-とすれば、
+とする。
+
+すると、
 
 $$
 \boxed{
@@ -481,7 +613,7 @@ s(t_1)
 =
 s(t_0)
 +
-F(I)
+F_S(I)
 }
 $$
 
@@ -500,11 +632,11 @@ s(t_0)
 }
 $$
 
-となる。
+である。
 
 ## Stock and Accumulated Effects
 
-この意味で、
+したがって、
 
 $$
 \boxed{
@@ -512,71 +644,223 @@ $$
 =
 \text{Beginning Stock}
 +
-\text{Accumulated State Changes}
+\text{Accumulated Semantic Stock Changes}
 }
 $$
 
 である。
 
+ここで重要なのは、
+
+$$
+\boxed{
+F_S(I)
+\neq
+f(I)
+}
+$$
+
+である。
+
+$F_S(I)$ はStock Transitionの累積、
+$f(I)$ はPeriod Flowである。
+
+## Flow Does Not Become Stock
+
+Revenue / ExpenseなどのFlowそのものが、
+Stock coordinateになるわけではない。
+
+しかしProfit-forming transactionは、
+
+$$
+f_{\mathrm{PL}}(e)
+$$
+
+と同時に、
+
+$$
+\Delta s(e)
+$$
+
+を生じさせる。
+
 したがって、
 
 $$
 \boxed{
-\text{Stock}\neq\text{Flow}
+\text{Flow itself is not Stock}
 }
 $$
 
-である一方、
+だが、
 
 $$
 \boxed{
-\text{Stock is generated by accumulated transitions}
+\text{the effects of Flow-forming transactions are reflected in Stock}
 }
 $$
 
-でもある。
+である。
 
-FlowそのものがStockになるわけではない。
+## Semantic Route to Ending State
 
-しかしFlowを生じさせた取引の効果は、
+ASMでは、
+期間末Reporting StateへのSemantic routeを、
 
 $$
-\Delta s
+\boxed{
+s_{\mathrm{sem}}(t_1)
+=
+s(t_0)
++
+F_S(I)
+}
 $$
 
-を通じてStockへ反映されうる。
+と考える。
+
+後にBook / Ledgerからも、
+
+$$
+\Phi_I
+$$
+
+を使って同じReporting Stateを再構成する。
+
+正しい会計システムでは、
+2つのrouteが一致する必要がある。
 
 ## Boundary
 
 本モジュールは、
 
 - Reporting Stock State
-- State Constraint
-- State / Historyの区別
+- State Coordinate
+- Aggregate BS Constraint
+- State / History distinction
+- Accumulated Semantic Stock Transition
 
 を扱う。
 
 一方、
 
-- 帳簿勘定残高 $b_i(t)$ の詳細
-- 帳簿勘定変化 $\Delta x$
-- D/C encoding
+- $\Delta s$ の個別構造
+- $f_{\mathrm{PL}}$
+- Account Classification
+- Book Balance $b_i(t)$ の更新
 - Journal / Ledger
-- Reporting Reconstruction
+- Reporting Reconstruction $\Phi_I$
 
 は後続モジュールで扱う。
+
+## Core Equations
+
+**Reporting Stock State：**
+
+$$
+\boxed{
+s(t)\in\mathcal S
+}
+$$
+
+**Book / Reporting Separation：**
+
+$$
+\boxed{
+b(t)\neq s(t)
+}
+$$
+
+**Aggregate Stock：**
+
+$$
+\boxed{
+G_S(s)
+=
+\begin{pmatrix}
+A(s)\\
+L(s)\\
+E(s)
+\end{pmatrix}
+}
+$$
+
+**State Constraint：**
+
+$$
+\boxed{
+g(s)
+=
+A(s)-L(s)-E(s)
+=
+0
+}
+$$
+
+**Valid State Space：**
+
+$$
+\boxed{
+\mathcal S_{\mathrm{valid}}
+=
+\{
+s\in\mathcal S
+\mid
+g(s)=0
+\}
+}
+$$
+
+**Aggregate Degrees of Freedom：**
+
+$$
+\boxed{
+\dim=3-1=2
+}
+$$
+
+**Accumulated Stock Transition：**
+
+$$
+\boxed{
+F_S(I)
+=
+\sum_{k\in K(I)}
+\Delta s^{(k)}
+}
+$$
+
+**State Evolution：**
+
+$$
+\boxed{
+s(t_1)
+=
+s(t_0)+F_S(I)
+}
+$$
 
 ## Relationship to Other Modules
 
 - Reality / Recognition:
   [01 — Reality and Recognition](01-reality-and-recognition.md)
-- Stock Transition:
+- Semantic Stock Transition:
   [03 — Transition](03-transition.md)
-- Accountと帳簿残高:
+- Accounts / Temporal Type:
   [04 — Accounts and Classification](04-accounts-and-classification.md)
-- D/C表現:
+- Bookkeeping Representation:
   [05 — Double Entry](05-double-entry.md)
-- Book Balanceと履歴:
+- Book Balance / History:
   [06 — Journal and Ledger](06-journal-and-ledger.md)
-- Stock / Flow / Closing:
+- Stock / Flow / Reporting Reconstruction:
   [07 — Period and Stock-Flow](07-period-stock-flow.md)
+- Validation:
+  [09 — Validation](09-validation.md)
+
+## Open Questions
+
+- $\mathcal S$ を正式なベクトル空間としてどこまで構造化するか。
+- Reporting coordinateとBook accountの一般的対応写像をどう定義するか。
+- Measurement uncertaintyをState coordinateへどう含めるか。
+- Equity内部の複数構成要素をState spaceへどう展開するか。
+- 非財務情報をAccounting Stateへ含める場合の境界をどう定めるか。
