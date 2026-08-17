@@ -17,6 +17,9 @@ ASM で使う主要用語と記号の索引です。厳密な定義は各 Theory
 | $I=[t_0,t_1]$ | 会計期間 | [Period and Stock-Flow](theory/07-period-stock-flow.md) |
 | $R(I),C(I),P(I)$ | 期間 $I$ の収益、費用、利益 | [Period and Stock-Flow](theory/07-period-stock-flow.md) |
 | $c(i)$ | 勘定 $i$ の分類 | [Accounts and Classification](theory/04-accounts-and-classification.md) |
+| $X_{\mathrm{report}}$ | 5要素へ分類される報告勘定の集合 | [Accounts and Classification](theory/04-accounts-and-classification.md) |
+| $X_{\mathrm{temporary}}$ | 未分類額などを処理途中で保持する一時勘定の集合 | [Accounts and Classification](theory/04-accounts-and-classification.md) |
+| Temporary Account | 原因判明や決算処理まで金額を一時保持する処理用勘定 | [Accounts and Classification](theory/04-accounts-and-classification.md) |
 | $\sigma_i$ | 勘定 $i$ の normal orientation | [Double Entry](theory/05-double-entry.md) |
 | Debit / Credit | 勘定変化を左右へ配置する記録方向 | [Double Entry](theory/05-double-entry.md) |
 | $J(\Delta x)$ | 会計的変化を D/C 形式にした仕訳 | [Double Entry](theory/05-double-entry.md) |

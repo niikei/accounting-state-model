@@ -2,8 +2,6 @@
 source: いぬぼき
 course: 日商簿記3級無料講座
 url: https://inuboki.com/3q-kouza/chapter1-1/
-related_urls:
-  - https://inuboki.com/3q-kouza/chapter1-2/
 ---
 # 簿記3級 第1講 — 現金
 
@@ -11,11 +9,11 @@ related_urls:
 
 ## 1. この講座で学ぶこと
 
-現金勘定の増減記録、簿記上の現金の範囲、帳簿残高と実際有高の照合を学ぶ。ASM では Recognition / Classification / Measurement / Validation を具体的に検証する。
+現金勘定の増減記録と、通貨代用証券を含む簿記上の現金の範囲を学ぶ。ASM では Recognition / Classification / Measurement を具体的に検証する。
 
 ## 2. 通常の簿記的説明
 
-現金は資産であり、増加を借方、減少を貸方へ記録する。簿記上の現金には通貨だけでなく、通貨代用証券として扱うものが含まれる場合がある。帳簿残高と実際有高に差があれば原因を調査し、必要な処理を行う。
+現金は資産であり、増加を借方、減少を貸方へ記録する。簿記上の現金には通貨だけでなく、他人振出小切手など、すぐに換金できる通貨代用証券も含まれる。
 
 ## 3. 関連するASM
 
@@ -69,33 +67,15 @@ $$
 
 で求める。
 
-実査残差を、
-
-$$
-r_{\mathrm{cash}}
-=
-\mathrm{Cash}_{\mathrm{book}}
--
-\mathrm{Cash}_{\mathrm{actual}}
-$$
-
-とすれば、一致時は $r_{\mathrm{cash}}=0$ である。
-
 ## 6. 具体例
 
-帳簿上の現金が500から600へ増えた場合、
+商品100を販売し、代金として他人振出小切手を受け取った場合、その証券を Cash に分類する。
 
 $$
 \Delta\mathrm{Cash}=+100
 $$
 
-なので借方に100を記録する。一方、帳簿残高600に対して実際有高が590なら、
-
-$$
-r_{\mathrm{cash}}=600-590=10
-$$
-
-である。貸借一致している帳簿でも、この差は実査しなければ分からない。
+なので現金100を借方、売上100を貸方へ記録する。物理的な紙幣を受け取っていなくても、会計上の性質によって Cash へ分類される。
 
 ## 7. 現行ASMで説明できるか
 
@@ -105,18 +85,13 @@ $$
 
 ## 8. ASMへの新しい洞察
 
-正しさには少なくとも次の三層がある。
-
-- Structural: 仕訳や帳簿の貸借が一致している。
-- Semantic: 対象を正しく Cash に分類している。
-- Empirical: 帳簿残高と実際有高・証憑が対応している。
+現実の対象をどの勘定へ分類するかは、物理的形状ではなく、換金可能性など会計上重視する性質に依存する。
 
 ## 9. Theory更新候補
 
-この講座から得られた Recognition → Classification → Measurement の分解と、Structural / Semantic / Empirical Validity の区別は、[01 — Reality and Recognition](../../theory/01-reality-and-recognition.md) と [09 — Validation](../../theory/09-validation.md) に反映済み。
+この講座から得られた Recognition → Classification → Measurement の分解は、[01 — Reality and Recognition](../../theory/01-reality-and-recognition.md) に反映済み。
 
 ## 10. 未解決問題
 
 - 通貨代用証券の範囲を、会計ルール $\rho$ の入力としてどう表現するか。
-- 現金過不足の原因判明前後を、認識状態の更新としてどう扱うか。
 - 外貨現金の換算測定を Measurement と状態変化へどう分けるか。

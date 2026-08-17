@@ -59,7 +59,7 @@ flowchart TD
 1. [Reality and Recognition](theory/01-reality-and-recognition.md) — 現実、認識、分類、測定
 2. [State](theory/02-state.md) — Stock 状態と貸借対照表制約
 3. [Transition](theory/03-transition.md) — 取引による状態変化と制約保存
-4. [Accounts and Classification](theory/04-accounts-and-classification.md) — 勘定科目、5要素、粒度
+4. [Accounts and Classification](theory/04-accounts-and-classification.md) — 報告勘定、一時勘定、5要素、粒度
 5. [Double Entry](theory/05-double-entry.md) — 借方・貸方への符号化と仕訳
 6. [Journal and Ledger](theory/06-journal-and-ledger.md) — 仕訳帳、転記、元帳、追跡可能性
 7. [Period and Stock-Flow](theory/07-period-stock-flow.md) — 会計期間、Stock、Flow、決算
@@ -88,6 +88,7 @@ Course Note は各ファイルの YAML で情報源と元ページを追跡す�
 ### いぬぼき — 日商簿記3級無料講座
 
 1. [現金](courses/1-grade3/01-cash.md)
+2. [現金過不足](courses/1-grade3/02-cash-over-and-short.md)
 
 新しい講座ノートは [Course Note Template](courses/TEMPLATE.md) から作成します。
 
