@@ -187,7 +187,7 @@ Effects in order.
 Let:
 
 $$
-H(t)=((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
+H_t=((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
 
 and:
@@ -251,7 +251,7 @@ $$
 such that:
 
 $$
-S_t=G(H(t))
+S_t=G(H_t)
 $$
 
 **Proof sketch:**
@@ -284,7 +284,7 @@ The same History may produce different Representations.
 Let:
 
 $$
-H\in\mathcal{H}
+H_t\in\mathcal{H}
 $$
 
 and:
@@ -320,9 +320,9 @@ $$
 such that:
 
 $$
-F_{Q_1}(H)
+F_{Q_1}(H_t)
 \neq
-F_{Q_2}(H)
+F_{Q_2}(H_t)
 $$
 
 may hold.
@@ -388,7 +388,7 @@ Valid transitions preserve State constraints.
 Let:
 
 $$
-C:
+\kappa:
 \mathcal{S}
 \rightarrow
 \mathbb{R}
@@ -399,7 +399,7 @@ be a Constraint Function.
 Assume:
 
 $$
-C(S_t)=0
+\kappa(S_t)=0
 $$
 
 and:
@@ -411,7 +411,7 @@ $$
 **Formal expression:**
 
 $$
-C(S_{t+1})=0
+\kappa(S_{t+1})=0
 $$
 
 where:

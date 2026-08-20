@@ -126,7 +126,7 @@ Events are accumulated into an ordered History.
 **Formal expression:**
 
 $$
-H(t)\in(\mathcal{E}\times T)^*
+H_t\in(\mathcal{E}\times T)^*
 $$
 
 **Explanation:**
@@ -142,7 +142,7 @@ History grows by adding Events.
 Formally:
 
 $$
-H(t_1)\subseteq H(t_2)
+H_{t_1}\subseteq H_{t_2}
 $$
 
 under normal progression.
@@ -256,7 +256,7 @@ $$
 such that:
 
 $$
-S_t=G(H(t))
+S_t=G(H_t)
 $$
 
 **Explanation:**
@@ -306,7 +306,9 @@ $$
 may produce:
 
 $$
-F_{Q_1}(H)\neq F_{Q_2}(H)
+F_{Q_1}(H_t)
+\neq
+F_{Q_2}(H_t)
 $$
 
 **Consequence:**
@@ -326,7 +328,7 @@ Valid State transitions preserve required Constraints.
 Let:
 
 $$
-C:\mathcal{S}\rightarrow\mathbb{R}
+\kappa:\mathcal{S}\rightarrow\mathbb{R}
 $$
 
 be a Constraint Function.
@@ -334,7 +336,7 @@ be a Constraint Function.
 If:
 
 $$
-C(S_t)=0
+\kappa(S_t)=0
 $$
 
 and:
@@ -346,7 +348,7 @@ $$
 then:
 
 $$
-C(S_{t+1})=0
+\kappa(S_{t+1})=0
 $$
 
 where:

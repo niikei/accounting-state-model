@@ -88,13 +88,13 @@ $$
 **Symbol:**
 
 $$
-I
+\tau
 $$
 
 **Formal expression:**
 
 $$
-I=[t_0,t_1]\subseteq T
+\tau=[t_0,t_1]\subseteq T
 $$
 
 **Definition:**
@@ -303,18 +303,18 @@ The space of event histories.
 **Symbol:**
 
 $$
-H(t)
+H_t
 $$
 
 **Formal expression:**
 
 $$
-H(t)\in(\mathcal{E}\times T)^*
+H_t\in(\mathcal{E}\times T)^*
 $$
 
 **Definition:**
 
-A finite ordered sequence of Events and their associated times.
+An ordered sequence of Events accumulated up to time $t$.
 
 ---
 
@@ -323,7 +323,7 @@ A finite ordered sequence of Events and their associated times.
 **Formal expression:**
 
 $$
-H(t)
+H_t
 =
 ((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
@@ -598,13 +598,13 @@ The space of constraints required for valid States.
 **Symbol:**
 
 $$
-C
+\kappa
 $$
 
 **Formal expression:**
 
 $$
-C:
+\kappa:
 \mathcal{S}
 \rightarrow
 \mathbb{R}
@@ -617,7 +617,7 @@ $$
 **Formal expression:**
 
 $$
-C(S_t)=0
+\kappa(S_t)=0
 $$
 
 **Definition:**

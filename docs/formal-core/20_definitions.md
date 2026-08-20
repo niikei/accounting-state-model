@@ -176,19 +176,19 @@ History is an ordered sequence of Events and their associated times.
 **Symbol:**
 
 $$
-H(t)
+H_t
 $$
 
 **Formal expression:**
 
 $$
-H(t)\in(\mathcal{E}\times T)^*
+H_t\in(\mathcal{E}\times T)^*
 $$
 
 or:
 
 $$
-H(t)=((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
+H_t=((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
 
 where:
@@ -205,7 +205,7 @@ $$
 
 **Meaning:**
 
-History records the sequence of Events that occurred.
+History records the sequence of Events accumulated up to time $t$.
 
 ---
 
@@ -352,7 +352,7 @@ $$
 such that:
 
 $$
-S_t=G(H(t))
+S_t=G(H_t)
 $$
 
 **Meaning:**
@@ -425,13 +425,13 @@ A Constraint is a condition that defines valid States.
 **Symbol:**
 
 $$
-C
+\kappa
 $$
 
 **Formal expression:**
 
 $$
-C:
+\kappa:
 \mathcal{S}
 \rightarrow
 \mathbb{R}
@@ -440,7 +440,7 @@ $$
 A valid State satisfies:
 
 $$
-C(S_t)=0
+\kappa(S_t)=0
 $$
 
 **Meaning:**
@@ -461,7 +461,7 @@ Constraints.
 If:
 
 $$
-C(S_t)=0
+\kappa(S_t)=0
 $$
 
 and:
@@ -473,7 +473,7 @@ $$
 then:
 
 $$
-C(S_{t+1})=0
+\kappa(S_{t+1})=0
 $$
 
 where:
@@ -517,5 +517,5 @@ e
 \rightarrow
 \alpha(e)
 \rightarrow
-\delta(S_t,\alpha(e))
+S_{t+1}
 $$

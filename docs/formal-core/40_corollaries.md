@@ -63,13 +63,13 @@ Events.
 Given:
 
 $$
-H(t)=((e_1,t_1),\dots,(e_n,t_n))
+H_t=((e_1,t_1),\dots,(e_n,t_n))
 $$
 
 the resulting State is:
 
 $$
-S_t=G(H(t))
+S_t=G(H_t)
 $$
 
 where:
@@ -208,9 +208,9 @@ $$
 such that:
 
 $$
-F_{Q_1}(H)
+F_{Q_1}(H_t)
 \neq
-F_{Q_2}(H)
+F_{Q_2}(H_t)
 $$
 
 may hold.
@@ -236,13 +236,13 @@ State is a compressed representation of accumulated Events.
 Given:
 
 $$
-S_t=G(H(t))
+S_t=G(H_t)
 $$
 
 State does not necessarily contain all information in:
 
 $$
-H(t)
+H_t
 $$
 
 **Derivation:**
