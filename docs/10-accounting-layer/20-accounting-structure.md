@@ -1,9 +1,10 @@
-# ASM Accounting Structure v1.2
+# ASM Accounting Structure v1.3
 
 ## Purpose
 
-This document defines the structure of Accounting State and related
-dimensions in the Accounting Layer of the Accounting State Model (ASM).
+This document defines the mathematical structure of Accounting State and
+related accounting dimensions in the Accounting Layer of the Accounting
+State Model (ASM).
 
 The purpose is to define how accounting information is organized as
 mathematical spaces.
@@ -13,7 +14,7 @@ This document introduces:
 - Accounting State dimensions.
 - Accounting constraints.
 - Flow dimensions.
-- The relationship between position and flow.
+- The relationship between position and accumulated change.
 
 ---
 
@@ -33,36 +34,14 @@ $$
 
 An Accounting State is not an arbitrary collection of accounting values.
 
-It is a constrained state representing the accounting condition of an
+It is a constrained representation of the accounting condition of an
 entity at a specific point in time.
 
 ---
 
-## Accounting State Space
+## Accounting State Structure
 
-The Accounting State Space represents accounting conditions at a point in
-time.
-
-The valid Accounting State Space is:
-
-$$
-\mathcal{S}_{acc}
-$$
-
-An Accounting State is:
-
-$$
-S_{acc,t}\in\mathcal{S}_{acc}
-$$
-
-The internal structure is defined by position dimensions.
-
----
-
-## Position Dimensions
-
-Position dimensions represent quantities existing at a specific point in
-time.
+The Accounting State represents position information.
 
 The position space is:
 
@@ -81,6 +60,20 @@ where:
 - $\mathcal{A}$ represents Asset dimension.
 - $\mathcal{L}$ represents Liability dimension.
 - $\mathcal{E}$ represents Equity dimension.
+
+An Accounting State is:
+
+$$
+S_{acc,t}
+=
+(A_t,L_t,E_t)
+$$
+
+where:
+
+$$
+S_{acc,t}\in\mathcal{S}_{acc}
+$$
 
 ---
 
@@ -136,13 +129,13 @@ $$
 
 represents a valid Accounting State.
 
-The fundamental Accounting Constraint is:
+The fundamental constraint is:
 
 $$
 A_t-L_t-E_t=0
 $$
 
-Therefore, the valid Accounting State Space is:
+Therefore:
 
 $$
 \mathcal{S}_{acc}
@@ -154,7 +147,7 @@ A-L-E=0
 \}
 $$
 
-The Accounting State Space is a constrained subset:
+and:
 
 $$
 \mathcal{S}_{acc}
@@ -165,6 +158,8 @@ $$
 \times
 \mathcal{E}
 $$
+
+The Accounting Equation defines the valid State space.
 
 ---
 
@@ -177,9 +172,9 @@ Flow is not a point-in-time State.
 Therefore:
 
 $$
-State
-\neq
 Flow
+\neq
+State
 $$
 
 The Accounting Flow Space is:
@@ -203,13 +198,21 @@ where:
 - $\mathcal{P}$ represents Performance Flow.
 - $\mathcal{C}$ represents Cash Flow.
 
+The relationship is:
+
+$$
+\mathcal{F}_{acc}
+\neq
+\mathcal{S}_{acc}
+$$
+
 ---
 
 ## Performance Flow Dimension
 
 **Performance Flow:**
 
-Performance Flow represents accumulated effects related to economic
+Performance Flow represents accumulated Effects related to economic
 performance during a period.
 
 For:
@@ -266,7 +269,7 @@ $$
 \alpha_C(e)
 $$
 
-Cash Flow represents temporal change.
+Cash Flow represents temporal changes.
 
 It is not a State.
 
@@ -290,7 +293,7 @@ S_{acc,t},
 )
 $$
 
-The accumulated changes over a period may be represented as Flow:
+Accumulated Effects over a period may be represented as Flow:
 
 $$
 Flow(I)
@@ -319,21 +322,23 @@ $$
 
 ## Performance Flow and Equity
 
-Performance Flow affects future Accounting State.
+Performance Flow contributes to changes in Equity.
 
-Conceptually:
+However, Equity changes may also arise from other Effects.
+
+Therefore:
 
 $$
-E_{t+1}
+\Delta E
 =
-E_t+\Pi(I)
+\Pi(I)
++
+Other\ Equity\ Effects
 $$
-
-This relationship is introduced formally in higher layers.
 
 At this layer:
 
-- Performance Flow is a period-based change.
+- Performance Flow is a period-based accumulation.
 - Equity is a position dimension.
 
 Therefore:
@@ -363,10 +368,10 @@ $$
 Examples:
 
 - Balance Sheet represents position dimensions.
-- Income Statement represents performance flow.
-- Cash Flow Statement represents cash flow.
+- Income Statement represents Performance Flow.
+- Cash Flow Statement represents Cash Flow.
 
-These are representations generated from accounting information.
+These are representations generated from Accounting information.
 
 ---
 
@@ -378,7 +383,7 @@ Future documents may introduce:
 - journal coordinates
 - debit and credit representation
 - aggregation structures
-- formal relationship between Performance Flow and Equity
+- formal relationship between Effects and accounts
 
 These concepts extend Accounting Structure.
 
@@ -388,15 +393,13 @@ These concepts extend Accounting Structure.
 
 Accounting Structure separates:
 
-**Position:**
+Position:
 
 $$
 \mathcal{S}_{acc}
 $$
 
-from:
-
-**Flow:**
+and Flow:
 
 $$
 \mathcal{F}_{acc}

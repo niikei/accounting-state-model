@@ -1,4 +1,4 @@
-# ASM Financial Representation v1.1
+# ASM Financial Representation v1.2
 
 ## Purpose
 
@@ -6,13 +6,13 @@ This document defines the concept of Financial Representation in the
 Accounting Layer of the Accounting State Model (ASM).
 
 The purpose is to explain financial statements and other accounting
-outputs as representations generated from Accounting information.
+outputs as purpose-dependent projections of Accounting information.
 
 ASM does not treat financial statements as the Accounting State itself.
 
 ---
 
-## Relationship with Accounting State
+## Relationship with Accounting Model
 
 The Accounting Layer defines:
 
@@ -26,8 +26,7 @@ Accounting\ History
 Accounting\ State
 $$
 
-Financial Representation is generated from these underlying accounting
-objects.
+Financial Representation is generated from these accounting objects.
 
 The general relationship is:
 
@@ -45,8 +44,8 @@ Financial\ Representation
 Accounting\ State
 $$
 
-Financial Representation is a purpose-dependent projection of Accounting
-information.
+Financial Representation is a projection of Accounting information for a
+specific purpose.
 
 ---
 
@@ -54,33 +53,47 @@ information.
 
 **Financial Representation:**
 
-A Financial Representation is a transformation of Accounting information
-into a form suitable for a specific purpose.
+A Financial Representation is a purpose-dependent transformation that
+projects Accounting information into a representation space.
 
-The general Representation Function is:
+The general form is:
 
 $$
 F_Q:
-(\mathcal{H}_{acc},\mathcal{S}_{acc})
+X_Q
 \rightarrow
 \mathcal{Y}_Q
 $$
 
 where:
 
-- $\mathcal{H}_{acc}$ represents Accounting History.
-- $\mathcal{S}_{acc}$ represents Accounting State.
-- $Q$ represents a Task or purpose.
-- $\mathcal{Y}_Q$ represents the resulting Representation Space.
+- $Q$ represents a purpose or Task.
+- $X_Q$ represents the required Accounting Information Space.
+- $\mathcal{Y}_Q$ represents the Representation Space.
 
-The required input depends on the purpose of the Representation.
+The required input depends on the purpose.
+
+---
+
+## Representation as Projection
+
+A Representation does not create accounting meaning.
+
+It extracts required information from the underlying model.
+
+Therefore:
+
+$$
+Representation
+=
+Projection(Accounting\ Information)
+$$
+
+Different purposes may select different projections.
 
 ---
 
 ## Purpose-Dependent Representation
-
-A single Accounting History and State may produce multiple
-representations.
 
 For:
 
@@ -91,29 +104,21 @@ $$
 there exist:
 
 $$
-F_{Q_1}
-:
-(\mathcal{H}_{acc},\mathcal{S}_{acc})
-\rightarrow
-\mathcal{Y}_{Q_1}
+F_{Q_1}:X_{Q_1}\rightarrow\mathcal{Y}_{Q_1}
 $$
 
 and:
 
 $$
-F_{Q_2}
-:
-(\mathcal{H}_{acc},\mathcal{S}_{acc})
-\rightarrow
-\mathcal{Y}_{Q_2}
+F_{Q_2}:X_{Q_2}\rightarrow\mathcal{Y}_{Q_2}
 $$
 
 such that:
 
 $$
-F_{Q_1}(H,S)
+F_{Q_1}(X)
 \neq
-F_{Q_2}(H,S)
+F_{Q_2}(X)
 $$
 
 may hold.
@@ -128,30 +133,11 @@ $$
 
 ---
 
-## Financial Statements as Representations
-
-Financial statements are examples of Financial Representations.
-
-Examples include:
-
-- Balance Sheet
-- Income Statement
-- Cash Flow Statement
-
-Each statement represents a different aspect of Accounting information.
-
-They are not independent sources of accounting meaning.
-
-They are generated from the same underlying Accounting Model.
-
----
-
 ## Balance Sheet Representation
 
-A Balance Sheet represents a view of Accounting State focused on
-financial position.
+A Balance Sheet represents Accounting Position.
 
-Formally:
+The representation function is:
 
 $$
 BS:
@@ -160,7 +146,7 @@ BS:
 \mathcal{Y}_{BS}
 $$
 
-The Balance Sheet represents the position dimensions of Accounting State:
+The input is:
 
 $$
 S_{acc,t}
@@ -168,7 +154,7 @@ S_{acc,t}
 (A_t,L_t,E_t)
 $$
 
-under the Accounting Constraint:
+under:
 
 $$
 A_t-L_t-E_t=0
@@ -182,145 +168,79 @@ Balance\ Sheet
 Accounting\ State
 $$
 
-The Balance Sheet is a representation of Accounting State.
+It is a projection of Accounting State.
 
 ---
 
 ## Income Statement Representation
 
-An Income Statement represents accumulated performance changes over a
-period.
+An Income Statement represents accumulated Performance Flow.
 
-The underlying concept is:
-
-$$
-Performance\ Flow
-$$
-
-For a period:
+For:
 
 $$
 I=[t_0,t_1]
 $$
 
-the representation is:
+Performance Flow is:
+
+$$
+\Pi(I)
+=
+\sum_{e\in H_I}
+\alpha_{\Pi}(e)
+$$
+
+The representation is:
 
 $$
 IS_I:
-\mathcal{H}_{acc}(I)
+\Pi(I)
 \rightarrow
 \mathcal{Y}_{IS}
 $$
 
 The Income Statement does not represent a point-in-time State.
 
-It represents accumulated Accounting Effects related to performance.
-
-Therefore:
-
-$$
-Income\ Statement
-\neq
-Accounting\ State
-$$
+It represents accumulated Effects during a period.
 
 ---
 
 ## Cash Flow Representation
 
-A Cash Flow Statement represents accumulated changes in cash-related
-dimensions during a period.
+A Cash Flow Statement represents accumulated cash-related Effects.
 
-For a period:
+For:
 
 $$
 I=[t_0,t_1]
 $$
 
-the representation is:
+Cash Flow is:
+
+$$
+\Phi_C(I)
+=
+\sum_{e\in H_I}
+\alpha_C(e)
+$$
+
+The representation is:
 
 $$
 CF_I:
-\mathcal{H}_{acc}(I)
+\Phi_C(I)
 \rightarrow
 \mathcal{Y}_{CF}
 $$
-
-The Cash Flow Statement is a period-based representation.
-
-It represents accumulated cash-related Effects.
-
----
-
-## State and Representation Separation
-
-ASM separates:
-
-**State:**
-
-The underlying accounting condition.
-
-$$
-S_{acc,t}
-$$
-
-**Representation:**
-
-A purpose-dependent view generated from Accounting information.
-
-$$
-F_Q(H_{acc},S_{acc})
-$$
-
-Therefore:
-
-$$
-State
-\neq
-View
-$$
-
-Different users may require different representations of the same
-Accounting Model.
-
----
-
-## Representation and Information Loss
-
-A representation does not necessarily preserve all information.
-
-There may exist:
-
-$$
-H_1,H_2\in\mathcal{H}_{acc}
-$$
-
-such that:
-
-$$
-H_1\neq H_2
-$$
-
-but:
-
-$$
-F_Q(H_1,S)
-=
-F_Q(H_2,S)
-$$
-
-Therefore:
-
-Financial representations are abstractions.
-
-They preserve information required for a purpose while omitting other
-information.
 
 ---
 
 ## Relationship with Double Entry
 
-Double Entry is also a representation.
+Double Entry is also a Representation.
+
+However, it represents Accounting Effects.
 
 The relationship is:
 
@@ -330,49 +250,7 @@ Accounting\ Effect
 Journal\ Representation
 $$
 
-Financial Statements are other representations:
-
-$$
-Accounting\ State
-+
-Accounting\ History
-\rightarrow
-Financial\ Representation
-$$
-
-Both originate from accounting information but serve different purposes.
-
----
-
-## Future Extension
-
-Future documents may introduce:
-
-- financial reporting structures
-- management accounting views
-- ERP reporting dimensions
-- analytical representations
-
-These are extensions of the Representation Layer.
-
----
-
-## Summary
-
-Financial Representation is a purpose-dependent projection generated from
-Accounting information.
-
-The fundamental structure is:
-
-$$
-Accounting\ History
-\rightarrow
-Accounting\ State
-\rightarrow
-Financial\ Representation
-$$
-
-Different representations focus on different aspects:
+Financial Statements represent different accounting objects:
 
 $$
 State
@@ -381,24 +259,81 @@ Balance\ Sheet
 $$
 
 $$
-Effect\ Aggregation
+Performance\ Flow
 \rightarrow
 Income\ Statement
 $$
 
 $$
-Cash\ Effect\ Aggregation
+Cash\ Flow
+\rightarrow
+Cash\ Flow\ Statement
+$$
+
+---
+
+## Representation and Information Loss
+
+Representations may omit information not required for their purpose.
+
+There may exist:
+
+$$
+X_1\neq X_2
+$$
+
+but:
+
+$$
+F_Q(X_1)=F_Q(X_2)
+$$
+
+Therefore:
+
+Representation is an abstraction.
+
+---
+
+## Summary
+
+Financial Representation is a purpose-dependent projection of Accounting
+information.
+
+The structure is:
+
+$$
+Accounting\ Information
+\rightarrow
+Financial\ Representation
+$$
+
+Examples:
+
+$$
+State
+\rightarrow
+Balance\ Sheet
+$$
+
+$$
+Performance\ Flow
+\rightarrow
+Income\ Statement
+$$
+
+$$
+Cash\ Flow
 \rightarrow
 Cash\ Flow\ Statement
 $$
 
 ASM separates:
 
-- accounting reality
-- accounting event
-- accounting effect
-- accounting state
-- accounting representation
+- Economic Reality
+- Accounting Event
+- Accounting Effect
+- Accounting State
+- Financial Representation
 
 Therefore:
 

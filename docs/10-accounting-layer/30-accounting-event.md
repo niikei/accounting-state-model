@@ -1,4 +1,4 @@
-# ASM Accounting Event v1.1
+# ASM Accounting Event v1.2
 
 ## Purpose
 
@@ -21,7 +21,8 @@ $$
 e\in\mathcal{E}
 $$
 
-An Event represents an occurrence that produces an Effect.
+An Event represents an occurrence recognized in the model that produces
+an Effect.
 
 The Accounting Layer specializes this concept:
 
@@ -36,30 +37,31 @@ where:
 
 ---
 
-## Economic Event and Accounting Event
+## Economic Occurrence and Accounting Event
 
 An economic entity experiences many occurrences.
 
-However, not every occurrence becomes an Accounting Event.
+However, not every economic occurrence becomes an Accounting Event.
 
 The relationship is:
 
 $$
 Economic\ Reality
 \rightarrow
-Evidence
+Accounting\ Evidence
 \rightarrow
 Accounting\ Event
 $$
 
-An Economic Event exists in reality.
+An economic occurrence exists independently of the accounting model.
 
-An Accounting Event exists in the accounting model.
+An Accounting Event exists as an interpreted object within the accounting
+model.
 
 Therefore:
 
 $$
-Economic\ Event
+Economic\ Occurrence
 \neq
 Accounting\ Event
 $$
@@ -70,8 +72,9 @@ $$
 
 **Accounting Event:**
 
-An Accounting Event is an occurrence recognized by the accounting model
-as a cause of a state transition.
+An Accounting Event is an interpreted representation of an economic
+occurrence that serves as the causal input of an Accounting State
+transition.
 
 Formally:
 
@@ -83,11 +86,11 @@ An Accounting Event represents:
 
 - a recognized occurrence
 - an interpretation result
-- a causal input for state transition
+- a causal input for State transition
 
 An Accounting Event is not raw Evidence.
 
-It is an interpreted representation.
+It is an interpreted model object.
 
 ---
 
@@ -131,19 +134,17 @@ $$
 
 where:
 
-- $z$ represents Evidence.
+- $z$ represents Accounting Evidence.
 - $\theta$ represents Accounting Policy.
 - $m$ represents Parameters or assumptions.
 
-The Accounting Event is the result of interpretation.
-
-It is not identical to Evidence, Policy, or Parameters.
+Accounting Event is the result of interpretation.
 
 ---
 
 ## Recognition and Measurement
 
-Accounting Event generation involves interpretation.
+Accounting Event generation depends on interpretation rules.
 
 The same Evidence may produce different Accounting Events depending on:
 
@@ -163,7 +164,7 @@ may hold.
 
 Therefore:
 
-Accounting Event is not purely observed data.
+Accounting Event is not purely observed information.
 
 It is an interpreted representation.
 
@@ -171,9 +172,7 @@ It is an interpreted representation.
 
 ## Accounting Event and Effect
 
-An Accounting Event is the cause of change.
-
-The Accounting Effect is the resulting change.
+An Accounting Event generates an Accounting Effect.
 
 The relationship is:
 
@@ -196,11 +195,11 @@ The distinction is:
 
 **Accounting Event:**
 
-"What occurred?"
+"What occurred in the accounting model?"
 
 **Accounting Effect:**
 
-"What changed because of it?"
+"What changed in Accounting State?"
 
 ---
 
@@ -209,7 +208,7 @@ The distinction is:
 An Accounting Effect represents an instantaneous change in Accounting
 State.
 
-The effect itself is:
+The Effect is:
 
 $$
 \alpha_{acc}(e_{acc})
@@ -217,7 +216,7 @@ $$
 \Delta\mathcal{S}_{acc}
 $$
 
-Flow dimensions are obtained by aggregating Effects over a period.
+Accumulated Effects over a period form Flow.
 
 For:
 
@@ -225,13 +224,13 @@ $$
 I=[t_0,t_1]
 $$
 
-a Flow may be represented as:
+Flow is represented as:
 
 $$
 Flow(I)
 =
 \sum_{e\in H_I}
-\alpha(e)
+\alpha_{acc}(e)
 $$
 
 Therefore:
@@ -242,7 +241,7 @@ Effect
 Flow
 $$
 
-Effect represents a single change.
+Effect represents one change.
 
 Flow represents accumulated changes.
 
@@ -258,12 +257,9 @@ H_{acc}(t)
 (\mathcal{E}_{acc}\times T)^*
 $$
 
-The History records:
+Each Event is stored together with its temporal position.
 
-- what Accounting Events occurred
-- when they occurred
-
-The Accounting State is derived from this History:
+The Accounting State is derived from History:
 
 $$
 S_{acc,t}
@@ -293,7 +289,7 @@ $$
 t_1<t_2
 $$
 
-the History preserves:
+History preserves:
 
 $$
 (e_1,t_1)
@@ -301,14 +297,13 @@ $$
 (e_2,t_2)
 $$
 
-The ordering of Events is essential because State transitions are
-sequential.
+The ordering is essential because State transitions are sequential.
 
 ---
 
 ## Event Is Not a Record
 
-Traditional accounting often begins with records such as Journal Entries.
+Traditional accounting often begins with Journal Entries.
 
 ASM separates the causal layer from the representation layer.
 
@@ -344,13 +339,13 @@ This document defines only the causal Event layer.
 
 ## Summary
 
-An Accounting Event is an interpreted economic occurrence that causes a
-change in Accounting State.
+An Accounting Event is an interpreted economic occurrence that causes an
+Accounting State transition.
 
 The fundamental structures are:
 
 $$
-Evidence
+Accounting\ Evidence
 \rightarrow
 Accounting\ Event
 \rightarrow
@@ -371,7 +366,7 @@ $$
 
 ASM separates:
 
-- Reality from Accounting Event
+- Economic Reality from Accounting Event
 - Evidence from Accounting Event
 - Accounting Event from Accounting Effect
 - Accounting Effect from Representation

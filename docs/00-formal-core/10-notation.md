@@ -1,4 +1,4 @@
-# ASM Notation v1.0
+# ASM Notation v1.2
 
 ## Purpose
 
@@ -7,8 +7,8 @@ Formal Core of the Accounting State Model (ASM).
 
 All Formal Core documents MUST follow the notation defined here.
 
-The Formal Core defines an abstract model of event-driven state
-transitions.
+The Formal Core defines an abstract model of constrained event-driven
+state transitions.
 
 Domain-specific concepts, including accounting structures, are introduced
 in higher layers.
@@ -16,6 +16,8 @@ in higher layers.
 ---
 
 ## General Mathematical Convention
+
+**Definition:**
 
 A mathematical space is represented by a calligraphic letter.
 
@@ -81,6 +83,10 @@ $$
 t\in T
 $$
 
+**Definition:**
+
+A single point in the Time Space.
+
 ---
 
 ### Period
@@ -99,7 +105,7 @@ $$
 
 **Definition:**
 
-A temporal interval used to select or aggregate events.
+A temporal interval used to select or aggregate Events.
 
 ---
 
@@ -166,7 +172,7 @@ $$
 
 **Definition:**
 
-The space of events represented in ASM.
+The space of Events represented in ASM.
 
 ---
 
@@ -186,9 +192,12 @@ $$
 
 **Definition:**
 
-An occurrence that produces an Effect on the modeled system.
+An occurrence recognized by ASM that produces an Effect on the modeled
+system.
 
-An Event represents the cause of a state transition.
+**Meaning:**
+
+An Event represents the causal input of a State transition.
 
 ---
 
@@ -204,7 +213,7 @@ $$
 
 **Definition:**
 
-The space of policies used for interpretation.
+The space of Policies used for Interpretation.
 
 ---
 
@@ -222,6 +231,10 @@ $$
 \theta\in\Theta
 $$
 
+**Definition:**
+
+A rule system applied during Interpretation.
+
 ---
 
 ### Parameter Space
@@ -234,7 +247,7 @@ $$
 
 **Definition:**
 
-The space of parameters or assumptions used during interpretation.
+The space of Parameters or assumptions used during Interpretation.
 
 ---
 
@@ -251,6 +264,10 @@ $$
 $$
 m\in\mathcal{M}
 $$
+
+**Definition:**
+
+A value or assumption required during Interpretation.
 
 ---
 
@@ -294,7 +311,7 @@ $$
 
 **Definition:**
 
-The space of event histories.
+The space of Event histories.
 
 ---
 
@@ -323,8 +340,7 @@ An ordered sequence of Events accumulated up to time $t$.
 **Formal expression:**
 
 $$
-H_t
-=
+H_t=
 ((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
 
@@ -354,7 +370,7 @@ $$
 
 **Definition:**
 
-The space of possible system states.
+The space of possible system States.
 
 ---
 
@@ -383,13 +399,14 @@ The condition of the modeled system at time $t$.
 **Symbol:**
 
 $$
-G
+G_{S_0,\alpha,\delta}
 $$
 
 **Formal expression:**
 
 $$
-G:
+G_{S_0,\alpha,\delta}
+:
 \mathcal{H}
 \rightarrow
 \mathcal{S}
@@ -397,7 +414,16 @@ $$
 
 **Definition:**
 
-A function that generates a State from a History.
+A function that generates a State from accumulated History under a fixed
+Initial State, Effect Function, and Transition Function.
+
+The reconstructed State is:
+
+$$
+S_t
+=
+G_{S_0,\alpha,\delta}(H_t)
+$$
 
 ---
 
@@ -413,7 +439,11 @@ $$
 
 **Definition:**
 
-The space of possible changes in State.
+The space of possible State changes.
+
+**Meaning:**
+
+An Effect represents a displacement from one State to another.
 
 ---
 
@@ -442,6 +472,12 @@ A function that maps an Event to its Effect.
 
 ### Effect
 
+**Symbol:**
+
+$$
+\alpha(e)
+$$
+
 **Formal expression:**
 
 $$
@@ -450,7 +486,11 @@ $$
 
 **Definition:**
 
-The state change produced by an Event.
+The State change produced by an Event.
+
+**Meaning:**
+
+Effect represents what changes.
 
 The fundamental relationship is:
 
@@ -460,6 +500,59 @@ Event
 Effect
 \rightarrow
 State
+$$
+
+---
+
+## Flow Notation
+
+### Flow Space
+
+**Symbol:**
+
+$$
+\mathcal{F}
+$$
+
+**Definition:**
+
+The space of accumulated Effects over a period.
+
+---
+
+### Flow
+
+**Formal expression:**
+
+For a period:
+
+$$
+\tau\subseteq T
+$$
+
+Flow is:
+
+$$
+Flow(\tau)
+=
+\sum_{(e,t)\in H_\tau}
+\alpha(e)
+$$
+
+**Definition:**
+
+An aggregation of Effects generated during a temporal interval.
+
+**Meaning:**
+
+Effect represents an instantaneous State change.
+
+Flow represents accumulated changes.
+
+Therefore:
+
+$$
+Effect\neq Flow
 $$
 
 ---
@@ -537,6 +630,10 @@ $$
 Q\in\mathcal{Q}
 $$
 
+**Definition:**
+
+A purpose that determines required information.
+
 ---
 
 ### Representation Space
@@ -553,6 +650,23 @@ The space of representations generated for Tasks.
 
 ---
 
+### Task-dependent Input Space
+
+**Symbol:**
+
+$$
+\mathcal{X}_Q
+$$
+
+**Definition:**
+
+The information space required for Task $Q$.
+
+The input may contain History, State, or other information depending on
+the Task.
+
+---
+
 ### Task-dependent Representation Function
 
 **Symbol:**
@@ -565,15 +679,15 @@ $$
 
 $$
 F_Q:
-\mathcal{H}
+\mathcal{X}_Q
 \rightarrow
 \mathcal{Y}_Q
 $$
 
 **Definition:**
 
-A function that transforms History into a representation suitable for
-Task $Q$.
+A function that transforms Task-dependent input information into a
+Representation suitable for Task $Q$.
 
 ---
 
@@ -589,7 +703,7 @@ $$
 
 **Definition:**
 
-The space of constraints required for valid States.
+The space of constraints that define valid regions of State Space.
 
 ---
 
@@ -610,6 +724,10 @@ $$
 \mathbb{R}
 $$
 
+**Definition:**
+
+A function that evaluates whether a State satisfies a Constraint.
+
 ---
 
 ### Valid State
@@ -626,9 +744,11 @@ A State satisfying required constraints.
 
 ---
 
-## ASM Core Flow
+## ASM Core Structure
 
-The Formal Core is represented by:
+ASM contains two related structures.
+
+### Information Preservation Structure
 
 $$
 \mathcal{R}
@@ -637,18 +757,28 @@ $$
 \rightarrow
 \mathcal{E}
 \rightarrow
-\Delta\mathcal{S}
+\mathcal{H}
 \rightarrow
 \mathcal{S}
 \rightarrow
 \mathcal{Y}_Q
 $$
 
-The transition structure is:
+---
+
+### State Transition Structure
 
 $$
-z
-\rightarrow
+\mathcal{E}
+\xrightarrow{\alpha}
+\Delta\mathcal{S}
+\xrightarrow{\delta}
+\mathcal{S}
+$$
+
+The transition sequence is:
+
+$$
 e
 \rightarrow
 \alpha(e)

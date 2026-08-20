@@ -81,27 +81,32 @@ $$
 \alpha_{acc}(e_{acc})
 $$
 
-The change occurs inside Asset dimensions.
+The Asset dimension is internally structured.
 
 For example:
 
 $$
-Equipment:+x
+A_t
+=
+(A_{cash},A_{equipment},...)
 $$
 
-and:
+The Accounting Effect changes the coordinates inside the Asset
+dimension:
 
 $$
-Cash:-x
+\Delta A
+=
+(-x,+x,0,...)
 $$
 
-Therefore:
+The total Asset amount is unchanged:
 
 $$
-\Delta A=0
+\sum \Delta A=0
 $$
 
-because the total Asset amount does not change.
+because cash is transformed into equipment.
 
 The Accounting Effect preserves:
 
@@ -121,9 +126,9 @@ Accounting\ Effect
 Journal\ Representation
 $$
 
-The Journal Entry describes the Effect.
+The Journal Entry describes the Accounting Effect.
 
-It does not create the Accounting Event or the Accounting Effect.
+It does not create the Accounting Event or generate the Accounting Effect.
 
 ---
 
@@ -233,7 +238,15 @@ $$
 The Accounting State now contains:
 
 - increased receivable
-- changed equity position through accumulated performance
+
+The Accounting Effect also generates Performance Flow:
+
+$$
+\Delta\Pi>0
+$$
+
+This Performance Flow is accumulated over the period and affects future
+Equity through accounting structure.
 
 ---
 
@@ -252,7 +265,7 @@ $$
 Performance representation:
 
 $$
-IS(H_{acc}(I))
+IS(\Pi(I))
 \rightarrow
 \mathcal{Y}_{IS}
 $$
@@ -369,17 +382,22 @@ $$
 
 The Income Statement represents accumulated Performance Flow.
 
-$$
-IS_I:
-H_{acc}(I)
-\rightarrow
-\mathcal{Y}_{IS}
-$$
-
-It represents:
+The Performance Flow is:
 
 $$
 \Pi(I)
+=
+\sum_{e\in H_I}
+\alpha_{\Pi}(e)
+$$
+
+The representation is:
+
+$$
+IS_I:
+\Pi(I)
+\rightarrow
+\mathcal{Y}_{IS}
 $$
 
 The Income Statement is not a State.
@@ -394,7 +412,7 @@ The Cash Flow Statement represents accumulated cash-related Effects.
 
 $$
 CF_I:
-H_{acc}(I)
+\Phi_C(I)
 \rightarrow
 \mathcal{Y}_{CF}
 $$
@@ -430,11 +448,11 @@ BS(S_{acc,t})
 $$
 
 $$
-IS(H_{acc}(I))
+IS(\Pi(I))
 $$
 
 $$
-CF(H_{acc}(I))
+CF(\Phi_C(I))
 $$
 
 These are different projections of the same Accounting Model.

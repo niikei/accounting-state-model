@@ -1,4 +1,4 @@
-# ASM Axioms v1.0
+# ASM Axioms v1.2
 
 ## Purpose
 
@@ -8,7 +8,8 @@ Accounting State Model (ASM).
 The axioms describe the assumptions required to construct the ASM
 framework.
 
-Accounting-specific interpretations are introduced in higher layers.
+Domain-specific interpretations, including accounting concepts, are
+introduced in higher layers.
 
 ---
 
@@ -28,8 +29,8 @@ $$
 
 where:
 
-- $\mathcal{R}$ is Reality Space.
-- $\mathcal{Z}$ is Evidence Space.
+- $\mathcal{R}$ represents Reality Space.
+- $\mathcal{Z}$ represents Evidence Space.
 
 **Explanation:**
 
@@ -38,21 +39,16 @@ Reality and Evidence are different mathematical objects.
 Therefore:
 
 $$
-\exists r\in\mathcal{R},
-\exists z\in\mathcal{Z}
+Reality
+\neq
+Evidence
 $$
 
-such that:
-
-$$
-(r,z)\in Obs
-$$
-
-may hold.
+Evidence represents an observation of Reality, not Reality itself.
 
 **Consequence:**
 
-ASM models interpreted information rather than Reality itself.
+ASM models interpreted information rather than Reality directly.
 
 ---
 
@@ -77,31 +73,17 @@ $$
 
 where:
 
-- $\Theta$ is Policy Space.
-- $\mathcal{M}$ is Parameter Space.
+- $\Theta$ represents Policy Space.
+- $\mathcal{M}$ represents Parameter Space.
 
 **Explanation:**
 
 An Event is not identical to Evidence.
 
-The same Evidence may produce different Events under different
-Interpretation contexts.
+The same Evidence may generate different Events depending on
+Interpretation context.
 
 Formally:
-
-$$
-\exists z\in\mathcal{Z},
-\exists\theta_1,\theta_2\in\Theta,
-\exists m_1,m_2\in\mathcal{M}
-$$
-
-such that:
-
-$$
-(\theta_1,m_1)\neq(\theta_2,m_2)
-$$
-
-and:
 
 $$
 I(z,\theta_1,m_1)
@@ -113,7 +95,7 @@ may hold.
 
 **Consequence:**
 
-Interpretation is context-dependent.
+Events are interpreted representations generated from Evidence.
 
 ---
 
@@ -126,10 +108,14 @@ Events are accumulated into an ordered History.
 **Formal expression:**
 
 $$
-H_t\in(\mathcal{E}\times T)^*
+H_t
+\in
+(\mathcal{E}\times T)^*
 $$
 
 **Explanation:**
+
+History preserves the sequence of Events.
 
 For:
 
@@ -137,19 +123,19 @@ $$
 t_1<t_2
 $$
 
-History grows by adding Events.
-
-Formally:
+History satisfies:
 
 $$
-H_{t_1}\subseteq H_{t_2}
+H_{t_1}
+\subseteq
+H_{t_2}
 $$
 
-under normal progression.
+under continuous progression.
 
 **Consequence:**
 
-A change to History requires an explicit Event.
+The causal path of State changes is preserved.
 
 ---
 
@@ -157,16 +143,9 @@ A change to History requires an explicit Event.
 
 **Statement:**
 
-Every Event generates exactly one Effect.
+Each Event generates an Effect.
 
 **Formal expression:**
-
-$$
-\forall e\in\mathcal{E},
-\exists!\alpha(e)\in\Delta\mathcal{S}
-$$
-
-where:
 
 $$
 \alpha:
@@ -175,23 +154,37 @@ $$
 \Delta\mathcal{S}
 $$
 
-**Explanation:**
-
-An Event represents a cause.
-
-An Effect represents the state change produced by that cause.
-
-The fundamental relationship is:
+Therefore:
 
 $$
-e
+\alpha(e)\in\Delta\mathcal{S}
+$$
+
+**Explanation:**
+
+An Event represents the cause of change.
+
+An Effect represents the State change produced by that Event.
+
+The relationship is:
+
+$$
+Event
 \rightarrow
-\alpha(e)
+Effect
+$$
+
+Therefore:
+
+$$
+Event
+\neq
+Effect
 $$
 
 **Consequence:**
 
-Events and Effects are distinct mathematical objects.
+ASM separates occurrence from State change.
 
 ---
 
@@ -199,7 +192,7 @@ Events and Effects are distinct mathematical objects.
 
 **Statement:**
 
-A State changes by applying an Effect to the current State.
+A State changes through the application of an Effect.
 
 **Formal expression:**
 
@@ -229,12 +222,14 @@ The Transition Function describes how the change is applied.
 Therefore:
 
 $$
-Effect\neq Transition
+Effect
+\neq
+Transition
 $$
 
 **Consequence:**
 
-ASM separates state change description from state transition mechanism.
+ASM separates change description from transition mechanism.
 
 ---
 
@@ -242,7 +237,7 @@ ASM separates state change description from state transition mechanism.
 
 **Statement:**
 
-A State can be generated from accumulated History.
+A State can be reconstructed from accumulated History.
 
 **Formal expression:**
 
@@ -256,16 +251,103 @@ $$
 such that:
 
 $$
-S_t=G(H_t)
+S_t
+=
+G(H_t)
 $$
 
 **Explanation:**
 
-History contains the ordered Events required to derive the current State.
+History contains the Events required to derive the current State.
 
 **Consequence:**
 
-State is a derived object from History.
+State is a derived object generated from History.
+
+---
+
+## History-State Separation Principle
+
+**Statement:**
+
+History and State are different mathematical objects.
+
+**Formal expression:**
+
+There may exist:
+
+$$
+H_1,H_2\in\mathcal{H}
+$$
+
+such that:
+
+$$
+H_1\neq H_2
+$$
+
+but:
+
+$$
+G(H_1)
+=
+G(H_2)
+$$
+
+**Explanation:**
+
+Different Event paths may result in the same State.
+
+History represents the path.
+
+State represents the current condition.
+
+**Consequence:**
+
+State does not replace History.
+
+---
+
+## Flow Accumulation Principle
+
+**Statement:**
+
+Flow represents accumulated Effects over a period.
+
+**Formal expression:**
+
+For:
+
+$$
+\tau\subseteq T
+$$
+
+Flow is:
+
+$$
+Flow(\tau)
+=
+\sum_{(e,t)\in H_\tau}
+\alpha(e)
+$$
+
+**Explanation:**
+
+Effect represents an instantaneous State change.
+
+Flow represents accumulated changes over a temporal interval.
+
+Therefore:
+
+$$
+Effect
+\neq
+Flow
+$$
+
+**Consequence:**
+
+Period-based information is derived from accumulated Effects.
 
 ---
 
@@ -273,8 +355,8 @@ State is a derived object from History.
 
 **Statement:**
 
-A single History may generate multiple representations according to
-different Tasks.
+A system may generate multiple Representations according to different
+Tasks.
 
 **Formal expression:**
 
@@ -288,28 +370,24 @@ there exists:
 
 $$
 F_Q:
-\mathcal{H}
+\mathcal{X}_Q
 \rightarrow
 \mathcal{Y}_Q
 $$
 
 **Explanation:**
 
-Different Tasks require different information.
+Different Tasks require different views of the same underlying system.
 
 Therefore:
 
 $$
-Q_1\neq Q_2
-$$
-
-may produce:
-
-$$
-F_{Q_1}(H_t)
+F_{Q_1}(X)
 \neq
-F_{Q_2}(H_t)
+F_{Q_2}(X)
 $$
+
+may hold.
 
 **Consequence:**
 
@@ -328,7 +406,10 @@ Valid State transitions preserve required Constraints.
 Let:
 
 $$
-\kappa:\mathcal{S}\rightarrow\mathbb{R}
+\kappa:
+\mathcal{S}
+\rightarrow
+\mathbb{R}
 $$
 
 be a Constraint Function.
@@ -342,21 +423,15 @@ $$
 and:
 
 $$
-Valid(e)
-$$
-
-then:
-
-$$
-\kappa(S_{t+1})=0
-$$
-
-where:
-
-$$
 S_{t+1}
 =
 \delta(S_t,\alpha(e))
+$$
+
+then valid transitions satisfy:
+
+$$
+\kappa(S_{t+1})=0
 $$
 
 **Explanation:**
@@ -379,5 +454,45 @@ ASM preserves consistency through invariant maintenance.
 | Effect Generation Principle | Events generate Effects |
 | Effect Application Principle | Effects transform States |
 | State Reconstruction Principle | History generates State |
-| Representation Principle | History generates Task-dependent Views |
+| History-State Separation Principle | State and History are distinct |
+| Flow Accumulation Principle | Effects accumulate into Flow |
+| Representation Principle | Systems generate Task-dependent Views |
 | Constraint Preservation Principle | Valid transitions preserve invariants |
+
+---
+
+## Summary
+
+ASM is constructed from the following principles:
+
+$$
+Reality
+\rightarrow
+Evidence
+\rightarrow
+Event
+\rightarrow
+History
+\rightarrow
+State
+\rightarrow
+Representation
+$$
+
+with State transition:
+
+$$
+Event
+\rightarrow
+Effect
+\rightarrow
+State
+$$
+
+Therefore:
+
+$$
+\boxed{
+ASM\ is\ a\ constrained\ event-driven\ state\ transition\ framework
+}
+$$

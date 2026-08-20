@@ -1,17 +1,17 @@
-# ASM Double Entry v1.1
+# ASM Double Entry v1.2
 
 ## Purpose
 
 This document defines the relationship between Double Entry and the
 Accounting State Model (ASM).
 
-The purpose is to explain Double Entry as a representation mechanism of
-Accounting Effects.
+The purpose is to explain Double Entry as a constrained representation
+mechanism of Accounting Effects.
 
 ASM does not treat Journal Entries as the source of accounting meaning.
 
-Instead, Journal Entries represent changes that have already been defined
-at the Accounting Effect layer.
+Instead, Journal Entries represent Accounting Effects that have already
+been defined at the Accounting Effect layer.
 
 ---
 
@@ -27,7 +27,7 @@ Accounting\ Effect
 Accounting\ State
 $$
 
-Double Entry is introduced as a representation of Accounting Effects:
+Double Entry represents Accounting Effects:
 
 $$
 Accounting\ Effect
@@ -51,15 +51,16 @@ Double Entry is a representation system for Accounting Effects.
 
 **Double Entry:**
 
-Double Entry is a representation system that expresses an Accounting
-Effect through balancing components.
+Double Entry is a constrained representation system that expresses an
+Accounting Effect through balancing components.
 
-Its purpose is to preserve accounting constraints when representing state
-changes.
+Its purpose is to preserve accounting constraints while representing
+state changes.
 
 Double Entry belongs to the representation layer.
 
-It does not define the economic event or the Accounting Effect itself.
+It does not define the economic occurrence or the Accounting Effect
+itself.
 
 ---
 
@@ -73,13 +74,13 @@ $$
 J:
 \Delta\mathcal{S}_{acc}
 \rightarrow
-\mathcal{Y}_{journal}
+\mathcal{J}
 $$
 
 where:
 
 - $\Delta\mathcal{S}_{acc}$ represents Accounting Effects.
-- $\mathcal{Y}_{journal}$ represents Journal Representation Space.
+- $\mathcal{J}$ represents Journal Representation Space.
 
 A Journal Representation is generated from an Accounting Effect:
 
@@ -89,7 +90,7 @@ j
 J(\alpha_{acc}(e_{acc}))
 $$
 
-The Journal Entry is a representation of the Effect.
+The Journal Entry expresses the Effect.
 
 It does not create the Effect.
 
@@ -105,7 +106,7 @@ $$
 D(j)
 $$
 
-represent the total Debit coordinates of a Journal Representation.
+represent total Debit coordinates.
 
 Let:
 
@@ -113,7 +114,7 @@ $$
 C(j)
 $$
 
-represent the total Credit coordinates of a Journal Representation.
+represent total Credit coordinates.
 
 The Double Entry constraint is:
 
@@ -142,7 +143,7 @@ $$
 D(j)-C(j)=0
 $$
 
-These are different constraints.
+These constraints exist at different layers.
 
 The Accounting Equation defines valid Accounting States.
 
@@ -156,13 +157,22 @@ Accounting\ State\ Constraint
 Journal\ Representation\ Constraint
 $$
 
+However:
+
+$$
+Double\ Entry
+\rightarrow
+Constraint\ Preservation
+$$
+
+ensures that represented Effects remain consistent with Accounting
+Structure.
+
 ---
 
 ## Effect and Journal Representation
 
-An Accounting Effect may be represented by a Journal Entry.
-
-For:
+An Accounting Effect:
 
 $$
 \alpha_{acc}(e)
@@ -170,7 +180,7 @@ $$
 \Delta\mathcal{S}_{acc}
 $$
 
-the Journal Representation is:
+is represented as:
 
 $$
 j
@@ -188,7 +198,7 @@ Accounting\ Effect
 Journal\ Representation
 $$
 
-The Journal Entry expresses the Effect.
+The Journal Entry describes the Effect.
 
 It does not generate the Effect.
 
@@ -200,17 +210,15 @@ Debit and Credit are not independent economic realities.
 
 They are coordinates used to represent Accounting Effects.
 
-Therefore:
+The mapping is:
 
 $$
-Debit/Credit
-\in
-Representation\ Coordinate\ System
+\Delta\mathcal{S}_{acc}
+\rightarrow
+\mathcal{J}
 $$
 
-Debit and Credit describe how an Effect is represented.
-
-They do not describe the original economic occurrence.
+Debit and Credit belong to the representation coordinate system.
 
 Therefore:
 
@@ -306,19 +314,19 @@ This follows the Representation Principle of ASM.
 
 Future documents introduce:
 
-- account dimensions
-- debit and credit coordinates
-- journal entry structure
-- ledger representation
+- Account dimensions.
+- Debit and Credit coordinates.
+- Journal Entry structure.
+- Ledger representation.
 
-This document defines only the conceptual relationship between
-Accounting Effect and Double Entry.
+These concepts define the detailed representation of Accounting Effects.
 
 ---
 
 ## Summary
 
-Double Entry is a representation mechanism for Accounting Effects.
+Double Entry is a constrained representation mechanism for Accounting
+Effects.
 
 The fundamental structure is:
 
@@ -332,9 +340,10 @@ $$
 
 ASM separates:
 
-- economic cause
-- accounting effect
-- journal representation
+- economic occurrence
+- Accounting Event
+- Accounting Effect
+- Journal Representation
 
 Therefore:
 

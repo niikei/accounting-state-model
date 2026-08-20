@@ -1,4 +1,4 @@
-# ASM Examples v1.0
+# ASM Examples v1.1
 
 ## Purpose
 
@@ -11,6 +11,16 @@ $$
 Event
 \rightarrow
 Effect
+\rightarrow
+State
+$$
+
+and:
+
+$$
+Event
+\rightarrow
+History
 \rightarrow
 State
 $$
@@ -76,7 +86,7 @@ S_1
 \delta(S_0,\alpha(e_1))
 $$
 
-Assuming addition as the transition rule:
+Assuming addition as the Transition Function:
 
 $$
 S_1=10+1
@@ -106,7 +116,7 @@ $$
 
 Consider a task management system.
 
-The State Space contains possible task states:
+The State Space contains possible task States:
 
 $$
 \mathcal{S}
@@ -159,7 +169,7 @@ $$
 In ASM:
 
 - Event represents what happened.
-- Effect represents the state change.
+- Effect represents what changed.
 - Transition represents how the change is applied.
 
 ---
@@ -180,13 +190,13 @@ $$
 t_1<t_2
 $$
 
-The initial State is:
+Given:
 
-$$
-S_0
-$$
+- Initial State $S_0$
+- Effect Function $\alpha$
+- Transition Function $\delta$
 
-The first Event produces:
+the first Event produces:
 
 $$
 \alpha(e_1)
@@ -230,13 +240,15 @@ The State does not replace the History.
 
 ## Multiple Representation Example
 
-A single History may have different representations depending on the
-required Task.
+A single History and State may have different Representations depending
+on the required Task.
 
 Let:
 
 $$
-H_t\in\mathcal{H}
+(H_t,S_t)
+\in
+(\mathcal{H},\mathcal{S})
 $$
 
 Two Tasks exist:
@@ -250,11 +262,11 @@ For example:
 - $Q_1$: Show operational status.
 - $Q_2$: Analyze historical changes.
 
-The representations are:
+The Representations are:
 
 $$
 F_{Q_1}:
-\mathcal{H}
+(\mathcal{H},\mathcal{S})
 \rightarrow
 \mathcal{Y}_{Q_1}
 $$
@@ -263,7 +275,7 @@ and:
 
 $$
 F_{Q_2}:
-\mathcal{H}
+(\mathcal{H},\mathcal{S})
 \rightarrow
 \mathcal{Y}_{Q_2}
 $$
@@ -271,19 +283,19 @@ $$
 The results may differ:
 
 $$
-F_{Q_1}(H_t)
+F_{Q_1}(H_t,S_t)
 \neq
-F_{Q_2}(H_t)
+F_{Q_2}(H_t,S_t)
 $$
 
-even though the source History is identical.
+even though the underlying History and State are identical.
 
 Therefore:
 
 $$
-History
-\neq
 Representation
+\neq
+State
 $$
 
 ---
@@ -329,7 +341,7 @@ S_{t+1}
 \delta(S_t,\alpha(e))
 $$
 
-A valid transition must preserve:
+A valid transition preserves:
 
 $$
 \kappa(S_{t+1})=0
@@ -338,9 +350,9 @@ $$
 Therefore:
 
 $$
-\text{Valid State}
+Valid\ State
 \rightarrow
-\text{Valid State}
+Valid\ State
 $$
 
 ---
@@ -355,17 +367,16 @@ $$
 \mathcal{S}_{acc}
 $$
 
-The relationship between Accounting State and ASM State is defined by an
-mapping function:
+such that:
 
 $$
-\iota_{acc}:
 \mathcal{S}_{acc}
-\rightarrow
+\subseteq
 \mathcal{S}
 $$
 
-This means that an Accounting State can be represented as an ASM State.
+The Accounting State is therefore a constrained specialization of the
+general ASM State.
 
 An Accounting Event is defined as:
 
@@ -376,8 +387,9 @@ $$
 and generates an Accounting Effect:
 
 $$
-\alpha_{acc}(e_{acc})
-\in
+\alpha_{acc}:
+\mathcal{E}_{acc}
+\rightarrow
 \Delta\mathcal{S}_{acc}
 $$
 
@@ -408,7 +420,9 @@ The Accounting Layer provides the domain meaning.
 
 ## Summary
 
-ASM describes systems through:
+ASM describes systems through two related structures.
+
+Information preservation:
 
 $$
 Reality
@@ -417,11 +431,21 @@ Evidence
 \rightarrow
 Event
 \rightarrow
-Effect
+History
 \rightarrow
 State
 \rightarrow
 Representation
+$$
+
+State transition:
+
+$$
+Event
+\rightarrow
+Effect
+\rightarrow
+State
 $$
 
 The essential state transition is:
@@ -436,6 +460,16 @@ Events explain why change occurs.
 
 Effects explain what changes.
 
+History explains what events occurred.
+
 States explain the resulting condition.
 
 Representations explain how the condition is viewed.
+
+Therefore:
+
+$$
+\boxed{
+ASM\ is\ a\ causal,\ reconstructable,\ and\ purpose-dependent\ state\ model
+}
+$$

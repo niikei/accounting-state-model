@@ -1,4 +1,4 @@
-# ASM Corollaries v1.0
+# ASM Corollaries v1.2
 
 ## Purpose
 
@@ -16,8 +16,8 @@ Domain-specific applications are introduced in higher layers.
 
 **Statement:**
 
-ASM represents a system as a sequence of Events that generate Effects and
-change States.
+ASM represents a system as Events that generate Effects and change
+States.
 
 **Formal expression:**
 
@@ -45,9 +45,13 @@ $$
 
 From the Effect Generation Principle and Effect Application Principle.
 
+An Event generates an Effect.
+
+The Effect is applied through the State Transition Function.
+
 **Conclusion:**
 
-ASM is an event-driven state transition model.
+ASM represents systems as event-driven state transition systems.
 
 ---
 
@@ -55,15 +59,17 @@ ASM is an event-driven state transition model.
 
 **Statement:**
 
-ASM has the structural property that State can be derived from accumulated
-Events.
+ASM has the structural property that State can be reconstructed from
+accumulated Events.
 
 **Formal expression:**
 
 Given:
 
 $$
-H_t=((e_1,t_1),\dots,(e_n,t_n))
+H_t
+=
+((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
 
 the resulting State is:
@@ -72,21 +78,19 @@ $$
 S_t=G(H_t)
 $$
 
-where:
+under fixed:
 
-$$
-S_{i+1}
-=
-\delta(S_i,\alpha(e_i))
-$$
+- Initial State
+- Effect Function
+- Transition Function
 
 **Derivation:**
 
 History stores Events.
 
-Each Event produces an Effect.
+Each Event generates an Effect.
 
-Each Effect produces a State transition.
+Each Effect produces a State Transition.
 
 **Conclusion:**
 
@@ -102,7 +106,7 @@ Every State change can be traced back to an Event.
 
 **Formal expression:**
 
-For a transition:
+For:
 
 $$
 S_{t+1}
@@ -110,7 +114,7 @@ S_{t+1}
 \delta(S_t,\alpha(e))
 $$
 
-there exists an Event:
+there exists:
 
 $$
 e\in\mathcal{E}
@@ -120,7 +124,7 @@ that generated the applied Effect.
 
 **Derivation:**
 
-By the Effect Generation Principle:
+From the Effect Generation Principle:
 
 $$
 \alpha:
@@ -129,9 +133,41 @@ $$
 \Delta\mathcal{S}
 $$
 
+Each Effect has a causal Event.
+
 **Conclusion:**
 
-ASM naturally preserves the causal path of State changes.
+ASM preserves the causal trace of State changes.
+
+---
+
+## Causality Preservation Corollary
+
+**Statement:**
+
+ASM preserves the causal relationship between Events and State changes.
+
+**Formal expression:**
+
+$$
+e
+\rightarrow
+\alpha(e)
+\rightarrow
+S_{t+1}
+$$
+
+**Derivation:**
+
+An Event generates an Effect.
+
+The Effect is applied through the Transition Function.
+
+Therefore State changes have identifiable causal origins.
+
+**Conclusion:**
+
+ASM provides explainable State transitions.
 
 ---
 
@@ -165,9 +201,23 @@ $$
 
 From the Effect and Transition Separation Theorem.
 
+Effect defines what changes.
+
+Transition defines how the change is applied.
+
 **Conclusion:**
 
-The same Effect concept can be applied by different transition mechanisms.
+ASM separates:
+
+$$
+what\ changes
+$$
+
+from:
+
+$$
+how\ the\ change\ is\ applied
+$$
 
 ---
 
@@ -175,7 +225,7 @@ The same Effect concept can be applied by different transition mechanisms.
 
 **Statement:**
 
-One History can generate multiple representations.
+One underlying ASM model can generate multiple Representations.
 
 **Formal expression:**
 
@@ -188,9 +238,8 @@ $$
 there exist:
 
 $$
-F_{Q_1}
-:
-\mathcal{H}
+F_{Q_1}:
+\mathcal{X}_{Q_1}
 \rightarrow
 \mathcal{Y}_{Q_1}
 $$
@@ -198,9 +247,8 @@ $$
 and:
 
 $$
-F_{Q_2}
-:
-\mathcal{H}
+F_{Q_2}:
+\mathcal{X}_{Q_2}
 \rightarrow
 \mathcal{Y}_{Q_2}
 $$
@@ -208,9 +256,9 @@ $$
 such that:
 
 $$
-F_{Q_1}(H_t)
+F_{Q_1}(X)
 \neq
-F_{Q_2}(H_t)
+F_{Q_2}(X)
 $$
 
 may hold.
@@ -219,39 +267,81 @@ may hold.
 
 From the Representation Principle.
 
+Each Task defines a different Representation Function.
+
 **Conclusion:**
 
-History is the common source of multiple views.
+A single underlying system supports multiple purpose-dependent views.
 
 ---
 
-## State Compression Corollary
+## Representation Separation Corollary
 
 **Statement:**
 
-State is a compressed representation of accumulated Events.
+A Representation is not identical to the underlying State.
 
 **Formal expression:**
 
-Given:
+In general:
+
+$$
+F_Q(X_Q)\neq S_t
+$$
+
+**Derivation:**
+
+A Representation is generated for a specific Task.
+
+It preserves information required for that Task but may omit other
+information.
+
+**Conclusion:**
+
+Reports, views, and documents are projections of State, not State itself.
+
+---
+
+## State Abstraction Corollary
+
+**Statement:**
+
+State is a derived abstraction of accumulated History.
+
+**Formal expression:**
 
 $$
 S_t=G(H_t)
 $$
 
-State does not necessarily contain all information in:
+but there may exist:
 
 $$
-H_t
+H_1,H_2\in\mathcal{H}
+$$
+
+such that:
+
+$$
+H_1\neq H_2
+$$
+
+and:
+
+$$
+G(H_1)=G(H_2)
 $$
 
 **Derivation:**
 
-From the Representation Compression Theorem.
+From the State Equivalence Theorem.
+
+The State Generation Function does not necessarily preserve all
+historical information.
 
 **Conclusion:**
 
-State and History are different mathematical objects.
+State represents the current condition, not the complete historical path.
 
 ---
 
@@ -259,39 +349,33 @@ State and History are different mathematical objects.
 
 **Statement:**
 
-A State contains sufficient information if future transitions required by a
-purpose can be determined from that State.
+A State is sufficient when it preserves information required for future
+State transitions.
 
 **Formal expression:**
 
-For a Task:
-
-$$
-Q\in\mathcal{Q}
-$$
-
-there exists:
-
-$$
-\delta_Q
-$$
-
-such that:
+For:
 
 $$
 S_{t+1}
 =
-\delta_Q(S_t,\alpha(e))
+\delta(S_t,\alpha(e))
 $$
+
+the State contains the information required to determine future
+transitions under the ASM model.
 
 **Derivation:**
 
-The State preserves the information required by the transition process
-for the intended purpose.
+From the State Transition Determinacy Theorem.
+
+A State does not need to contain complete History.
+
+It only needs to contain transition-relevant information.
 
 **Conclusion:**
 
-State is not a complete History but a sufficient abstraction.
+State is a sufficient summary of the past for future transitions.
 
 ---
 
@@ -299,8 +383,8 @@ State is not a complete History but a sufficient abstraction.
 
 **Statement:**
 
-Domain-specific models can be constructed by defining specialized State
-Spaces.
+Domain-specific models can be constructed by defining specialized
+spaces.
 
 **Formal expression:**
 
@@ -316,22 +400,39 @@ $$
 \mathcal{S}_D
 $$
 
-with:
+such that:
 
 $$
 \mathcal{S}_D
-\rightarrow
+\subseteq
 \mathcal{S}
+$$
+
+Similarly:
+
+$$
+\mathcal{E}_D
+\subseteq
+\mathcal{E}
+$$
+
+and:
+
+$$
+\Delta\mathcal{S}_D
+\subseteq
+\Delta\mathcal{S}
 $$
 
 **Derivation:**
 
-The Formal Core defines the transition structure but does not restrict the
-contents of State.
+The Formal Core defines general transition structures.
+
+Domain layers specialize meanings and constraints.
 
 **Conclusion:**
 
-Accounting and ERP models can extend ASM without changing the Formal
+Accounting and ERP models can extend ASM without modifying the Formal
 Core.
 
 ---
@@ -343,8 +444,50 @@ Core.
 | Event-driven State Corollary | Events generate Effects and State changes |
 | Event Sourcing Corollary | State can be reconstructed from History |
 | Audit Trail Corollary | State changes remain traceable |
+| Causality Preservation Corollary | State changes preserve causal origins |
 | Effect-based Change Corollary | Change and application are separated |
-| Projection Corollary | One History supports multiple views |
-| State Compression Corollary | State abstracts History |
-| State Sufficiency Corollary | State preserves required information |
+| Projection Corollary | One model supports multiple views |
+| Representation Separation Corollary | Representations are not States |
+| State Abstraction Corollary | State abstracts accumulated History |
+| State Sufficiency Corollary | State preserves transition-relevant information |
 | Layer Extension Corollary | Domain models extend the Core |
+
+---
+
+## Summary
+
+ASM derives the following consequences:
+
+Information preservation:
+
+$$
+Reality
+\rightarrow
+Evidence
+\rightarrow
+Event
+\rightarrow
+History
+\rightarrow
+State
+\rightarrow
+Representation
+$$
+
+State transition:
+
+$$
+Event
+\rightarrow
+Effect
+\rightarrow
+State
+$$
+
+Therefore:
+
+$$
+\boxed{
+ASM\ provides\ a\ causal,\ reconstructable,\ and\ purpose-dependent\ state\ model
+}
+$$

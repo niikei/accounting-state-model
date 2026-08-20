@@ -1,11 +1,11 @@
-# ASM Accounting State v1.1
+# ASM Accounting State v1.2
 
 ## Purpose
 
 This document defines the concept of Accounting State in the Accounting
 Layer of the Accounting State Model (ASM).
 
-The purpose is to define what an accounting state represents before
+The purpose is to define what an Accounting State represents before
 introducing specific accounting structures such as Assets, Liabilities,
 Equity, and Double Entry.
 
@@ -54,8 +54,8 @@ economic entity.
 
 It is not a record of transactions.
 
-It is mathematically derived from accumulated Accounting History through
-Accounting Effects and State Transitions.
+It is the condition obtained after applying Accounting Effects generated
+from accumulated Accounting Events.
 
 The fundamental relationship is:
 
@@ -85,7 +85,7 @@ $$
 
 ## Formal Definition
 
-The Accounting State Space is defined as:
+The Accounting State Space is:
 
 $$
 \mathcal{S}_{acc}
@@ -121,7 +121,7 @@ where:
 
 ---
 
-## State and History
+## State Generation from History
 
 Accounting Events are accumulated as Accounting History.
 
@@ -131,7 +131,7 @@ H_{acc}(t)
 (\mathcal{E}_{acc}\times T)^*
 $$
 
-The Accounting State is mathematically derived from this History:
+The Accounting State can be reconstructed from accumulated History:
 
 $$
 S_{acc,t}
@@ -139,9 +139,16 @@ S_{acc,t}
 G_{acc}(H_{acc}(t))
 $$
 
-Therefore, Accounting State is not an independent primitive object.
+where:
 
-It is a derived state generated from accumulated Accounting Events.
+$$
+G_{acc}:
+\mathcal{H}_{acc}
+\rightarrow
+\mathcal{S}_{acc}
+$$
+
+represents the State Generation Function.
 
 The relationship is:
 
@@ -171,9 +178,13 @@ Accounting\ Effect
 Accounting\ State
 $$
 
+The Accounting Event describes:
+
+"What occurred?"
+
 The Accounting Effect describes:
 
-"What changes?"
+"What changed?"
 
 The Accounting State describes:
 
@@ -203,12 +214,12 @@ $$
 
 ## Relationship Between History and Transition
 
-Accounting History provides the sequence of Accounting Events.
+Accounting History preserves the ordered sequence of Accounting Events.
 
 The State Transition mechanism applies the corresponding Accounting
 Effects.
 
-For a History:
+For:
 
 $$
 H_{acc}(t)
@@ -216,7 +227,19 @@ H_{acc}(t)
 ((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
 $$
 
-the resulting Accounting State is obtained by:
+the resulting State is obtained through sequential transitions:
+
+$$
+S_{i+1}
+=
+\delta_{acc}
+(
+S_i,
+\alpha_{acc}(e_i)
+)
+$$
+
+Therefore:
 
 $$
 S_{acc,t}
@@ -224,24 +247,18 @@ S_{acc,t}
 G_{acc}(H_{acc}(t))
 $$
 
-where each Event contributes:
+History provides the Events.
 
-$$
-e_i
-\rightarrow
-\alpha_{acc}(e_i)
-\rightarrow
-S_{i+1}
-$$
+Effects provide the changes.
+
+Transitions produce the resulting State.
 
 ---
 
-## State Information
+## State and History Separation
 
-An Accounting State contains the information required to represent the
-current accounting condition.
-
-However, it does not necessarily contain the complete Accounting History.
+An Accounting State does not necessarily contain the complete Accounting
+History.
 
 Formally, there may exist:
 
@@ -286,7 +303,7 @@ $$
 e_{acc}\in\mathcal{E}_{acc}
 $$
 
-the next state can be determined by:
+the next State is determined by:
 
 $$
 S_{acc,t+1}
@@ -355,7 +372,7 @@ The Accounting State is:
 - a condition, not a record
 - derived from Accounting History
 - updated through Accounting Effects
-- constrained by accounting structures
+- constrained by Accounting Structure
 
 ASM models accounting as:
 
