@@ -1,0 +1,693 @@
+# ASM Notation v2.0
+
+## Purpose
+
+This document defines the official mathematical notation used in the
+Accounting State Model (ASM).
+
+All Formal Core documents MUST follow the notation defined here.
+
+Each symbol has one official meaning and MUST NOT be reused for another
+concept.
+
+---
+
+## General Mathematical Convention
+
+A set or mathematical space is represented by a calligraphic letter.
+
+Example:
+
+$$
+\mathcal{R}
+$$
+
+An element belonging to a set is represented by a lowercase letter.
+
+Example:
+
+$$
+e\in\mathcal{E}_{acc}
+$$
+
+A function is represented by a mapping.
+
+Example:
+
+$$
+f:X\rightarrow Y
+$$
+
+A relation is represented as a subset of a Cartesian product.
+
+Example:
+
+$$
+R\subseteq X\times Y
+$$
+
+---
+
+## Time Notation
+
+### Time Space
+
+**Symbol:**
+
+$$
+T
+$$
+
+**Definition:**
+
+The domain of temporal points used in ASM.
+
+---
+
+### Time Point
+
+**Symbol:**
+
+$$
+t
+$$
+
+**Formal expression:**
+
+$$
+t\in T
+$$
+
+---
+
+### Period
+
+**Symbol:**
+
+$$
+I
+$$
+
+**Formal expression:**
+
+$$
+I=[t_0,t_1]\subseteq T
+$$
+
+**Definition:**
+
+A temporal interval used for measuring accumulated effects.
+
+---
+
+## Reality and Observation
+
+### Reality Space
+
+**Symbol:**
+
+$$
+\mathcal{R}
+$$
+
+**Definition:**
+
+The space of economic reality before accounting interpretation.
+
+---
+
+### Evidence Space
+
+**Symbol:**
+
+$$
+\mathcal{Z}
+$$
+
+**Definition:**
+
+The space of observed information used for accounting interpretation.
+
+---
+
+### Observation Relation
+
+**Symbol:**
+
+$$
+Obs
+$$
+
+**Formal expression:**
+
+$$
+Obs\subseteq\mathcal{R}\times\mathcal{Z}
+$$
+
+**Definition:**
+
+The relation between economic reality and observed evidence.
+
+---
+
+## Event Notation
+
+### Economic Event Space
+
+**Symbol:**
+
+$$
+\mathcal{E}_{econ}
+$$
+
+**Definition:**
+
+The space of events occurring in economic reality.
+
+---
+
+### Economic Event
+
+**Symbol:**
+
+$$
+\epsilon
+$$
+
+**Formal expression:**
+
+$$
+\epsilon\in\mathcal{E}_{econ}
+$$
+
+**Definition:**
+
+A meaningful change occurring in Reality.
+
+---
+
+### Accounting Event Space
+
+**Symbol:**
+
+$$
+\mathcal{E}_{acc}
+$$
+
+**Definition:**
+
+The space of events recognized by an accounting system.
+
+---
+
+### Accounting Event
+
+**Symbol:**
+
+$$
+e
+$$
+
+**Formal expression:**
+
+$$
+e\in\mathcal{E}_{acc}
+$$
+
+**Definition:**
+
+An Economic Event interpreted and recognized through accounting rules.
+
+---
+
+## Interpretation Notation
+
+### Accounting Policy Space
+
+**Symbol:**
+
+$$
+\Theta
+$$
+
+**Definition:**
+
+The space of accounting policies.
+
+---
+
+### Accounting Policy
+
+**Symbol:**
+
+$$
+\theta
+$$
+
+**Formal expression:**
+
+$$
+\theta\in\Theta
+$$
+
+**Definition:**
+
+A rule system used for accounting recognition and measurement.
+
+---
+
+### Estimate Space
+
+**Symbol:**
+
+$$
+H_{\eta}
+$$
+
+**Definition:**
+
+The space of assumptions representing uncertainty.
+
+---
+
+### Estimate
+
+**Symbol:**
+
+$$
+\eta
+$$
+
+**Formal expression:**
+
+$$
+\eta\in H_{\eta}
+$$
+
+**Definition:**
+
+An assumption used during accounting interpretation.
+
+---
+
+### Accounting Interpretation
+
+**Symbol:**
+
+$$
+\widehat{\mathsf{Acc}}_{\theta}
+$$
+
+**Formal expression:**
+
+$$
+\widehat{\mathsf{Acc}}_{\theta}:
+\mathcal{Z}\times H_{\eta}
+\rightarrow
+\mathcal{E}_{acc}
+$$
+
+**Definition:**
+
+A transformation from Evidence and Estimates into Accounting Events.
+
+---
+
+## History Notation
+
+### Accounting History Space
+
+**Symbol:**
+
+$$
+\mathcal{H}_{acc}
+$$
+
+**Definition:**
+
+The space of Accounting Event histories.
+
+---
+
+### Accounting Event History
+
+**Symbol:**
+
+$$
+H_A(t)
+$$
+
+**Formal expression:**
+
+$$
+H_A(t)
+=
+((e_1,t_1),(e_2,t_2),\dots,(e_n,t_n))
+$$
+
+**Definition:**
+
+An ordered sequence of Accounting Events.
+
+---
+
+### Provenance
+
+**Symbol:**
+
+$$
+Prov
+$$
+
+**Formal expression:**
+
+$$
+Prov:
+\mathcal{E}_{acc}
+\rightarrow
+2^{\mathcal{Z}\times\Theta\times H_{\eta}}
+$$
+
+**Definition:**
+
+Information describing the origin and supporting basis of an Accounting
+Event.
+
+---
+
+## Accounting Dimension Notation
+
+### Accounting Dimension Space
+
+**Symbol:**
+
+$$
+\mathcal{X}
+$$
+
+**Definition:**
+
+The space of accounting dimensions affected by Accounting Events.
+
+**Formal expression:**
+
+$$
+\mathcal{X}
+=
+\mathcal{A}
+\times
+\mathcal{L}
+\times
+\mathcal{E}
+\times
+\mathcal{P}
+\times
+\mathcal{C}
+$$
+
+where:
+
+- $\mathcal{A}$ represents Asset dimension.
+- $\mathcal{L}$ represents Liability dimension.
+- $\mathcal{E}$ represents Equity dimension.
+- $\mathcal{P}$ represents Performance dimension.
+- $\mathcal{C}$ represents Cash dimension.
+
+---
+
+## Effect Notation
+
+### Accounting Effect
+
+**Symbol:**
+
+$$
+\alpha(e)
+$$
+
+**Formal expression:**
+
+$$
+\alpha:
+\mathcal{E}_{acc}
+\rightarrow
+\Delta\mathcal{X}
+$$
+
+**Definition:**
+
+The change vector generated by an Accounting Event.
+
+---
+
+### Effect Vector
+
+**Formal expression:**
+
+$$
+\alpha(e)
+=
+(\Delta A,\Delta L,\Delta E,\Delta\Pi,\Delta\Phi_C)
+$$
+
+where:
+
+- $A$ represents Assets.
+- $L$ represents Liabilities.
+- $E$ represents Equity.
+- $\Pi$ represents Performance Flow.
+- $\Phi_C$ represents Cash Flow.
+
+---
+
+## Representation Notation
+
+### Task Space
+
+**Symbol:**
+
+$$
+\mathcal{Q}
+$$
+
+**Definition:**
+
+The space of Tasks.
+
+---
+
+### Task
+
+**Symbol:**
+
+$$
+Q
+$$
+
+**Formal expression:**
+
+$$
+Q\in\mathcal{Q}
+$$
+
+**Definition:**
+
+The purpose that determines required information.
+
+---
+
+### Task-dependent Representation
+
+**Symbol:**
+
+$$
+F_Q
+$$
+
+**Formal expression:**
+
+$$
+F_Q:
+\mathcal{H}_{acc}
+\rightarrow
+Y_Q
+$$
+
+**Definition:**
+
+A transformation from Accounting History into a representation suitable
+for Task $Q$.
+
+---
+
+## State Notation
+
+### Operational State
+
+**Symbol:**
+
+$$
+S_t
+$$
+
+**Formal expression:**
+
+$$
+S_t=G_Q(H_A(t))
+$$
+
+**Definition:**
+
+A Task-dependent compression of Accounting History that preserves
+information required for future transitions.
+
+---
+
+### State Transition Function
+
+**Symbol:**
+
+$$
+\delta_Q
+$$
+
+**Formal expression:**
+
+$$
+S_{t+1}
+=
+\delta_Q(S_t,e)
+$$
+
+**Definition:**
+
+A transition caused by an Accounting Event.
+
+---
+
+## Position Notation
+
+### Financial Position
+
+**Symbol:**
+
+$$
+FP_t
+$$
+
+**Formal expression:**
+
+$$
+FP_t=(A_t,L_t,E_t)
+$$
+
+**Definition:**
+
+A representation of Assets, Liabilities, and Equity.
+
+---
+
+### Accounting Identity
+
+**Formal expression:**
+
+$$
+A_t-L_t-E_t=0
+$$
+
+---
+
+### Quantitative Position
+
+**Symbol:**
+
+$$
+P_k(t)
+$$
+
+**Formal expression:**
+
+$$
+P_k(t)
+=
+P_k(0)
++
+\sum_{e\in H_A(t)}
+\alpha_k(e)
+$$
+
+**Definition:**
+
+A projection of accumulated Accounting Effects along dimension $k$.
+
+---
+
+## Flow Notation
+
+### Performance Flow
+
+**Symbol:**
+
+$$
+\Pi(I)
+$$
+
+**Formal expression:**
+
+$$
+\Pi(I)
+=
+\sum_{e\in H_I}
+\alpha_\Pi(e)
+$$
+
+---
+
+### Cash Flow
+
+**Symbol:**
+
+$$
+\Phi_C(I)
+$$
+
+**Formal expression:**
+
+$$
+\Phi_C(I)
+=
+\sum_{e\in H_I}
+\alpha_C(e)
+$$
+
+---
+
+## Bookkeeping Notation
+
+### Book Representation
+
+**Symbol:**
+
+$$
+B
+$$
+
+**Definition:**
+
+A representation of Accounting History using double-entry records.
+
+---
+
+### Double Entry Constraint
+
+**Symbol:**
+
+$$
+\mathsf{Bal}_B
+$$
+
+**Formal expression:**
+
+$$
+\mathsf{Bal}_B(B)=0
+$$
